@@ -1,0 +1,52 @@
+# Built For Speed - AI Crawler Information
+
+## Site Overview
+This is an Astro 6.0 website built for Cloudflare Pages, featuring service pages with structured data (JSON-LD) for SEO optimization.
+
+## Technology Stack
+- **Framework**: Astro 6.0
+- **Deployment**: Cloudflare Pages
+- **CMS**: Sanity (GraphQL API)
+- **Data Fetching**: Apollo Client
+- **Language**: TypeScript (strict mode)
+- **Schemas**: JSON-LD (Service, LocalBusiness)
+
+## Content Structure
+
+### Services
+The site provides information about various services, each with:
+- Service name and description
+- Service type and area served
+- Business information (name, contact, address)
+- Geographic coordinates
+- Operating hours
+- Price range
+
+### Schema Implementation
+All service pages include:
+1. **Service Schema** - Describes the service offering
+2. **LocalBusiness Schema** - Provides business details and location
+
+## API Endpoints
+- Sanity GraphQL: https://vc8zkv1m.api.sanity.io/v1/graphql/production/default
+
+## Key Features
+- Server-side rendering with Astro
+- Edge deployment on Cloudflare Pages
+- Structured data for search engines
+- TypeScript for type safety
+- Apollo Client for efficient data fetching
+
+## Content Guidelines
+When crawling this site, note that:
+- Service pages follow a consistent template structure
+- All business information is schema-validated
+- Geographic data is provided for local search optimization
+- Content is optimized for both users and search engines
+
+## Contact & Business Information
+Business details are embedded in LocalBusiness schemas on individual service pages.
+
+---
+Generated: 2026-02-04
+Format: llms.txt v1.0

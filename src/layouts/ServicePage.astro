@@ -1,0 +1,112 @@
+---
+import { generateServiceSchema, generateLocalBusinessSchema } from '../lib/schema';
+
+interface Props {
+  title: string;
+  description: string;
+  serviceName: string;
+  serviceDescription: string;
+  serviceType?: string;
+  areaServed?: string;
+  businessName: string;
+  businessUrl: string;
+  telephone?: string;
+  email?: string;
+  address?: {
+    streetAddress: string;
+    addressLocality: string;
+    addressRegion: string;
+    postalCode: string;
+    addressCountry: string;
+  };
+  geo?: {
+    latitude: number;
+    longitude: number;
+  };
+  openingHours?: string[];
+  priceRange?: string;
+}
+
+const {
+  title,
+  description,
+  serviceName,
+  serviceDescription,
+  serviceType,
+  areaServed,
+  businessName,
+  businessUrl,
+  telephone,
+  email,
+  address,
+  geo,
+  openingHours,
+  priceRange,
+} = Astro.props;
+
+const serviceSchema = generateServiceSchema({
+  name: serviceName,
+  description: serviceDescription,
+  provider: {
+    name: businessName,
+    url: businessUrl,
+  },
+  areaServed,
+  serviceType,
+});
+
+const businessSchema = generateLocalBusinessSchema({
+  name: businessName,
+  description: serviceDescription,
+  url: businessUrl,
+  telephone,
+  email,
+  address,
+  geo,
+  openingHours,
+  priceRange,
+});
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    
+    <!-- Service Schema -->
+    <script type="application/ld+json" set:html={JSON.stringify(serviceSchema)} />
+    
+    <!-- LocalBusiness Schema -->
+    <script type="application/ld+json" set:html={JSON.stringify(businessSchema)} />
+    
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>
+
+<style is:global>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    line-height: 1.6;
+    color: #333;
+  }
+
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+</style>
