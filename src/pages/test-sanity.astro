@@ -1,0 +1,97 @@
+---
+// Test script to explore Sanity content
+import { fetchAllDocumentTypes, fetchDocumentsByType, fetchServices } from '../lib/sanity-client';
+
+console.log('🔍 Exploring Sanity Content...\n');
+
+try {
+  // Get all document types
+  console.log('📋 Fetching all document types...');
+  const types = await fetchAllDocumentTypes();
+  
+  if (types && types.length > 0) {
+    console.log(`✅ Found ${types.length} document type(s):\n`);
+    types.forEach((type: string) => {
+      console.log(`  - ${type}`);
+    });
+    
+    // Fetch documents for each type
+    console.log('\n📄 Fetching documents for each type...\n');
+    for (const type of types) {
+      const docs = await fetchDocumentsByType(type);
+      console.log(`  ${type}: ${docs.length} document(s)`);
+      if (docs.length > 0 && docs.length <= 3) {
+        docs.forEach((doc: any) => {
+          console.log(`    - ${doc.title || doc.name || doc._id}`);
+        });
+      }
+    }
+  } else {
+    console.log('⚠️  No document types found');
+  }
+  
+  // Try to fetch services specifically
+  console.log('\n🔍 Checking for services...');
+  const services = await fetchServices();
+  if (services.length > 0) {
+    console.log(`✅ Found ${services.length} service(s):`);
+    services.forEach((service: any) => {
+      console.log(`  - ${service.title} (${service.slug})`);
+    });
+  } else {
+    console.log('ℹ️  No services found. You may need to create service documents in Sanity Studio.');
+  }
+  
+  console.log('\n✅ Sanity connection test complete!');
+  
+} catch (error) {
+  console.error('❌ Error:', error);
+}
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sanity Content Explorer</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+      line-height: 1.6;
+    }
+    h1 {
+      color: #333;
+    }
+    .info {
+      background: #f0f9ff;
+      border-left: 4px solid #0ea5e9;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+    code {
+      background: #f1f5f9;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔍 Sanity Content Explorer</h1>
+  <div class="info">
+    <p><strong>Check the build console output above</strong> to see what document types and content exist in your Sanity project.</p>
+    <p>This page explores your Sanity content using GROQ queries.</p>
+  </div>
+  
+  <h2>Next Steps:</h2>
+  <ol>
+    <li>Review the console output to see what content exists</li>
+    <li>If no <code>service</code> documents exist, create them in Sanity Studio</li>
+    <li>Once services exist, the site will automatically fetch and display them</li>
+  </ol>
+</body>
+</html>

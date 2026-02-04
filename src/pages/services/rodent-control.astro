@@ -1,39 +1,17 @@
 ---
 import ServicePage from '../../layouts/ServicePage.astro';
-import { client } from '../../lib/apollo-client';
-import { gql } from '@apollo/client';
 
-// Example GraphQL query - adjust based on your Sanity schema
-const GET_SERVICE = gql`
-  query GetService($slug: String!) {
-    allService(where: { slug: { current: { eq: $slug } } }) {
-      _id
-      title
-      description
-      serviceType
-      areaServed
-    }
-  }
-`;
-
-// For static generation, you can fetch data at build time
-// const { data } = await client.query({
-//   query: GET_SERVICE,
-//   variables: { slug: 'pest-control' },
-// });
-
-// Example static data for demonstration
 const serviceData = {
-  title: 'Professional Pest Control Services',
-  description: 'Expert pest control solutions for residential and commercial properties',
-  serviceName: 'Pest Control',
-  serviceDescription: 'Comprehensive pest management services including inspection, treatment, and prevention for all types of pests.',
-  serviceType: 'Pest Control Service',
+  title: 'Professional Rodent Control Services',
+  description: 'Expert rodent removal and prevention services for homes and businesses',
+  serviceName: 'Rodent Control',
+  serviceDescription: 'Effective rodent control solutions including inspection, removal, exclusion, and ongoing prevention to keep your property rodent-free.',
+  serviceType: 'Rodent Control Service',
   areaServed: 'Greater Metropolitan Area',
   businessName: 'Built For Speed Pest Experts',
   businessUrl: 'https://example.com',
   telephone: '+1-555-0123',
-  email: 'info@example.com',
+  email: 'info@builtforspeed.com',
   address: {
     streetAddress: '123 Main Street',
     addressLocality: 'City',
@@ -58,11 +36,33 @@ const serviceData = {
     </header>
 
     <section class="service-details">
-      <h2>Our Services</h2>
+      <h2>Comprehensive Rodent Control Solutions</h2>
       <p>
-        We provide professional pest control services tailored to your specific needs.
-        Our experienced technicians use safe, effective methods to eliminate pests
-        and prevent future infestations.
+        Rodents pose serious health risks and can cause extensive property damage. Our expert
+        technicians provide fast, effective rodent control services tailored to your specific situation.
+      </p>
+
+      <h3>Our Rodent Control Process</h3>
+      <ul class="process-list">
+        <li><strong>Inspection:</strong> Thorough assessment to identify entry points and nesting areas</li>
+        <li><strong>Removal:</strong> Safe and humane rodent removal using proven methods</li>
+        <li><strong>Exclusion:</strong> Sealing entry points to prevent future infestations</li>
+        <li><strong>Sanitation:</strong> Cleanup and decontamination of affected areas</li>
+        <li><strong>Prevention:</strong> Ongoing monitoring and preventive measures</li>
+      </ul>
+
+      <h3>Common Rodent Problems We Solve</h3>
+      <ul class="problem-list">
+        <li>Mice infestations in walls and attics</li>
+        <li>Rat problems in basements and crawl spaces</li>
+        <li>Commercial property rodent issues</li>
+        <li>Recurring rodent problems</li>
+      </ul>
+
+      <h3>Why Professional Rodent Control?</h3>
+      <p>
+        DIY methods often provide only temporary relief. Our professional approach addresses
+        the root cause of rodent problems, ensuring long-term protection for your property.
       </p>
 
       <h3>Service Areas</h3>
@@ -150,6 +150,24 @@ const serviceData = {
   li {
     padding: 0.5rem 0;
     color: #4b5563;
+  }
+
+  .process-list li,
+  .problem-list li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .process-list li:last-child,
+  .problem-list li:last-child {
+    border-bottom: none;
+  }
+
+  .problem-list li::before {
+    content: "✓ ";
+    color: #667eea;
+    font-weight: bold;
+    margin-right: 0.5rem;
   }
 
   a {

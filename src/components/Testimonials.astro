@@ -1,0 +1,223 @@
+---
+// src/components/Testimonials.astro
+// Testimonials carousel with star ratings
+import { Image } from 'astro:assets';
+
+interface Review {
+  customerName: string;
+  rating: number;
+  reviewText: string;
+  location?: string;
+  avatar?: any;
+}
+
+interface Props {
+  title?: string;
+  reviews?: Review[];
+}
+
+const { 
+  title = "What Our Customers Say",
+  reviews = []
+} = Astro.props;
+
+const renderStars = (rating: number) => {
+  return Array.from({ length: 5 }, (_, i) => i < rating);
+};
+---
+
+<section class="testimonials">
+  <div class="container">
+    <h2 class="section-title">{title}</h2>
+    
+    <div class="reviews-grid">
+      {reviews.map((review) => (
+        <div class="review-card">
+          <div class="review-header">
+            <img 
+              src="/google-places-logo.svg" 
+              alt="Google Places" 
+              class="google-logo"
+            />
+            <div class="stars">
+              {renderStars(review.rating).map((filled) => (
+                <svg 
+                  class={filled ? 'star filled' : 'star'} 
+                  viewBox="0 0 20 20" 
+                  fill="currentColor"
+                >
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              ))}
+            </div>
+          </div>
+          
+          <p class="review-text">"{review.reviewText}"</p>
+          
+          <div class="reviewer">
+            {review.avatar && (
+              <Image 
+                src={review.avatar} 
+                alt={review.customerName}
+                class="avatar"
+                width={48}
+                height={48}
+              />
+            )}
+            {!review.avatar && (
+              <div class="avatar-placeholder">
+                {review.customerName.charAt(0)}
+              </div>
+            )}
+            <div class="reviewer-info">
+              <div class="reviewer-name">{review.customerName}</div>
+              {review.location && (
+                <div class="reviewer-location">{review.location}</div>
+              )}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .testimonials {
+    padding: 4rem 0;
+    background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #1d5f20 0%, #2d7a30 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    align-items: stretch;
+  }
+
+  .review-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .review-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(29, 95, 32, 0.12);
+    border-color: #1d5f20;
+  }
+
+  .review-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .google-logo {
+    width: 100px;
+    height: auto;
+  }
+
+  .stars {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .star {
+    width: 20px;
+    height: 20px;
+    color: #d1d5db;
+    transition: color 0.2s;
+  }
+
+  .star.filled {
+    color: #fbbf24;
+  }
+
+  .review-text {
+    color: #374151;
+    line-height: 1.6;
+    margin-bottom: auto;
+    font-style: italic;
+    flex-grow: 1;
+    padding-bottom: 1.5rem;
+  }
+
+  .reviewer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid #f3f4f6;
+  }
+
+  .avatar,
+  .avatar-placeholder {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .avatar-placeholder {
+    background: linear-gradient(135deg, #1d5f20 0%, #2d7a30 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.25rem;
+  }
+
+  .reviewer-info {
+    flex: 1;
+  }
+
+  .reviewer-name {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 1rem;
+  }
+
+  .reviewer-location {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-top: 0.125rem;
+  }
+
+  @media (max-width: 768px) {
+    .section-title {
+      font-size: 2rem;
+    }
+
+    .review-card {
+      padding: 1.5rem;
+    }
+  }
+</style>

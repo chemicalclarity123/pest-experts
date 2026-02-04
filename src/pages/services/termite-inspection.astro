@@ -1,39 +1,17 @@
 ---
 import ServicePage from '../../layouts/ServicePage.astro';
-import { client } from '../../lib/apollo-client';
-import { gql } from '@apollo/client';
 
-// Example GraphQL query - adjust based on your Sanity schema
-const GET_SERVICE = gql`
-  query GetService($slug: String!) {
-    allService(where: { slug: { current: { eq: $slug } } }) {
-      _id
-      title
-      description
-      serviceType
-      areaServed
-    }
-  }
-`;
-
-// For static generation, you can fetch data at build time
-// const { data } = await client.query({
-//   query: GET_SERVICE,
-//   variables: { slug: 'pest-control' },
-// });
-
-// Example static data for demonstration
 const serviceData = {
-  title: 'Professional Pest Control Services',
-  description: 'Expert pest control solutions for residential and commercial properties',
-  serviceName: 'Pest Control',
-  serviceDescription: 'Comprehensive pest management services including inspection, treatment, and prevention for all types of pests.',
-  serviceType: 'Pest Control Service',
+  title: 'Professional Termite Inspection Services',
+  description: 'Expert termite detection and treatment solutions for residential and commercial properties',
+  serviceName: 'Termite Inspection',
+  serviceDescription: 'Comprehensive termite inspection and treatment services using advanced detection technology and proven elimination methods.',
+  serviceType: 'Termite Inspection Service',
   areaServed: 'Greater Metropolitan Area',
   businessName: 'Built For Speed Pest Experts',
   businessUrl: 'https://example.com',
   telephone: '+1-555-0123',
-  email: 'info@example.com',
+  email: 'info@builtforspeed.com',
   address: {
     streetAddress: '123 Main Street',
     addressLocality: 'City',
@@ -58,11 +36,25 @@ const serviceData = {
     </header>
 
     <section class="service-details">
-      <h2>Our Services</h2>
+      <h2>Why Choose Our Termite Inspection Services?</h2>
       <p>
-        We provide professional pest control services tailored to your specific needs.
-        Our experienced technicians use safe, effective methods to eliminate pests
-        and prevent future infestations.
+        Termites can cause significant structural damage to your property if left undetected.
+        Our certified inspectors use state-of-the-art technology to identify termite activity
+        and provide comprehensive treatment solutions.
+      </p>
+
+      <h3>Our Inspection Process</h3>
+      <ul class="process-list">
+        <li><strong>Visual Inspection:</strong> Thorough examination of accessible areas</li>
+        <li><strong>Moisture Detection:</strong> Identifying conditions favorable to termites</li>
+        <li><strong>Thermal Imaging:</strong> Advanced technology to detect hidden infestations</li>
+        <li><strong>Detailed Report:</strong> Comprehensive findings and recommendations</li>
+      </ul>
+
+      <h3>Treatment Options</h3>
+      <p>
+        Based on our inspection findings, we offer various treatment solutions including
+        liquid termiticides, baiting systems, and preventive measures to protect your property.
       </p>
 
       <h3>Service Areas</h3>
@@ -150,6 +142,15 @@ const serviceData = {
   li {
     padding: 0.5rem 0;
     color: #4b5563;
+  }
+
+  .process-list li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .process-list li:last-child {
+    border-bottom: none;
   }
 
   a {

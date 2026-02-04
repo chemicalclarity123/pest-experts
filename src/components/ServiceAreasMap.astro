@@ -1,0 +1,156 @@
+---
+// src/components/ServiceAreasMap.astro
+// Service areas section with map and area list
+
+interface Props {
+  title?: string;
+  description?: string;
+  mapImage?: any;
+  areas?: string[];
+}
+
+const { 
+  title = "Local Areas We Serve",
+  description,
+  mapImage,
+  areas = []
+} = Astro.props;
+
+// Check if mapImage is a valid URL string
+const hasMapImage = mapImage && typeof mapImage === 'string' && mapImage.length > 0;
+---
+
+<section class="service-areas">
+  <div class="container">
+    <div class="section-header">
+      <h2>{title}</h2>
+      {description && <p class="section-description">{description}</p>}
+    </div>
+
+    <div class="areas-grid">
+      {hasMapImage && (
+        <div class="map-container">
+          <img 
+            src={mapImage} 
+            alt="Gauteng service areas map" 
+            class="map-image"
+            loading="lazy"
+          />
+        </div>
+      )}
+
+      {areas.length > 0 && (
+        <div class="areas-list">
+          <h3>We Serve:</h3>
+          <ul class="areas">
+            {areas.map((area) => (
+              <li class="area-item">
+                <svg class="check-icon" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                {area}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  </div>
+</section>
+
+<style>
+  .service-areas {
+    padding: 4rem 0;
+    background: white;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .section-header h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.75rem;
+    background: linear-gradient(135deg, #1d5f20 0%, #2d7a30 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .section-description {
+    font-size: 1.125rem;
+    color: #6b7280;
+    margin: 0 auto;
+  }
+
+  .areas-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+
+  @media (max-width: 968px) {
+    .areas-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .map-container {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .map-image {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .areas-list h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 1.5rem;
+  }
+
+  .areas {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  @media (max-width: 640px) {
+    .areas {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .area-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #374151;
+    font-weight: 500;
+  }
+
+  .check-icon {
+    width: 20px;
+    height: 20px;
+    color: #10b981;
+    flex-shrink: 0;
+  }
+</style>

@@ -1,0 +1,106 @@
+---
+// src/components/WhatsAppWidget.astro
+// Floating WhatsApp button optimized for mobile thumb reach
+interface Props {
+  phoneNumber: string;
+  message?: string;
+}
+
+const { phoneNumber, message = "Hi! I'd like to get a quote for pest control services." } = Astro.props;
+
+// Format phone number for WhatsApp (remove spaces, dashes, etc.)
+const formattedPhone = phoneNumber.replace(/[^\d+]/g, '');
+const whatsappUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
+---
+
+<a 
+  href={whatsappUrl}
+  target="_blank"
+  rel="noopener noreferrer"
+  class="whatsapp-widget"
+  aria-label="Chat on WhatsApp"
+>
+  <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
+    <path d="M16 0C7.164 0 0 7.164 0 16c0 2.828.736 5.484 2.028 7.788L0 32l8.384-2.196A15.93 15.93 0 0 0 16 32c8.836 0 16-7.164 16-16S24.836 0 16 0zm0 29.2c-2.544 0-4.94-.732-6.96-1.996l-.5-.296-5.168 1.356 1.38-5.04-.324-.52A13.13 13.13 0 0 1 2.8 16C2.8 8.708 8.708 2.8 16 2.8S29.2 8.708 29.2 16 23.292 29.2 16 29.2zm7.228-9.888c-.396-.2-2.344-1.156-2.708-1.288-.364-.132-.628-.2-.892.2-.264.396-1.024 1.288-1.256 1.552-.232.264-.464.296-.86.1-.396-.2-1.672-.616-3.184-1.964-1.176-1.048-1.972-2.344-2.204-2.74-.232-.396-.024-.612.172-.808.176-.176.396-.464.596-.696.2-.232.264-.396.396-.66.132-.264.068-.496-.032-.696-.1-.2-.892-2.148-1.224-2.94-.324-.772-.652-.668-.892-.68-.232-.012-.496-.016-.76-.016s-.696.1-1.06.496c-.364.396-1.388 1.356-1.388 3.308s1.42 3.836 1.62 4.1c.2.264 2.808 4.288 6.804 6.012.952.412 1.696.656 2.276.84.956.304 1.824.26 2.512.156.764-.116 2.344-.956 2.676-1.88.332-.924.332-1.716.232-1.88-.1-.164-.364-.264-.76-.464z"/>
+  </svg>
+  <span class="pulse"></span>
+</a>
+
+<style>
+  .whatsapp-widget {
+    position: fixed;
+    z-index: 1000;
+    width: 60px;
+    height: 60px;
+    background: #25D366;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  /* Desktop: bottom-right */
+  @media (min-width: 768px) {
+    .whatsapp-widget {
+      bottom: 24px;
+      right: 24px;
+    }
+  }
+
+  /* Mobile: bottom-center, thumb reach */
+  @media (max-width: 767px) {
+    .whatsapp-widget {
+      bottom: 20px;
+      right: 20px;
+      width: 56px;
+      height: 56px;
+    }
+  }
+
+  .whatsapp-widget:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(37, 211, 102, 0.5);
+  }
+
+  .whatsapp-widget svg {
+    width: 32px;
+    height: 32px;
+    color: white;
+  }
+
+  @media (max-width: 767px) {
+    .whatsapp-widget svg {
+      width: 28px;
+      height: 28px;
+    }
+  }
+
+  /* Pulse animation */
+  .pulse {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: #25D366;
+    opacity: 0.6;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+      opacity: 0.6;
+    }
+    50% {
+      transform: scale(1.2);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 0;
+    }
+  }
+</style>

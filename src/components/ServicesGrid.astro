@@ -1,0 +1,168 @@
+---
+// src/components/ServicesGrid.astro
+// Services grid fetched from Sanity
+interface Service {
+  title: string;
+  slug: { current: string };
+  description?: string;
+  seo?: {
+    shareImage?: any;
+  };
+}
+
+interface Props {
+  title?: string;
+  services?: Service[];
+}
+
+const { 
+  title = "Our Services",
+  services = []
+} = Astro.props;
+
+// Service icons mapping (can be customized)
+const serviceIcons: Record<string, string> = {
+  'pest': '🐜',
+  'termite': '🪲',
+  'rodent': '🐭',
+  'bed': '🛏️',
+  'cockroach': '🪳',
+  'mosquito': '🦟',
+  'wasp': '🐝',
+  'flea': '🦟',
+};
+
+const getServiceIcon = (title: string) => {
+  const lowerTitle = title.toLowerCase();
+  for (const [key, icon] of Object.entries(serviceIcons)) {
+    if (lowerTitle.includes(key)) return icon;
+  }
+  return '🏠'; // Default icon
+};
+---
+
+<section class="services-grid-section">
+  <div class="container">
+    <h2 class="section-title">{title}</h2>
+    
+    <div class="services-grid">
+      {services.map((service) => (
+        <a href={`/services/${service.slug.current}/`} class="service-card">
+          <div class="service-icon">
+            {getServiceIcon(service.title)}
+          </div>
+          <h3 class="service-title">{service.title}</h3>
+          {service.description && (
+            <p class="service-description">{service.description}</p>
+          )}
+          <span class="learn-more">
+            Learn More →
+          </span>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .services-grid-section {
+    padding: 4rem 0;
+    background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #1d5f20 0%, #2d7a30 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+
+  .service-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .service-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(29, 95, 32, 0.12);
+    border-color: #1d5f20;
+  }
+
+  .service-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, rgba(29, 95, 32, 0.1) 0%, rgba(45, 122, 48, 0.15) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .service-card:hover .service-icon {
+    background: linear-gradient(135deg, #1d5f20 0%, #2d7a30 100%);
+    transform: scale(1.1) rotate(5deg);
+  }
+
+  .service-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.75rem;
+  }
+
+  .service-description {
+    color: #6b7280;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    flex-grow: 1;
+  }
+
+  .learn-more {
+    color: #1d5f20;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+  }
+
+  .service-card:hover .learn-more {
+    transform: translateX(4px);
+  }
+
+  @media (max-width: 768px) {
+    .section-title {
+      font-size: 2rem;
+    }
+
+    .service-card {
+      padding: 1.5rem;
+    }
+  }
+</style>

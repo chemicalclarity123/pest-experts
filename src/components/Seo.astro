@@ -1,0 +1,164 @@
+---
+import {
+  generateEnhancedServiceSchema,
+  generateEnhancedLocalBusinessSchema,
+  generateFAQSchema,
+} from '../lib/schema';
+
+interface Props {
+  // Page metadata
+  title: string;
+  description: string;
+  
+  // Service data
+  serviceName: string;
+  serviceDescription: string;
+  serviceType?: string;
+  
+  // Local SEO data
+  areaServed?: string[];
+  knowsAbout?: string[]; // Pest expertise
+  faqs?: Array<{
+    question: string;
+    answer: string;
+  }>;
+  
+  // Company data
+  companySettings?: {
+    businessName: string;
+    legalName?: string;
+    logo?: string;
+    aggregateRating?: {
+      ratingValue: number;
+      reviewCount: number;
+      bestRating?: number;
+    };
+    address?: {
+      streetAddress: string;
+      addressLocality: string;
+      addressRegion: string;
+      postalCode: string;
+      addressCountry: string;
+    };
+    geo?: {
+      latitude: number;
+      longitude: number;
+    };
+    contactInfo?: {
+      telephone: string;
+      email?: string;
+    };
+    businessHours?: Array<{
+      days: string;
+      opens: string;
+      closes: string;
+    }>;
+    priceRange?: string;
+    sameAs?: Array<{
+      platform: string;
+      url: string;
+    }>;
+  };
+  
+  // Social/OG
+  shareImage?: string;
+  canonicalUrl?: string;
+}
+
+const {
+  title,
+  description,
+  serviceName,
+  serviceDescription,
+  serviceType,
+  areaServed,
+  knowsAbout,
+  faqs,
+  companySettings,
+  shareImage,
+  canonicalUrl,
+} = Astro.props;
+
+// Generate Service Schema
+const serviceSchema = generateEnhancedServiceSchema({
+  name: serviceName,
+  description: serviceDescription,
+  serviceType,
+  provider: {
+    name: companySettings?.businessName || 'Pest Experts',
+    url: Astro.site?.toString() || 'https://example.com',
+  },
+  areaServed,
+  knowsAbout,
+  aggregateRating: companySettings?.aggregateRating,
+});
+
+// Generate LocalBusiness Schema (if company settings available)
+let businessSchema;
+if (companySettings) {
+  const sameAsUrls = companySettings.sameAs?.map((s) => s.url) || [];
+  const openingHours = companySettings.businessHours?.map(
+    (h) => `${h.days} ${h.opens}-${h.closes}`
+  ) || [];
+
+  businessSchema = generateEnhancedLocalBusinessSchema({
+    name: companySettings.businessName,
+    legalName: companySettings.legalName,
+    description: serviceDescription,
+    url: Astro.site?.toString() || 'https://example.com',
+    telephone: companySettings.contactInfo?.telephone,
+    email: companySettings.contactInfo?.email,
+    address: companySettings.address,
+    geo: companySettings.geo,
+    openingHours,
+    priceRange: companySettings.priceRange,
+    aggregateRating: companySettings.aggregateRating,
+    sameAs: sameAsUrls,
+    areaServed,
+    logo: companySettings.logo,
+  });
+}
+
+// Generate FAQ Schema (if FAQs provided)
+let faqSchema;
+if (faqs && faqs.length > 0) {
+  faqSchema = generateFAQSchema({ faqs });
+}
+
+const currentUrl = canonicalUrl || Astro.url.toString();
+const ogImage = shareImage || '/og-default.jpg';
+---
+
+<!-- Primary Meta Tags -->
+<title>{title}</title>
+<meta name="title" content={title} />
+<meta name="description" content={description} />
+<meta name="generator" content={Astro.generator} />
+<link rel="canonical" href={currentUrl} />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content={currentUrl} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={ogImage} />
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content={currentUrl} />
+<meta property="twitter:title" content={title} />
+<meta property="twitter:description" content={description} />
+<meta property="twitter:image" content={ogImage} />
+
+<!-- Service Schema -->
+<script type="application/ld+json" set:html={JSON.stringify(serviceSchema)} />
+
+<!-- LocalBusiness Schema (with 4.8 Google Rating!) -->
+{businessSchema && (
+  <script type="application/ld+json" set:html={JSON.stringify(businessSchema)} />
+)}
+
+<!-- FAQ Schema (for SERP real estate) -->
+{faqSchema && (
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+)}

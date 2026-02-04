@@ -1,0 +1,91 @@
+---
+// src/layouts/Layout.astro
+// Base layout with SEO meta tags
+interface Props {
+	title: string;
+	description?: string;
+	ogImage?: string;
+	canonicalUrl?: string;
+	schemaMarkup?: any;
+}
+
+const { 
+	title, 
+	description = "Professional pest control services across Gauteng Province",
+	ogImage,
+	canonicalUrl,
+	schemaMarkup
+} = Astro.props;
+
+const siteUrl = import.meta.env.PUBLIC_SITE_URL || 'https://pest-experts-site.pages.dev';
+const currentUrl = canonicalUrl || new URL(Astro.url.pathname, siteUrl).href;
+const defaultOgImage = `${siteUrl}/og-image.jpg`;
+const ogImageUrl = ogImage || defaultOgImage;
+---
+
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="description" content={description} />
+	<meta name="viewport" content="width=device-width" />
+	<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+	<meta name="generator" content={Astro.generator} />
+	<title>{title}</title>
+	
+	<!-- Canonical URL -->
+	<link rel="canonical" href={currentUrl} />
+	
+	<!-- Open Graph / Facebook -->
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content={currentUrl} />
+	<meta property="og:title" content={title} />
+	<meta property="og:description" content={description} />
+	<meta property="og:image" content={ogImageUrl} />
+	
+	<!-- Twitter -->
+	<meta property="twitter:card" content="summary_large_image" />
+	<meta property="twitter:url" content={currentUrl} />
+	<meta property="twitter:title" content={title} />
+	<meta property="twitter:description" content={description} />
+	<meta property="twitter:image" content={ogImageUrl} />
+	
+	<!-- Schema.org JSON-LD -->
+	{schemaMarkup && (
+		Array.isArray(schemaMarkup) ? (
+			schemaMarkup.map((schema, index) => (
+				<script key={index} type="application/ld+json" set:html={JSON.stringify(schema)} />
+			))
+		) : (
+			<script type="application/ld+json" set:html={JSON.stringify(schemaMarkup)} />
+		)
+	)}
+	
+	<!-- Additional head content (schemas, etc) -->
+	<slot name="head" />
+</head>
+<body>
+	<slot />
+</body>
+</html>
+
+<style is:global>
+	* {
+		box-sizing: border-box;
+		margin: 0;
+		padding: 0;
+	}
+
+	html {
+		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
+
+	body {
+		margin: 0;
+		color: #1f2937;
+		background: white;
+		line-height: 1.5;
+	}
+</style>

@@ -1,17 +1,178 @@
 ---
+// src/pages/index.astro
+// Homepage with full Sanity CMS integration
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import ServicesSection from '../components/ServicesSection.astro';
+import ServiceAreasMap from '../components/ServiceAreasMap.astro';
+import WhyChooseUs from '../components/WhyChooseUs.astro';
+import ServicesGrid from '../components/ServicesGrid.astro';
+import Testimonials from '../components/Testimonials.astro';
+import FAQ from '../components/FAQ.astro';
+import LeadForm from '../components/LeadForm.astro';
+import WhatsAppWidget from '../components/WhatsAppWidget.astro';
+import Footer from '../components/Footer.astro';
+import { fetchHomepage, fetchServices, fetchCompanySettings, urlFor } from '../lib/sanity-client';
+import { generateHomepageSchema } from '../lib/schema';
 
+// Fetch data from Sanity
+const homepage = await fetchHomepage();
+const services = await fetchServices();
+const companySettings = await fetchCompanySettings();
+
+// Fallback data if Sanity is empty
+const fallbackHomepage = {
+  hero: {
+    headline: "Gauteng's Trusted Pest Control",
+    subheadline: "Fast, Local, Effective",
+    ctaText: "Get A Quote",
+    trustBadges: ["24/7 Emergency Service", "Licensed & Insured", "Free Inspection"]
+  },
+  serviceAreas: {
+    title: "Local Areas We Serve",
+    description: "Professional pest control services across Gauteng Province"
+  },
+  whyChooseUs: {
+    title: "Why Choose Us",
+    features: [
+      {
+        icon: "🎯",
+        title: "Local Experts",
+        description: "Based in Gauteng, we understand local pest challenges"
+      },
+      {
+        icon: "⚡",
+        title: "Fast Response",
+        description: "We respond within 1 hour to all inquiries"
+      },
+      {
+        icon: "✅",
+        title: "Guaranteed Results",
+        description: "6-month guarantee on all treatments"
+      }
+    ]
+  },
+  testimonials: {
+    title: "What Our Customers Say",
+    reviews: []
+  },
+  faq: {
+    title: "Frequently Asked Questions",
+    questions: []
+  }
+};
+
+const pageData = homepage || fallbackHomepage;
+
+// Get WhatsApp number from company settings
+const whatsappNumber = companySettings?.contactInfo?.whatsapp || "+27123456789";
+
+// Generate composite homepage schema with LocalBusiness + FAQ
+const schemaMarkup = generateHomepageSchema({
+  name: companySettings?.businessName || "Pest Experts Gauteng",
+  legalName: companySettings?.legalName,
+  description: pageData.seo?.metaDescription || "Professional pest control services in Gauteng. Fast response, guaranteed results. Licensed & insured pest experts.",
+  url: "https://pest-experts-site.pages.dev",
+  logo: companySettings?.logo,
+  telephone: companySettings?.contactInfo?.telephone || "+27123456789",
+  email: companySettings?.contactInfo?.email || "info@pestexperts.co.za",
+  address: companySettings?.address,
+  geo: companySettings?.geo,
+  openingHours: companySettings?.businessHours?.map((hours: any) => 
+    `${hours.days} ${hours.opens}-${hours.closes}`
+  ),
+  priceRange: companySettings?.priceRange,
+  aggregateRating: companySettings?.aggregateRating,
+  sameAs: companySettings?.sameAs?.map((profile: any) => profile.url),
+  areaServed: companySettings?.serviceAreas || companySettings?.serviceArea?.gautengAreas || ["Pretoria", "Johannesburg", "Gauteng"],
+  services: services?.map((s: any) => s.title) || ["Pest Control", "Rodent Control", "Termite Control"],
+  faqs: pageData.faq?.questions || []
+});
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout 
+  title={pageData.seo?.pageTitle || "Pest Control Gauteng | Professional Pest Removal Services"}
+  description={pageData.seo?.metaDescription || "Professional pest control services in Gauteng. Fast response, guaranteed results. Licensed & insured pest experts."}
+  keywords={pageData.seo?.keywords || ["pest control gauteng", "pest removal", "exterminator"]}
+  ogImage={pageData.seo?.ogImage}
+  canonicalUrl={pageData.seo?.canonicalUrl}
+  schemaMarkup={schemaMarkup}
+>
+  <!-- Hero Section -->
+  <Hero 
+    headline={pageData.hero?.headline}
+    subheadline={pageData.hero?.subheadline}
+    ctaText={pageData.hero?.ctaText}
+    backgroundImage={pageData.hero?.backgroundImage}
+    trustBadges={pageData.hero?.trustBadges}
+  />
+
+  <!-- Services Section -->
+  <ServicesSection 
+    title={pageData.services?.title}
+    description={pageData.services?.description}
+    serviceCards={pageData.services?.serviceCards}
+  />
+
+  <!-- Service Areas Map -->
+  <ServiceAreasMap 
+    title={pageData.serviceAreas?.title}
+    description={pageData.serviceAreas?.description}
+    mapImage={pageData.serviceAreas?.mapImage}
+  />
+
+  <!-- Why Choose Us -->
+  <WhyChooseUs 
+    title={pageData.whyChooseUs?.title}
+    features={pageData.whyChooseUs?.features}
+  />
+
+  <!-- Testimonials -->
+  <Testimonials 
+    title={pageData.testimonials.title}
+    reviews={pageData.testimonials.reviews}
+  />
+  
+  <!-- FAQ Section -->
+  {pageData.faq?.questions && pageData.faq.questions.length > 0 && (
+    <FAQ 
+      title={pageData.faq.title}
+      questions={pageData.faq.questions}
+    />
+  )}
+
+  <!-- Lead Form -->
+  <LeadForm 
+    title={pageData.leadForm?.title || "Get A Free Quote"}
+    description={pageData.leadForm?.description || "Fill out the form and we'll contact you within 1 hour"}
+    successMessage={pageData.leadForm?.successMessage}
+    source="homepage"
+  />
+
+  <!-- WhatsApp Widget -->
+  <WhatsAppWidget 
+    phoneNumber={whatsappNumber}
+    message="Hi! I'd like to get a quote for pest control services in Gauteng."
+  />
+
+  <!-- Footer -->
+  <Footer />
+</Layout>
+
+<style>
+  /* Global styles for homepage */
+  :global(body) {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    color: #1f2937;
+    background: white;
+  }
+
+  :global(*) {
+    box-sizing: border-box;
+  }
+
+  :global(html) {
+    scroll-behavior: smooth;
+  }
+</style>

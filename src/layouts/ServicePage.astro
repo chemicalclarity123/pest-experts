@@ -1,71 +1,44 @@
 ---
-import { generateServiceSchema, generateLocalBusinessSchema } from '../lib/schema';
+import Seo from '../components/Seo.astro';
 
 interface Props {
-  title: string;
-  description: string;
+  // Service data
   serviceName: string;
   serviceDescription: string;
   serviceType?: string;
-  areaServed?: string;
-  businessName: string;
-  businessUrl: string;
-  telephone?: string;
-  email?: string;
-  address?: {
-    streetAddress: string;
-    addressLocality: string;
-    addressRegion: string;
-    postalCode: string;
-    addressCountry: string;
-  };
-  geo?: {
-    latitude: number;
-    longitude: number;
-  };
-  openingHours?: string[];
-  priceRange?: string;
+  
+  // SEO metadata
+  metaTitle?: string;
+  metaDescription?: string;
+  shareImage?: string;
+  
+  // Local SEO data
+  areaServed?: string[];
+  knowsAbout?: string[];
+  faqs?: Array<{
+    question: string;
+    answer: string;
+  }>;
+  
+  // Company settings (passed from page)
+  companySettings?: any;
 }
 
 const {
-  title,
-  description,
   serviceName,
   serviceDescription,
   serviceType,
+  metaTitle,
+  metaDescription,
+  shareImage,
   areaServed,
-  businessName,
-  businessUrl,
-  telephone,
-  email,
-  address,
-  geo,
-  openingHours,
-  priceRange,
+  knowsAbout,
+  faqs,
+  companySettings,
 } = Astro.props;
 
-const serviceSchema = generateServiceSchema({
-  name: serviceName,
-  description: serviceDescription,
-  provider: {
-    name: businessName,
-    url: businessUrl,
-  },
-  areaServed,
-  serviceType,
-});
-
-const businessSchema = generateLocalBusinessSchema({
-  name: businessName,
-  description: serviceDescription,
-  url: businessUrl,
-  telephone,
-  email,
-  address,
-  geo,
-  openingHours,
-  priceRange,
-});
+const title = metaTitle || `${serviceName} | ${companySettings?.businessName || 'Pest Experts'}`;
+const description = metaDescription || serviceDescription;
 ---
 
 <!DOCTYPE html>
@@ -73,16 +46,20 @@ const businessSchema = generateLocalBusinessSchema({
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content={description} />
-    <title>{title}</title>
-    
-    <!-- Service Schema -->
-    <script type="application/ld+json" set:html={JSON.stringify(serviceSchema)} />
-    
-    <!-- LocalBusiness Schema -->
-    <script type="application/ld+json" set:html={JSON.stringify(businessSchema)} />
-    
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    
+    <Seo
+      title={title}
+      description={description}
+      serviceName={serviceName}
+      serviceDescription={serviceDescription}
+      serviceType={serviceType}
+      areaServed={areaServed}
+      knowsAbout={knowsAbout}
+      faqs={faqs}
+      companySettings={companySettings}
+      shareImage={shareImage}
+    />
   </head>
   <body>
     <main>

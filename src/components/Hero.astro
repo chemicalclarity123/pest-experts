@@ -1,0 +1,326 @@
+---
+// src/components/Hero.astro
+// Hero section with background image and inline form
+import { Image } from 'astro:assets';
+
+interface Props {
+  headline: string;
+  subheadline?: string;
+  ctaText?: string;
+  backgroundImage?: any;
+  trustBadges?: string[];
+}
+
+const { 
+  headline,
+  subheadline,
+  ctaText = "Get A Quote",
+  backgroundImage,
+  trustBadges = []
+} = Astro.props;
+
+// Check if backgroundImage is a valid URL string
+const hasValidImage = backgroundImage && typeof backgroundImage === 'string' && backgroundImage.length > 0;
+---
+
+<section class="hero" class:list={[{ 'hero-no-image': !hasValidImage }]}>
+  {hasValidImage && (
+    <div class="hero-bg">
+      <img 
+        src={backgroundImage} 
+        alt="Pest control service" 
+        loading="eager"
+        class="hero-image"
+      />
+      <div class="hero-overlay"></div>
+    </div>
+  )}
+  
+  <div class="hero-content">
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-text">
+          <h1>{headline}</h1>
+          {subheadline && <p class="subheadline">{subheadline}</p>}
+          
+          {trustBadges.length > 0 && (
+            <div class="trust-badges">
+              {trustBadges.map((badge) => (
+                <span class="badge">{badge}</span>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div class="hero-form-card">
+          <h2>Get A Free Quote</h2>
+          <p class="form-subtitle">We'll respond within 1 hour</p>
+          
+          <form id="heroForm" class="hero-form">
+            <input 
+              type="text" 
+              name="name" 
+              placeholder="Full Name *" 
+              required 
+            />
+            <input 
+              type="tel" 
+              name="phone" 
+              placeholder="Phone Number *" 
+              required 
+            />
+            <input 
+              type="email" 
+              name="email" 
+              placeholder="Email" 
+            />
+            <select name="service">
+              <option value="">Select Service</option>
+              <option value="Pest Control">General Pest Control</option>
+              <option value="Termite Control">Termite Control</option>
+              <option value="Rodent Control">Rodent Control</option>
+              <option value="Other">Other</option>
+            </select>
+            <input type="hidden" name="source" value="homepage_hero" />
+            <button type="submit" class="cta-btn">
+              <span class="btn-text">{ctaText}</span>
+              <span class="btn-loader" style="display: none;">Sending...</span>
+            </button>
+            <div class="form-message" style="display: none;"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const heroForm = document.getElementById('heroForm') as HTMLFormElement;
+  const submitBtn = heroForm?.querySelector('.cta-btn') as HTMLButtonElement;
+  const btnText = submitBtn?.querySelector('.btn-text') as HTMLElement;
+  const btnLoader = submitBtn?.querySelector('.btn-loader') as HTMLElement;
+  const messageEl = heroForm?.querySelector('.form-message') as HTMLElement;
+
+  heroForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    submitBtn.disabled = true;
+    btnText.style.display = 'none';
+    btnLoader.style.display = 'inline';
+    messageEl.style.display = 'none';
+
+    const formData = new FormData(heroForm);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+      const response = await fetch('/api/submit-lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        messageEl.textContent = result.message || 'Thank you! We\'ll contact you shortly.';
+        messageEl.className = 'form-message success';
+        messageEl.style.display = 'block';
+        heroForm.reset();
+      } else {
+        messageEl.textContent = result.error || 'Something went wrong.';
+        messageEl.className = 'form-message error';
+        messageEl.style.display = 'block';
+      }
+    } catch (error) {
+      messageEl.textContent = 'Network error. Please try again.';
+      messageEl.className = 'form-message error';
+      messageEl.style.display = 'block';
+    } finally {
+      submitBtn.disabled = false;
+      btnText.style.display = 'inline';
+      btnLoader.style.display = 'none';
+    }
+  });
+</script>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 600px;
+    display: flex;
+    align-items: center;
+    padding: 4rem 0;
+    overflow: hidden;
+  }
+
+  /* Fallback gradient when no image */
+  .hero-no-image {
+    background: linear-gradient(135deg, #1f2937 0%, #1d5f20 100%);
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.4) 100%);
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+
+  @media (max-width: 968px) {
+    .hero-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+
+  .hero-text h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    color: white;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .hero-text h1 {
+      font-size: 2rem;
+    }
+  }
+
+  .subheadline {
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 1.5rem;
+  }
+
+  .trust-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  .badge {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .hero-form-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  }
+
+  .hero-form-card h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-subtitle {
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .hero-form input,
+  .hero-form select {
+    padding: 0.875rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+
+  .hero-form input:focus,
+  .hero-form select:focus {
+    outline: none;
+    border-color: #1d5f20;
+    box-shadow: 0 0 0 3px rgba(29, 95, 32, 0.1);
+  }
+
+  .cta-btn {
+    background: linear-gradient(135deg, #1d5f20 0%, #2d7a30 100%);
+    color: white;
+    padding: 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-top: 0.5rem;
+    box-shadow: 0 4px 12px rgba(29, 95, 32, 0.3);
+  }
+
+  .cta-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(29, 95, 32, 0.4);
+  }
+
+  .cta-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .form-message {
+    padding: 0.875rem;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .form-message.success {
+    background: rgba(29, 95, 32, 0.1);
+    color: #1d5f20;
+    border: 1px solid rgba(29, 95, 32, 0.2);
+  }
+
+  .form-message.error {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+</style>

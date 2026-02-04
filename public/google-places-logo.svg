@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 24" fill="none">
+  <!-- Google "G" Icon -->
+  <g transform="translate(0, 0)">
+    <!-- Red segment -->
+    <path d="M12 4.8c-3.96 0-7.2 3.24-7.2 7.2s3.24 7.2 7.2 7.2c3.48 0 6.36-2.52 7.08-5.88H12v-2.64h9.72c.12.6.12 1.2.12 1.8 0 5.52-3.72 9.72-9.84 9.72C6.48 22.2 2.4 18.12 2.4 12S6.48 1.8 12 1.8c2.88 0 5.4 1.08 7.32 2.88l-1.92 1.92C16.2 5.64 14.28 4.8 12 4.8z" fill="#EA4335"/>
+    <!-- Blue segment -->
+    <path d="M12 4.8c-3.96 0-7.2 3.24-7.2 7.2s3.24 7.2 7.2 7.2c3.48 0 6.36-2.52 7.08-5.88H12v-2.64h9.72c.12.6.12 1.2.12 1.8 0 5.52-3.72 9.72-9.84 9.72C6.48 22.2 2.4 18.12 2.4 12S6.48 1.8 12 1.8c2.88 0 5.4 1.08 7.32 2.88l-1.92 1.92C16.2 5.64 14.28 4.8 12 4.8z" fill="#4285F4" clip-path="url(#blue-clip)"/>
+    <!-- Yellow segment -->
+    <path d="M12 4.8c-3.96 0-7.2 3.24-7.2 7.2s3.24 7.2 7.2 7.2c3.48 0 6.36-2.52 7.08-5.88H12v-2.64h9.72c.12.6.12 1.2.12 1.8 0 5.52-3.72 9.72-9.84 9.72C6.48 22.2 2.4 18.12 2.4 12S6.48 1.8 12 1.8c2.88 0 5.4 1.08 7.32 2.88l-1.92 1.92C16.2 5.64 14.28 4.8 12 4.8z" fill="#FBBC04" clip-path="url(#yellow-clip)"/>
+    <!-- Green segment -->
+    <path d="M12 4.8c-3.96 0-7.2 3.24-7.2 7.2s3.24 7.2 7.2 7.2c3.48 0 6.36-2.52 7.08-5.88H12v-2.64h9.72c.12.6.12 1.2.12 1.8 0 5.52-3.72 9.72-9.84 9.72C6.48 22.2 2.4 18.12 2.4 12S6.48 1.8 12 1.8c2.88 0 5.4 1.08 7.32 2.88l-1.92 1.92C16.2 5.64 14.28 4.8 12 4.8z" fill="#34A853" clip-path="url(#green-clip)"/>
+  </g>
+  
+  <!-- Google Text -->
+  <text x="26" y="16" font-family="Arial, sans-serif" font-size="13" font-weight="500">
+    <tspan fill="#4285F4">G</tspan>
+    <tspan fill="#EA4335">o</tspan>
+    <tspan fill="#FBBC04">o</tspan>
+    <tspan fill="#4285F4">g</tspan>
+    <tspan fill="#34A853">l</tspan>
+    <tspan fill="#EA4335">e</tspan>
+  </text>
+  
+  <!-- Places Text -->
+  <text x="26" y="22" font-family="Arial, sans-serif" font-size="7" fill="#5F6368">Places</text>
+  
+  <defs>
+    <clipPath id="blue-clip">
+      <rect x="12" y="0" width="12" height="24"/>
+    </clipPath>
+    <clipPath id="yellow-clip">
+      <rect x="0" y="12" width="12" height="12"/>
+    </clipPath>
+    <clipPath id="green-clip">
+      <rect x="0" y="0" width="12" height="12"/>
+    </clipPath>
+  </defs>
+</svg>

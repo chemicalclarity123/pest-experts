@@ -1,0 +1,202 @@
+---
+// src/components/ServicesSection.astro
+// Services section with cards matching WhyChooseUs styling
+import { urlFor } from '../lib/sanity-client';
+
+interface ServiceCard {
+  image?: any;
+  heading: string;
+  description: string;
+  link?: string;
+}
+
+interface Props {
+  title?: string;
+  description?: string;
+  serviceCards?: ServiceCard[];
+}
+
+const { 
+  title = "Our Services",
+  description,
+  serviceCards = []
+} = Astro.props;
+---
+
+<section class="services-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">{title}</h2>
+      {description && <p class="section-description">{description}</p>}
+    </div>
+
+    <div class="services-grid">
+      {serviceCards.map((service) => (
+        <div class="service-card">
+          {service.image && (
+            <div class="service-image">
+              <img 
+                src={urlFor(service.image).width(600).height(400).url()} 
+                alt={service.image.alt || service.heading}
+                loading="lazy"
+              />
+            </div>
+          )}
+          <div class="service-content">
+            <h3 class="service-heading">{service.heading}</h3>
+            <p class="service-description">{service.description}</p>
+            {service.link && (
+              <a href={service.link} class="learn-more">
+                Learn More →
+              </a>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .services-section {
+    padding: 4rem 0;
+    background: #f9fafb;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #1d5f20 0%, #2d7a30 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .section-description {
+    font-size: 1.125rem;
+    color: #6b7280;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+
+  @media (max-width: 1024px) {
+    .services-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .services-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .service-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .service-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  .service-image {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    background: #f3f4f6;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+  }
+
+  .service-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+  }
+
+  .service-card:hover .service-image img {
+    transform: scale(1.05);
+  }
+
+  .service-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .service-heading {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1d5f20;
+    margin-bottom: 0.75rem;
+  }
+
+  .service-description {
+    color: #6b7280;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+  }
+
+  .learn-more {
+    color: #1d5f20;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+    align-self: flex-start;
+  }
+
+  .learn-more:hover {
+    color: #2d7a30;
+    gap: 0.75rem;
+  }
+
+  @media (max-width: 768px) {
+    .services-section {
+      padding: 3rem 0;
+    }
+
+    .section-title {
+      font-size: 2rem;
+    }
+
+    .service-card {
+      padding: 1.5rem;
+    }
+
+    .service-image {
+      height: 180px;
+    }
+  }
+</style>

@@ -1,0 +1,186 @@
+---
+// src/components/WhyChooseUs.astro
+// Why choose us section with features grid and Font Awesome icons
+import { icon } from '@fortawesome/fontawesome-svg-core';
+import * as solidIcons from '@fortawesome/free-solid-svg-icons';
+import * as regularIcons from '@fortawesome/free-regular-svg-icons';
+
+interface Feature {
+  icon?: string;
+  title: string;
+  description?: string;
+}
+
+interface Props {
+  title?: string;
+  features?: Feature[];
+}
+
+const { 
+  title = "Why Choose Us",
+  features = []
+} = Astro.props;
+
+// Convert icon name to Font Awesome format and get SVG
+const getIconSvg = (iconName: string) => {
+  if (!iconName) return null;
+  
+  // Convert kebab-case to PascalCase and add 'fa' prefix
+  // e.g., 'map-location' -> 'faMapLocation'
+  const pascalCase = 'fa' + iconName
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join('');
+  
+  // Try solid icons first, then regular
+  const iconDef = (solidIcons as any)[pascalCase] || (regularIcons as any)[pascalCase];
+  
+  if (!iconDef) {
+    console.warn(`Icon "${iconName}" (${pascalCase}) not found in Font Awesome`);
+    return null;
+  }
+  
+  try {
+    const svg = icon(iconDef);
+    return svg.html[0];
+  } catch (error) {
+    console.error(`Error rendering icon "${iconName}":`, error);
+    return null;
+  }
+};
+---
+
+<section class="why-choose-us">
+  <div class="container">
+    <h2 class="section-title">{title}</h2>
+    
+    <div class="features-grid">
+      {features.map((feature) => {
+        const iconSvg = feature.icon ? getIconSvg(feature.icon) : null;
+        
+        return (
+          <div class="feature-card">
+            {iconSvg && (
+              <div class="icon-wrapper">
+                <div class="icon" set:html={iconSvg} />
+              </div>
+            )}
+            <h3 class="feature-title">{feature.title}</h3>
+            {feature.description && (
+              <p class="feature-description">{feature.description}</p>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  </div>
+</section>
+
+<style>
+  .why-choose-us {
+    padding: 4rem 0;
+    background: white;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #1d5f20 0%, #2d7a30 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+
+  .feature-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: center;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(29, 95, 32, 0.12);
+    border-color: #1d5f20;
+  }
+
+  .icon-wrapper {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, rgba(29, 95, 32, 0.1) 0%, rgba(45, 122, 48, 0.15) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+
+  .feature-card:hover .icon-wrapper {
+    background: linear-gradient(135deg, #1d5f20 0%, #2d7a30 50%, #1d5f20 100%);
+    transform: scale(1.15) rotate(5deg);
+    box-shadow: 0 8px 24px rgba(29, 95, 32, 0.4), 0 0 20px rgba(29, 95, 32, 0.3);
+  }
+
+  .icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .icon :global(svg) {
+    width: 100%;
+    height: 100%;
+    fill: url(#icon-gradient);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 2px 4px rgba(29, 95, 32, 0.2));
+  }
+
+  .feature-card:hover .icon :global(svg) {
+    fill: white;
+    filter: drop-shadow(0 4px 8px rgba(255, 255, 255, 0.3));
+    transform: scale(1.1);
+  }
+
+  .feature-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1d5f20;
+    margin-bottom: 0.75rem;
+  }
+
+  .feature-description {
+    color: #6b7280;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 768px) {
+    .section-title {
+      font-size: 2rem;
+    }
+
+    .feature-card {
+      padding: 1.5rem;
+    }
+  }
+</style>
