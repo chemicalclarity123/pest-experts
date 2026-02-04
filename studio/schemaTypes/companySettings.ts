@@ -1,4 +1,6 @@
 // studio/schemaTypes/companySettings.ts
+import { CSVPasteInput } from '../components/CSVPasteInput';
+
 export const companySettings = {
     name: 'companySettings',
     title: 'Company Settings',
@@ -276,7 +278,7 @@ export const companySettings = {
             name: 'serviceAreas',
             title: 'Service Areas',
             type: 'array',
-            description: 'Cities and suburbs served (used for schema.org areaServed)',
+            description: 'Cities and suburbs served (used for schema.org areaServed). Paste comma-separated values to add multiple areas at once.',
             of: [{ type: 'string' }],
             options: {
                 layout: 'tags',
@@ -289,6 +291,9 @@ export const companySettings = {
                 'Sandton',
                 'Randburg',
             ],
+            components: {
+                input: CSVPasteInput,
+            },
         },
         {
             name: 'serviceArea',
