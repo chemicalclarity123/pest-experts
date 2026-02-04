@@ -2,6 +2,7 @@
 // src/components/Testimonials.astro
 // Testimonials carousel with star ratings
 import { Image } from 'astro:assets';
+import { urlFor } from '../lib/sanity-client';
 
 interface Review {
   customerName: string;
@@ -56,12 +57,13 @@ const renderStars = (rating: number) => {
           
           <div class="reviewer">
             {review.avatar && (
-              <Image 
-                src={review.avatar} 
+              <img 
+                src={urlFor(review.avatar).width(96).height(96).quality(80).auto('format').url()} 
                 alt={review.customerName}
                 class="avatar"
-                width={48}
-                height={48}
+                width="48"
+                height="48"
+                loading="lazy"
               />
             )}
             {!review.avatar && (

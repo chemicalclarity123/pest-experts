@@ -12,7 +12,7 @@ export const client = createClient({
 const builder = imageUrlBuilder(client);
 
 export function urlFor(source: any) {
-  return builder.image(source);
+  return builder.image(source).auto('format').fit('max');
 }
 
 export { builder as imageBuilder };
@@ -118,14 +118,14 @@ export async function fetchHomepage() {
         headline,
         subheadline,
         ctaText,
-        "backgroundImage": backgroundImage.asset->url,
+        backgroundImage,
         trustBadges
       },
       services{
         title,
         description,
         serviceCards[]{
-          "image": image.asset->url,
+          image,
           "imageAlt": image.alt,
           heading,
           description,
@@ -135,7 +135,7 @@ export async function fetchHomepage() {
       serviceAreas{
         title,
         description,
-        "mapImage": mapImage.asset->url
+        mapImage
       },
       whyChooseUs{
         title,
@@ -152,7 +152,7 @@ export async function fetchHomepage() {
           rating,
           reviewText,
           location,
-          "avatar": avatar.asset->url
+          avatar
         }
       },
       stats,

@@ -1,6 +1,7 @@
 ---
 // src/components/ServiceAreasMap.astro
 // Service areas section with map and area list
+import { urlFor } from '../lib/sanity-client';
 
 interface Props {
   title?: string;
@@ -16,8 +17,16 @@ const {
   areas = []
 } = Astro.props;
 
-// Check if mapImage is a valid URL string
-const hasMapImage = mapImage && typeof mapImage === 'string' && mapImage.length > 0;
+// Check if mapImage is valid (supporting Sanity object or string)
+const hasMapImage = mapImage && (
+  (typeof mapImage === 'string' && mapImage.length > 0) ||
+  (typeof mapImage === 'object' && mapImage.asset)
+);
+
+// Optimize image URL if it's a Sanity object
+const mapImageUrl = (hasMapImage && typeof mapImage === 'object' && mapImage.asset)
+  ? urlFor(mapImage).width(800).auto('format').url()
+  : mapImage;
 ---
 
 <section class="service-areas">
@@ -31,7 +40,7 @@ const hasMapImage = mapImage && typeof mapImage === 'string' && mapImage.length 
       {hasMapImage && (
         <div class="map-container">
           <img 
-            src={mapImage} 
+            src={mapImageUrl} 
             alt="Gauteng service areas map" 
             class="map-image"
             loading="lazy"

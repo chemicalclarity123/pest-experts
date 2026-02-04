@@ -2,6 +2,7 @@
 // src/components/Hero.astro
 // Hero section with background image and inline form
 import { Image } from 'astro:assets';
+import { urlFor } from '../lib/sanity-client';
 
 interface Props {
   headline: string;
@@ -19,15 +20,23 @@ const {
   trustBadges = []
 } = Astro.props;
 
-// Check if backgroundImage is a valid URL string
-const hasValidImage = backgroundImage && typeof backgroundImage === 'string' && backgroundImage.length > 0;
+// Check if backgroundImage is valid (now supporting Sanity object)
+const hasValidImage = backgroundImage && (
+  (typeof backgroundImage === 'string' && backgroundImage.length > 0) ||
+  (typeof backgroundImage === 'object' && backgroundImage.asset)
+);
+
+// Optimize image URL if it's a Sanity object
+const bgImageUrl = (hasValidImage && typeof backgroundImage === 'object' && backgroundImage.asset)
+  ? urlFor(backgroundImage).width(1920).quality(80).auto('format').url()
+  : backgroundImage; 
 ---
 
 <section class="hero" class:list={[{ 'hero-no-image': !hasValidImage }]}>
   {hasValidImage && (
     <div class="hero-bg">
       <img 
-        src={backgroundImage} 
+        src={bgImageUrl} 
         alt="Pest control service" 
         loading="eager"
         class="hero-image"
