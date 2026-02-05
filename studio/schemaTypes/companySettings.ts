@@ -1,5 +1,5 @@
 // studio/schemaTypes/companySettings.ts
-import { CSVPasteInput } from '../components/CSVPasteInput';
+import { CsvTagInput } from '../components/CsvTagInput';
 
 export const companySettings = {
     name: 'companySettings',
@@ -176,11 +176,17 @@ export const companySettings = {
                             description: 'e.g., "Mo-Fr" or "Sa"',
                             options: {
                                 list: [
+                                    { title: 'Monday', value: 'Monday' },
+                                    { title: 'Tuesday', value: 'Tuesday' },
+                                    { title: 'Wednesday', value: 'Wednesday' },
+                                    { title: 'Thursday', value: 'Thursday' },
+                                    { title: 'Friday', value: 'Friday' },
+                                    { title: 'Saturday', value: 'Saturday' },
+                                    { title: 'Sunday', value: 'Sunday' },
                                     { title: 'Monday-Friday', value: 'Mo-Fr' },
-                                    { title: 'Saturday', value: 'Sa' },
-                                    { title: 'Sunday', value: 'Su' },
                                     { title: 'Monday-Saturday', value: 'Mo-Sa' },
                                     { title: 'Monday-Sunday', value: 'Mo-Su' },
+                                    { title: 'Public Holidays', value: 'PH' },
                                 ],
                             },
                         },
@@ -292,7 +298,7 @@ export const companySettings = {
                 'Randburg',
             ],
             components: {
-                input: CSVPasteInput,
+                input: CsvTagInput,
             },
         },
         {
@@ -419,6 +425,75 @@ export const companySettings = {
             title: 'Years in Business',
             type: 'number',
             description: 'How many years have you been operating? (builds trust)',
+        },
+        {
+            name: 'testimonials',
+            title: 'Customer Testimonials',
+            type: 'object',
+            options: {
+                collapsible: true,
+                collapsed: true,
+            },
+            fields: [
+                {
+                    name: 'title',
+                    title: 'Section Title',
+                    type: 'string',
+                    initialValue: 'What Our Customers Say',
+                },
+                {
+                    name: 'reviews',
+                    title: 'Reviews',
+                    type: 'array',
+                    of: [
+                        {
+                            type: 'object',
+                            fields: [
+                                {
+                                    name: 'customerName',
+                                    title: 'Customer Name',
+                                    type: 'string',
+                                    validation: (Rule: any) => Rule.required(),
+                                },
+                                {
+                                    name: 'rating',
+                                    title: 'Rating',
+                                    type: 'number',
+                                    validation: (Rule: any) => Rule.required().min(1).max(5),
+                                    initialValue: 5,
+                                },
+                                {
+                                    name: 'reviewText',
+                                    title: 'Review Text',
+                                    type: 'text',
+                                    rows: 4,
+                                },
+                                {
+                                    name: 'location',
+                                    title: 'Location',
+                                    type: 'string',
+                                    description: 'e.g., "Pretoria" or "Johannesburg"',
+                                },
+                                {
+                                    name: 'avatar',
+                                    title: 'Avatar Image',
+                                    type: 'image',
+                                    options: {
+                                        hotspot: true,
+                                    },
+                                },
+                            ],
+                            preview: {
+                                select: {
+                                    title: 'customerName',
+                                    subtitle: 'reviewText',
+                                    media: 'avatar',
+                                },
+                            },
+                        },
+                    ],
+                },
+            ],
         },
     ],
     preview: {

@@ -5,4 +5,6 @@ import { serviceArea } from './serviceArea';
 import { homepage } from './homepage';
 import { formSubmission } from './formSubmission';
 
-export const schemaTypes = [companySettings, service, serviceArea, homepage, formSubmission];
+import { contactPage } from './contactPage';
+
+export const schemaTypes = [companySettings, service, serviceArea, homepage, formSubmission, contactPage];

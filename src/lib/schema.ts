@@ -90,9 +90,9 @@ export function generateEnhancedServiceSchema(
             : props.areaServed;
     }
 
-    // Add expertise (knowsAbout for pest types)
+    // Add pest expertise to provider Organization (knowsAbout is valid for Organization, not Service)
     if (props.knowsAbout && props.knowsAbout.length > 0) {
-        (schema as any).knowsAbout = props.knowsAbout;
+        (schema.provider as any).knowsAbout = props.knowsAbout;
     }
 
     // Add aggregate rating

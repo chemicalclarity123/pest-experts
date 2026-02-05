@@ -1,0 +1,105 @@
+@import "tailwindcss";
+
+@theme {
+    --font-heading: 'Inter', system-ui, sans-serif;
+    --font-body: 'Inter', system-ui, sans-serif;
+
+    /* Primary Palette: Brand Green */
+    --color-primary-50: #f0fdf4;
+    --color-primary-100: #dcfce7;
+    --color-primary-200: #bbf7d0;
+    --color-primary-300: #86efac;
+    --color-primary-400: #4ade80;
+    --color-primary-500: #22c55e;
+    --color-primary-600: #16a34a;
+    --color-primary-700: #15803d;
+    --color-primary-800: #166534;
+    --color-primary-900: #2b6b2a;
+    --color-primary-950: #14532d;
+
+    /* Accent Palette: Vibrant Orange */
+    --color-accent-50: #fff7ed;
+    --color-accent-100: #ffedd5;
+    --color-accent-200: #fed7aa;
+    --color-accent-300: #fdba74;
+    --color-accent-400: #fb923c;
+    --color-accent-500: #f97316;
+    --color-accent-600: #ea580c;
+    --color-accent-700: #c2410c;
+    --color-accent-800: #9a3412;
+    --color-accent-900: #7c2d12;
+    --color-accent-950: #431407;
+}
+
+@layer base {
+    html {
+        font-family: var(--font-body);
+        color: #1f2937;
+    }
+
+    /* Standardized Heading Styles - All H2s use brand green */
+    h1 {
+        font-family: var(--font-heading);
+        font-weight: 700;
+    }
+
+    h2 {
+        font-family: var(--font-heading);
+        font-weight: 700;
+        color: #2b6b2a;
+        /* Brand green for all H2s */
+    }
+
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: var(--font-heading);
+        font-weight: 600;
+        color: #2b6b2a;
+    }
+}
+
+@layer components {
+
+    /* Standard content container - aligns with navigation */
+    .content-container {
+        max-width: 1200px;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+
+    /* Section spacing */
+    .section-spacing {
+        padding-top: 4rem;
+        padding-bottom: 4rem;
+    }
+
+    @media (min-width: 1024px) {
+        .section-spacing {
+            padding-top: 6rem;
+            padding-bottom: 6rem;
+        }
+    }
+
+    /* Custom scrollbar for overflow containers */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #2b6b2a;
+        border-radius: 10px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #15803d;
+    }
+}

@@ -1,4 +1,5 @@
-// studio/schemaTypes/service.ts
+import { CsvTagInput } from '../components/CsvTagInput'
+
 export const service = {
     name: 'service',
     title: 'Service',
@@ -140,6 +141,9 @@ export const service = {
                     options: {
                         layout: 'tags',
                     },
+                    components: {
+                        input: CsvTagInput
+                    }
                 },
                 {
                     name: 'areas',
@@ -150,6 +154,9 @@ export const service = {
                     options: {
                         layout: 'tags',
                     },
+                    components: {
+                        input: CsvTagInput
+                    }
                 },
                 {
                     name: 'faqs',
@@ -261,6 +268,136 @@ export const service = {
                 },
             ],
         },
+        {
+            name: 'hero',
+            title: 'Hero Section',
+            type: 'object',
+            options: { collapsible: true, collapsed: false },
+            fields: [
+                {
+                    name: 'subheading',
+                    title: 'Subheading',
+                    type: 'string',
+                    description: 'Appears below the main title (e.g., "Fast, Reliable, & Safe")',
+                },
+                {
+                    name: 'ctaText',
+                    title: 'CTA Button Text',
+                    type: 'string',
+                    initialValue: 'Get a Free Quote',
+                },
+            ],
+        },
+        {
+            name: 'overview',
+            title: 'Service Overview',
+            type: 'array',
+            of: [{ type: 'block' }],
+            description: 'Introduction to the service (SEO rich text)',
+        },
+        {
+            name: 'signsOfInfestation',
+            title: 'Common Signs of Infestation',
+            type: 'array',
+            description: 'List of signs that potential customers should look out for',
+            of: [{ type: 'string' }],
+            options: {
+                layout: 'tags',
+            },
+            components: {
+                input: CsvTagInput
+            }
+        },
+        {
+            name: 'treatmentProcess',
+            title: 'Treatment Process',
+            type: 'array',
+            description: 'Step-by-step process of how you handle this service',
+            of: [
+                {
+                    type: 'object',
+                    fields: [
+                        {
+                            name: 'stepTitle',
+                            title: 'Step Title',
+                            type: 'string',
+                            validation: (Rule: any) => Rule.required(),
+                        },
+                        {
+                            name: 'stepDescription',
+                            title: 'Step Description',
+                            type: 'text',
+                            rows: 2,
+                            validation: (Rule: any) => Rule.required(),
+                        },
+                    ],
+                },
+            ],
+        },
+        {
+            name: 'benefits',
+            title: 'Why Professional Treatment?',
+            type: 'array',
+            of: [{ type: 'block' }],
+            description: 'Benefits of using professional service vs DIY',
+        },
+        {
+            name: 'customTestimonials',
+            title: 'Service-Specific Testimonials',
+            type: 'object',
+            description: 'Override global testimonials with service-specific ones',
+            options: { collapsible: true, collapsed: true },
+            fields: [
+                {
+                    name: 'title',
+                    title: 'Section Title',
+                    type: 'string',
+                    initialValue: 'What Our Customers Say',
+                },
+                {
+                    name: 'reviews',
+                    title: 'Reviews',
+                    type: 'array',
+                    of: [
+                        {
+                            type: 'object',
+                            fields: [
+                                {
+                                    name: 'customerName',
+                                    title: 'Customer Name',
+                                    type: 'string',
+                                    validation: (Rule: any) => Rule.required(),
+                                },
+                                {
+                                    name: 'rating',
+                                    title: 'Rating',
+                                    type: 'number',
+                                    validation: (Rule: any) => Rule.required().min(1).max(5),
+                                    initialValue: 5,
+                                },
+                                {
+                                    name: 'reviewText',
+                                    title: 'Review Text',
+                                    type: 'text',
+                                    rows: 4,
+                                },
+                                {
+                                    name: 'location',
+                                    title: 'Location',
+                                    type: 'string',
+                                },
+                                {
+                                    name: 'avatar',
+                                    title: 'Avatar Image',
+                                    type: 'image',
+                                    options: { hotspot: true },
+                                },
+                            ],
+                        },
+                    ],
+                },
+            ],
+        },
     ],
     preview: {
         select: {
@@ -278,4 +415,4 @@ export const service = {
             };
         },
     },
-};
+}

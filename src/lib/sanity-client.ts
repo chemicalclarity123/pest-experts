@@ -35,7 +35,17 @@ export async function fetchCompanySettings() {
         url
       },
       serviceAreas,
-      serviceArea
+      serviceArea,
+      testimonials{
+        title,
+        reviews[]{
+          customerName,
+          rating,
+          reviewText,
+          location,
+          avatar
+        }
+      }
     }`;
     const settings = await client.fetch(query);
     return settings;
@@ -101,6 +111,35 @@ export async function fetchServiceBySlug(slug: string) {
       featured,
       description,
       content,
+      image{
+        asset->{
+          _id,
+          url
+        },
+        alt
+      },
+      features,
+      hero{
+        subheading,
+        ctaText
+      },
+      overview,
+      signsOfInfestation,
+      treatmentProcess[]{
+        stepTitle,
+        stepDescription
+      },
+      benefits,
+      customTestimonials{
+        title,
+        reviews[]{
+          customerName,
+          rating,
+          reviewText,
+          location,
+          avatar
+        }
+      },
       seo{
         metaTitle,
         metaDesc,
@@ -121,6 +160,26 @@ export async function fetchServiceBySlug(slug: string) {
     return service;
   } catch (error) {
     console.error(`Error fetching service with slug "${slug}":`, error);
+    return null;
+  }
+}
+
+// Fetch contact page content (singleton)
+export async function fetchContactPage() {
+  try {
+    const query = `*[_type == "contactPage"][0]{
+      hero{
+        heading,
+        subheading,
+        "backgroundImage": backgroundImage.asset->url
+      },
+      content,
+      seo
+    }`;
+    const data = await client.fetch(query);
+    return data;
+  } catch (error) {
+    console.error('Error fetching contact page:', error);
     return null;
   }
 }

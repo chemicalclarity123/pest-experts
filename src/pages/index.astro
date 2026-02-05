@@ -129,8 +129,8 @@ const schemaMarkup = generateHomepageSchema({
 
   <!-- Testimonials -->
   <Testimonials 
-    title={pageData.testimonials.title}
-    reviews={pageData.testimonials.reviews}
+    title={companySettings?.testimonials?.title || pageData.testimonials?.title || "What Our Customers Say"}
+    reviews={companySettings?.testimonials?.reviews?.length > 0 ? companySettings.testimonials.reviews : (pageData.testimonials?.reviews || [])}
   />
   
   <!-- FAQ Section -->
