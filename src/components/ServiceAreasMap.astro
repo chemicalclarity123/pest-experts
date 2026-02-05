@@ -102,19 +102,13 @@ const mapImageUrl = (hasMapImage && typeof mapImage === 'object' && mapImage.ass
   }
 
   .areas-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 3rem;
-    align-items: center;
-  }
-
-  @media (max-width: 968px) {
-    .areas-grid {
-      grid-template-columns: 1fr;
-    }
   }
 
   .map-container {
+    width: 100%;
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -123,7 +117,13 @@ const mapImageUrl = (hasMapImage && typeof mapImage === 'object' && mapImage.ass
   .map-image {
     width: 100%;
     height: auto;
+    max-height: 500px;
+    object-fit: cover;
     display: block;
+  }
+
+  .areas-list {
+    width: 100%;
   }
 
   .areas-list h3 {
@@ -131,6 +131,7 @@ const mapImageUrl = (hasMapImage && typeof mapImage === 'object' && mapImage.ass
     font-weight: 700;
     color: #1f2937;
     margin-bottom: 1.5rem;
+    text-align: center;
   }
 
   .areas {
@@ -138,11 +139,23 @@ const mapImageUrl = (hasMapImage && typeof mapImage === 'object' && mapImage.ass
     padding: 0;
     margin: 0;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
   }
 
-  @media (max-width: 640px) {
+  @media (max-width: 1024px) {
+    .areas {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .areas {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 480px) {
     .areas {
       grid-template-columns: 1fr;
     }

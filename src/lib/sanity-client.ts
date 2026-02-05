@@ -45,6 +45,21 @@ export async function fetchCompanySettings() {
   }
 }
 
+// Fetch all service areas
+export async function fetchServiceAreas() {
+  try {
+    const query = `*[_type == "serviceArea"] | order(title asc){
+      title,
+      "slug": slug.current
+    }`;
+    const areas = await client.fetch(query);
+    return areas;
+  } catch (error) {
+    console.error('Error fetching service areas:', error);
+    return [];
+  }
+}
+
 // Fetch all services with local SEO data
 export async function fetchServices() {
   try {

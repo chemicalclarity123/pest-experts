@@ -1,0 +1,528 @@
+---
+// src/components/Navbar.astro
+import { fetchCompanySettings, fetchServices, fetchServiceAreas, urlFor } from '../lib/sanity-client';
+
+// Fetch data
+const companySettings = await fetchCompanySettings();
+const services = await fetchServices();
+const serviceAreas = await fetchServiceAreas();
+
+const logo = companySettings?.logo || '/favicon.svg';
+const phone = companySettings?.contactInfo?.telephone || '+27 12 345 6789';
+const whatsapp = companySettings?.contactInfo?.whatsappNumber;
+const legacyAreas = companySettings?.serviceAreas || []; // Fallback/Legacy
+
+// Fallback for visual testing if no data
+const displayPhone = phone;
+const displayLogo = logo;
+---
+
+<header class="header">
+  <!-- Top Bar (Desktop) -->
+  <div class="top-bar">
+    <div class="container top-bar-content">
+      <div class="contact-info">
+        <a href={`tel:${phone.replace(/\s+/g, '')}`} class="phone-link">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2.153a1 1 0 01-1.066-.998 15.056 15.056 0 00-4.504-4.504A11.054 11.054 0 012 3z" />
+          </svg>
+          <span class="phone-text">{displayPhone}</span>
+        </a>
+      </div>
+      <div class="top-cta">
+        <a href="#heroForm" class="cta-small">Get a Quote</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Navbar -->
+  <nav class="navbar">
+    <div class="container navbar-content">
+      <!-- Logo -->
+      <a href="/" class="logo-link">
+        <img src={displayLogo} alt="Pest Experts Logo" class="logo" />
+      </a>
+
+      <!-- Desktop Navigation -->
+      <div class="desktop-nav">
+        <a href="/" class="nav-link">Home</a>
+        
+        <div class="dropdown">
+          <button class="nav-link dropdown-toggle">
+            Services
+            <svg xmlns="http://www.w3.org/2000/svg" class="chevron" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </button>
+          <div class="dropdown-menu">
+            {services.map((service: any) => (
+              <a href={`/services/${service.slug}/`} class="dropdown-item">
+                {service.title}
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <div class="dropdown">
+          <button class="nav-link dropdown-toggle">
+            Service Areas
+            <svg xmlns="http://www.w3.org/2000/svg" class="chevron" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </button>
+          <div class="dropdown-menu">
+            {serviceAreas.length > 0 ? (
+              serviceAreas.map((area: any) => (
+                <a href={`/service-areas/${area.slug}/`} class="dropdown-item">
+                  {area.title}
+                </a>
+              ))
+            ) : (
+              /* Fallback to legacy array if no documents */
+              legacyAreas.map((area: string) => (
+                <span class="dropdown-item">{area}</span>
+              ))
+            )}
+          </div>
+        </div>
+
+        <a href="#contact" class="nav-link">Contact</a>
+      </div>
+
+      <!-- Mobile Toggle -->
+      <button id="mobile-toggle" class="mobile-toggle" aria-label="Open Menu">
+        <svg xmlns="http://www.w3.org/2000/svg" class="hamburger" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+      <!-- Desktop CTA -->
+      <a href="#heroForm" class="cta-button desktop-only">Get A Quote</a>
+    </div>
+  </nav>
+
+  <!-- Mobile Drawer -->
+  <div id="mobile-drawer" class="mobile-drawer">
+    <div class="drawer-header">
+      <img src={displayLogo} alt="Pest Experts Logo" class="drawer-logo" />
+      <button id="close-drawer" class="close-btn" aria-label="Close Menu">
+        <svg xmlns="http://www.w3.org/2000/svg" class="close-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="drawer-content">
+      <a href="/" class="drawer-link">Home</a>
+      
+      <div class="drawer-group">
+        <span class="drawer-label">Services</span>
+        <div class="drawer-submenu">
+          {services.map((service: any) => (
+            <a href={`/services/${service.slug}/`} class="drawer-sublink">
+              {service.title}
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <div class="drawer-group">
+        <span class="drawer-label">Service Areas</span>
+        <div class="drawer-submenu areas-grid-mobile">
+          {serviceAreas.length > 0 ? (
+            serviceAreas.map((area: any) => (
+              <a href={`/service-areas/${area.slug}/`} class="drawer-sublink area">
+                {area.title}
+              </a>
+            ))
+          ) : (
+            legacyAreas.map((area: string) => (
+              <span class="drawer-sublink area">{area}</span>
+            ))
+          )}
+        </div>
+      </div>
+
+      <a href="#contact" class="drawer-link">Contact</a>
+
+      <div class="drawer-cta-wrapper">
+        <a href={`tel:${phone.replace(/\s+/g, '')}`} class="drawer-phone">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2.153a1 1 0 01-1.066-.998 15.056 15.056 0 00-4.504-4.504A11.054 11.054 0 012 3z" />
+          </svg>
+          Call {displayPhone}
+        </a>
+        <a href="#heroForm" class="cta-button drawer-cta">Get A Quote</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Overlay -->
+  <div id="drawer-overlay" class="drawer-overlay"></div>
+</header>
+
+<script>
+  const toggleBtn = document.getElementById('mobile-toggle');
+  const closeBtn = document.getElementById('close-drawer');
+  const drawer = document.getElementById('mobile-drawer');
+  const overlay = document.getElementById('drawer-overlay');
+
+  function openMenu() {
+    drawer?.classList.add('open');
+    overlay?.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMenu() {
+    drawer?.classList.remove('open');
+    overlay?.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  toggleBtn?.addEventListener('click', openMenu);
+  closeBtn?.addEventListener('click', closeMenu);
+  overlay?.addEventListener('click', closeMenu);
+
+  // Close on link click
+  const drawerLinks = drawer?.querySelectorAll('a');
+  drawerLinks?.forEach(link => {
+    link.addEventListener('click', closeMenu);
+  });
+</script>
+
+<style>
+  /* Header Base */
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Top Bar */
+  .top-bar {
+    background: #1f2937;
+    color: white;
+    padding: 0.5rem 0;
+    font-size: 0.875rem;
+  }
+
+  .top-bar-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .phone-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .phone-link:hover {
+    color: #4ade80;
+  }
+
+  .icon {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .cta-small {
+    color: #4ade80;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .cta-small:hover {
+    color: #22c55e;
+  }
+
+  /* Navbar */
+  .navbar {
+    padding: 1rem 0;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .navbar-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .logo {
+    height: 48px;
+    width: auto;
+  }
+
+  /* Desktop Nav */
+  .desktop-nav {
+    display: none;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  @media (min-width: 1024px) {
+    .desktop-nav {
+      display: flex;
+    }
+    
+    .mobile-toggle {
+      display: none;
+    }
+  }
+
+  .nav-link {
+    color: #374151;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: color 0.2s;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .nav-link:hover {
+    color: #1d5f20;
+  }
+
+  /* Dropdown */
+  .dropdown {
+    position: relative;
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: white;
+    min-width: 200px;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    padding: 0.5rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s;
+    border: 1px solid #f3f4f6;
+  }
+
+  .dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .dropdown-item {
+    display: block;
+    padding: 0.5rem 1rem;
+    color: #4b5563;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .dropdown-item:hover {
+    background: #f9fafb;
+    color: #1d5f20;
+  }
+
+  .chevron {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  /* CTA Button */
+  .cta-button {
+    background: linear-gradient(135deg, #1d5f20 0%, #2d7a30 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s;
+    box-shadow: 0 4px 6px -1px rgba(29, 95, 32, 0.2);
+  }
+
+  .cta-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 15px -3px rgba(29, 95, 32, 0.3);
+  }
+
+  .desktop-only {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .desktop-only {
+      display: inline-block;
+    }
+  }
+
+  /* Mobile Toggle */
+  .mobile-toggle {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    color: #374151;
+  }
+
+  .hamburger {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  /* Mobile Drawer */
+  .mobile-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 300px;
+    background: white;
+    z-index: 200;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.1);
+    overflow-y: auto;
+  }
+
+  .mobile-drawer.open {
+    transform: translateX(0);
+  }
+
+  .drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .drawer-logo {
+    height: 36px;
+    width: auto;
+  }
+
+  .close-btn {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    color: #6b7280;
+  }
+
+  .close-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .drawer-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .drawer-link {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+    text-decoration: none;
+  }
+
+  .drawer-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+    display: block;
+  }
+
+  .drawer-submenu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-left: 0.5rem;
+    border-left: 2px solid #f3f4f6;
+  }
+
+  .drawer-sublink {
+    font-size: 1rem;
+    color: #4b5563;
+    text-decoration: none;
+  }
+
+  .areas-grid-mobile {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .area {
+    font-size: 0.875rem;
+  }
+
+  .drawer-cta-wrapper {
+    margin-top: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #f3f4f6;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .drawer-phone {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #1f2937;
+    font-weight: 600;
+    text-decoration: none;
+    justify-content: center;
+  }
+
+  .drawer-cta {
+    text-align: center;
+  }
+
+  /* Overlay */
+  .drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 150;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    backdrop-filter: blur(2px);
+  }
+
+  .drawer-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Container Utility (if not global) */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+</style>
