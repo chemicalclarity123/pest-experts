@@ -289,6 +289,12 @@ export const service = {
             ],
         },
         {
+            name: 'overviewHeading',
+            title: 'Overview Section Heading',
+            type: 'string',
+            description: 'Heading for the overview section (e.g., "Why Choose Professional Pest Control?")',
+        },
+        {
             name: 'overview',
             title: 'Service Overview',
             type: 'array',

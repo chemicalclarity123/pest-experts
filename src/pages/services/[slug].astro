@@ -202,7 +202,8 @@ const keyFeatures = service.features || [];
   <div class="content-container section-spacing">
     <!-- Overview -->
     {service.overview && (
-      <section class="content-section">
+      <section class="content-section overview-section">
+        <h2 class="overview-heading">{service.overviewHeading || "Why Choose Professional Pest Control?"}</h2>
         <div class="prose prose-lg max-w-none">
           <PortableText value={service.overview} />
         </div>
@@ -771,5 +772,28 @@ const keyFeatures = service.features || [];
   .prose strong {
     font-weight: 600;
     color: #1f2937;
+  }
+
+  /* Overview Section Styling */
+  .overview-section {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  }
+
+  .overview-heading {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #2b6b2a;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  /* Increase font size for overview text to make it stand out */
+  .overview-section .prose {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: #4b5563;
   }
 </style>

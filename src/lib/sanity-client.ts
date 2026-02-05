@@ -123,6 +123,7 @@ export async function fetchServiceBySlug(slug: string) {
         subheading,
         ctaText
       },
+      overviewHeading,
       overview,
       signsOfInfestation,
       treatmentProcess[]{
