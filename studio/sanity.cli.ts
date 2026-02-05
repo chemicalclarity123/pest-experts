@@ -1,4 +1,4 @@
-import {defineCliConfig} from 'sanity/cli'
+import { defineCliConfig } from 'sanity/cli'
 
 export default defineCliConfig({
   api: {
@@ -6,6 +6,8 @@ export default defineCliConfig({
     dataset: 'production'
   },
   deployment: {
+    // App ID to prevent prompting for hostname on every deploy
+    appId: 'egoyxpcunsk7pxcxe96m2cme',
     /**
      * Enable auto-updates for studios.
      * Learn more at https://www.sanity.io/docs/studio/latest-version-of-sanity#k47faf43faf56
