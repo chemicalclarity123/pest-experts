@@ -12,14 +12,26 @@ interface Review {
   avatar?: any;
 }
 
+interface GoogleReview {
+  author: string;
+  authorPhoto?: string;
+  rating: number;
+  text: string;
+  relativeTime?: string;
+  publishDate?: string;
+  location?: string;
+}
+
 interface Props {
   title?: string;
   reviews?: Review[];
+  googleReviews?: GoogleReview[];
 }
 
 const { 
   title = "What Our Customers Say",
-  reviews = []
+  reviews = [],
+  googleReviews = []
 } = Astro.props;
 
 const renderStars = (rating: number) => {
@@ -32,6 +44,59 @@ const renderStars = (rating: number) => {
     <h2 class="section-title">{title}</h2>
     
     <div class="reviews-grid">
+      {/* Render Google Reviews first */}
+      {googleReviews.map((review) => (
+        <div class="review-card google-review">
+          <div class="review-header">
+            <img 
+              src="/google-places-logo.svg" 
+              alt="Google Places" 
+              class="google-logo"
+            />
+            <div class="stars">
+              {renderStars(review.rating).map((filled) => (
+                <svg 
+                  class={filled ? 'star filled' : 'star'} 
+                  viewBox="0 0 20 20" 
+                  fill="currentColor"
+                >
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              ))}
+            </div>
+          </div>
+          
+          <p class="review-text">"{review.text}"</p>
+          
+          <div class="reviewer">
+            {review.authorPhoto && (
+              <img 
+                src={review.authorPhoto} 
+                alt={review.author}
+                class="avatar"
+                width="48"
+                height="48"
+                loading="lazy"
+                referrerpolicy="no-referrer"
+              />
+            )}
+            {!review.authorPhoto && (
+              <div class="avatar-placeholder">
+                {review.author.charAt(0)}
+              </div>
+            )}
+            <div class="reviewer-info">
+              <div class="reviewer-name">{review.author}</div>
+              <div class="reviewer-meta">
+                {review.location && <span class="reviewer-location">{review.location}</span>}
+                {review.relativeTime && <span class="review-date">{review.relativeTime}</span>}
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+
+      {/* Render Manual Reviews */}
       {reviews.map((review) => (
         <div class="review-card">
           <div class="review-header">

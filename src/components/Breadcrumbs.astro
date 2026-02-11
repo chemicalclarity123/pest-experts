@@ -1,0 +1,97 @@
+---
+// src/components/Breadcrumbs.astro
+import { generateBreadcrumbSchema } from '../lib/schema';
+
+interface BreadcrumbItem {
+  name: string;
+  item: string;
+}
+
+interface Props {
+  items: BreadcrumbItem[];
+  class?: string;
+}
+
+const { items, class: className } = Astro.props;
+
+// Generate the JSON-LD schema
+const breadcrumbSchema = generateBreadcrumbSchema({ items });
+---
+
+<nav aria-label="Breadcrumb" class:list={["breadcrumbs", className]}>
+  <ol class="breadcrumb-list">
+    {items.map((item, index) => (
+      <li class="breadcrumb-item">
+        {index < items.length - 1 ? (
+          <>
+            <a href={item.item} class="breadcrumb-link">{item.name}</a>
+            <span class="breadcrumb-separator" aria-hidden="true">/</span>
+          </>
+        ) : (
+          <span class="breadcrumb-current" aria-current="page">{item.name}</span>
+        )}
+      </li>
+    ))}
+  </ol>
+
+  <!-- Breadcrumb JSON-LD -->
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+</nav>
+
+<style>
+  .breadcrumbs {
+    margin-bottom: 1.5rem;
+  }
+
+  .breadcrumb-list {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .breadcrumb-item {
+    display: flex;
+    align-items: center;
+  }
+
+  .breadcrumb-link {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .breadcrumb-link:hover {
+    color: white;
+    text-decoration: underline;
+  }
+
+  .breadcrumb-separator {
+    margin: 0 0.5rem;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .breadcrumb-current {
+    color: white;
+    font-weight: 600;
+  }
+
+  /* Dark text variations for white backgrounds */
+  :global(.bg-white) .breadcrumb-link,
+  :global(.bg-gray-50) .breadcrumb-link {
+    color: #6b7280;
+  }
+
+  :global(.bg-white) .breadcrumb-link:hover,
+  :global(.bg-gray-50) .breadcrumb-link:hover {
+    color: #111827;
+  }
+
+  :global(.bg-white) .breadcrumb-current,
+  :global(.bg-gray-50) .breadcrumb-current {
+    color: #111827;
+  }
+</style>

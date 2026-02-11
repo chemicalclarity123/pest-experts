@@ -8,7 +8,16 @@ export const serviceArea = {
             title: 'Area Name',
             type: 'string',
             description: 'e.g., "Pretoria", "Centurion"',
-            validation: (Rule: any) => Rule.required(),
+            validation: (Rule: any) => Rule.required().custom((value: string) => {
+                if (!value) return true;
+                if (value.includes('\u00A0')) {
+                    return 'Title contains non-breaking spaces. Please use regular spaces.';
+                }
+                if (value !== value.trim()) {
+                    return 'Title contains leading or trailing whitespace.';
+                }
+                return true;
+            }),
         },
         {
             name: 'slug',
@@ -17,6 +26,13 @@ export const serviceArea = {
             options: {
                 source: 'title',
                 maxLength: 96,
+                slugify: (input: string) => input
+                    .toLowerCase()
+                    .replace(/\u00A0/g, ' ')
+                    .trim()
+                    .replace(/\s+/g, '-')
+                    .replace(/[^\w-]+/g, '')
+                    .replace(/--+/g, '-')
             },
             validation: (Rule: any) => Rule.required(),
         },

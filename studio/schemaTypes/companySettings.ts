@@ -30,6 +30,26 @@ export const companySettings = {
             description: 'Company logo (recommended: square format, min 512x512px)',
         },
         {
+            name: 'googleBusiness',
+            title: 'Google Business Profile Config',
+            type: 'object',
+            description: 'Authentication and identification for Google Places API',
+            fields: [
+                {
+                    name: 'placeId',
+                    title: 'Google Place ID',
+                    type: 'string',
+                    description: 'Your Google Place ID (e.g., ChIJ...)',
+                },
+                {
+                    name: 'apiKey',
+                    title: 'Google Maps API Key',
+                    type: 'string',
+                    description: 'Required for dynamic review syncing',
+                },
+            ],
+        },
+        {
             name: 'aggregateRating',
             title: 'Aggregate Rating',
             type: 'object',

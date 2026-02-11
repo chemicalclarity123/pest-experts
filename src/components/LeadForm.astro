@@ -5,12 +5,14 @@ interface Props {
   title?: string;
   description?: string;
   successMessage?: string;
+  source?: string;
 }
 
 const { 
   title = "Get A Free Quote",
   description = "Fill out the form and we'll contact you within 1 hour",
-  successMessage = "Thank you! We'll contact you within 1 hour."
+  successMessage = "Thank you! We'll contact you within 1 hour.",
+  source = "general_form"
 } = Astro.props;
 ---
 
@@ -21,6 +23,7 @@ const {
       {description && <p class="description">{description}</p>}
       
       <form class="lead-form" id="leadForm">
+        <input type="hidden" name="source" value={source} />
         <div class="form-row">
           <div class="form-group">
             <label for="fullName">Full Name *</label>

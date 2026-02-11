@@ -7,4 +7,6 @@ import { formSubmission } from './formSubmission';
 
 import { contactPage } from './contactPage';
 
-export const schemaTypes = [companySettings, service, serviceArea, homepage, formSubmission, contactPage];
+import { googleReview } from './googleReview';
+
+export const schemaTypes = [companySettings, googleReview, service, serviceArea, homepage, formSubmission, contactPage];

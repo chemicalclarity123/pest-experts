@@ -1,69 +1,52 @@
 ---
 // src/layouts/Layout.astro
-// Base layout with SEO meta tags
+// Base layout with centralized SEO management
 import Navbar from '../components/Navbar.astro';
+import Seo from '../components/Seo.astro';
 import '../styles/global.css';
+
 interface Props {
-	title: string;
+	title?: string;
 	description?: string;
-	ogImage?: string;
-	canonicalUrl?: string;
-	schemaMarkup?: any;
+	seo?: any;
+	schemaMarkup?: any | any[];
+	ogImage?: string; // Legacy support
+	canonicalUrl?: string; // Legacy support
 }
 
 const { 
 	title, 
-	description = "Professional pest control services across Gauteng Province",
+	description,
+	seo,
+	schemaMarkup,
 	ogImage,
-	canonicalUrl,
-	schemaMarkup
+	canonicalUrl
 } = Astro.props;
 
-const siteUrl = import.meta.env.PUBLIC_SITE_URL || 'https://pest-experts-site.pages.dev';
-const currentUrl = canonicalUrl || new URL(Astro.url.pathname, siteUrl).href;
-const defaultOgImage = `${siteUrl}/og-image.jpg`;
-const ogImageUrl = ogImage || defaultOgImage;
+// Prepare SEO object from both new and legacy props
+const seoData = seo || {
+	metaTitle: title,
+	metaDescription: description,
+	shareImage: ogImage,
+	canonicalUrl: canonicalUrl
+};
 ---
 
 <!doctype html>
 <html lang="en">
 <head>
 	<meta charset="UTF-8" />
-	<meta name="description" content={description} />
 	<meta name="viewport" content="width=device-width" />
 	<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-	<meta name="generator" content={Astro.generator} />
-	<title>{title}</title>
 	
-	<!-- Canonical URL -->
-	<link rel="canonical" href={currentUrl} />
+	<Seo 
+		title={title}
+		description={description}
+		seo={seoData}
+		schemaMarkup={schemaMarkup}
+	/>
 	
-	<!-- Open Graph / Facebook -->
-	<meta property="og:type" content="website" />
-	<meta property="og:url" content={currentUrl} />
-	<meta property="og:title" content={title} />
-	<meta property="og:description" content={description} />
-	<meta property="og:image" content={ogImageUrl} />
-	
-	<!-- Twitter -->
-	<meta property="twitter:card" content="summary_large_image" />
-	<meta property="twitter:url" content={currentUrl} />
-	<meta property="twitter:title" content={title} />
-	<meta property="twitter:description" content={description} />
-	<meta property="twitter:image" content={ogImageUrl} />
-	
-	<!-- Schema.org JSON-LD -->
-	{schemaMarkup && (
-		Array.isArray(schemaMarkup) ? (
-			schemaMarkup.map((schema, index) => (
-				<script key={index} type="application/ld+json" set:html={JSON.stringify(schema)} />
-			))
-		) : (
-			<script type="application/ld+json" set:html={JSON.stringify(schemaMarkup)} />
-		)
-	)}
-	
-	<!-- Additional head content (schemas, etc) -->
+	<!-- Additional head content -->
 	<slot name="head" />
 </head>
 <body>

@@ -1,5 +1,5 @@
 import { createClient } from '@sanity/client';
-import imageUrlBuilder from '@sanity/image-url';
+import { createImageUrlBuilder } from '@sanity/image-url';
 
 export const client = createClient({
   projectId: 'vc8zkv1m',
@@ -9,13 +9,71 @@ export const client = createClient({
 });
 
 // Image URL builder
-const builder = imageUrlBuilder(client);
+const builder = createImageUrlBuilder(client);
 
 export function urlFor(source: any) {
   return builder.image(source).auto('format').fit('max');
 }
 
 export { builder as imageBuilder };
+
+/**
+ * Normalizes slugs by removing non-breaking spaces and trimming.
+ * Defensive measure against messy data in Sanity.
+ */
+export function normalizeSlug(slug: string | { current: string }): string {
+  if (!slug) return '';
+  const s = typeof slug === 'string' ? slug : slug.current;
+  return s.replace(/\u00A0/g, ' ').trim().replace(/\s+/g, '-').toLowerCase();
+}
+
+// GROQ Fragments for reuse
+const SEO_FRAGMENT = `
+  seo{
+    "metaTitle": coalesce(metaTitle, pageTitle),
+    "metaDescription": coalesce(metaDesc, metaDescription),
+    "shareImage": coalesce(shareImage.asset->url, ogImage.asset->url),
+    canonicalUrl,
+    keywords
+  }
+`;
+
+const LOCAL_CONTEXT_FRAGMENT = `
+  localContext{
+    serviceType,
+    pests,
+    areas,
+    faqs[]{
+      question,
+      answer
+    }
+  }
+`;
+
+const TESTIMONIALS_FRAGMENT = `
+  testimonials{
+    title,
+    reviews[]{
+      customerName,
+      rating,
+      reviewText,
+      location,
+      avatar
+    }
+  }
+`;
+
+const GOOGLE_REVIEWS_FRAGMENT = `
+  "googleReviews": *[_type == "googleReview" && isFeatured == true] | order(publishDate desc) {
+    author,
+    authorPhoto,
+    rating,
+    text,
+    relativeTime,
+    publishDate,
+    location
+  }
+`;
 
 // Fetch company settings (singleton)
 export async function fetchCompanySettings() {
@@ -34,18 +92,11 @@ export async function fetchCompanySettings() {
         platform,
         url
       },
+      googleBusiness,
       serviceAreas,
       serviceArea,
-      testimonials{
-        title,
-        reviews[]{
-          customerName,
-          rating,
-          reviewText,
-          location,
-          avatar
-        }
-      }
+      ${TESTIMONIALS_FRAGMENT},
+      ${GOOGLE_REVIEWS_FRAGMENT}
     }`;
     const settings = await client.fetch(query);
     return settings;
@@ -60,10 +111,14 @@ export async function fetchServiceAreas() {
   try {
     const query = `*[_type == "serviceArea"] | order(title asc){
       title,
-      "slug": slug.current
+      "slug": slug.current,
+      ${SEO_FRAGMENT}
     }`;
     const areas = await client.fetch(query);
-    return areas;
+    return areas.map((area: any) => ({
+      ...area,
+      slug: normalizeSlug(area.slug)
+    }));
   } catch (error) {
     console.error('Error fetching service areas:', error);
     return [];
@@ -80,20 +135,15 @@ export async function fetchServices() {
       "slug": slug.current,
       featured,
       description,
-      seo,
-      localContext{
-        serviceType,
-        pests,
-        areas,
-        faqs[]{
-          question,
-          answer
-        }
-      },
+      ${SEO_FRAGMENT},
+      ${LOCAL_CONTEXT_FRAGMENT},
       pricing
     }`;
     const services = await client.fetch(query);
-    return services;
+    return services.map((service: any) => ({
+      ...service,
+      slug: normalizeSlug(service.slug)
+    }));
   } catch (error) {
     console.error('Error fetching services:', error);
     return [];
@@ -111,13 +161,7 @@ export async function fetchServiceBySlug(slug: string) {
       featured,
       description,
       content,
-      image{
-        asset->{
-          _id,
-          url
-        },
-        alt
-      },
+      image,
       features,
       hero{
         subheading,
@@ -141,20 +185,8 @@ export async function fetchServiceBySlug(slug: string) {
           avatar
         }
       },
-      seo{
-        metaTitle,
-        metaDesc,
-        "shareImage": shareImage.asset->url
-      },
-      localContext{
-        serviceType,
-        pests,
-        areas,
-        faqs[]{
-          question,
-          answer
-        }
-      },
+      ${SEO_FRAGMENT},
+      ${LOCAL_CONTEXT_FRAGMENT},
       pricing
     }`;
     const service = await client.fetch(query, { slug });
@@ -175,7 +207,7 @@ export async function fetchContactPage() {
         "backgroundImage": backgroundImage.asset->url
       },
       content,
-      seo
+      ${SEO_FRAGMENT}
     }`;
     const data = await client.fetch(query);
     return data;
@@ -220,16 +252,8 @@ export async function fetchHomepage() {
           description
         }
       },
-      testimonials{
-        title,
-        reviews[]{
-          customerName,
-          rating,
-          reviewText,
-          location,
-          avatar
-        }
-      },
+      ${TESTIMONIALS_FRAGMENT},
+      ${GOOGLE_REVIEWS_FRAGMENT},
       stats,
       formSection,
       leadForm{
@@ -243,7 +267,8 @@ export async function fetchHomepage() {
           question,
           answer
         }
-      }
+      },
+      ${SEO_FRAGMENT}
     }`;
     const homepage = await client.fetch(query);
     return homepage;

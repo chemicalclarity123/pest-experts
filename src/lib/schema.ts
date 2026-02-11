@@ -3,6 +3,8 @@ import type {
     LocalBusiness,
     FAQPage,
     AggregateRating,
+    BreadcrumbList,
+    Organization,
     WithContext
 } from 'schema-dts';
 
@@ -50,6 +52,15 @@ interface EnhancedLocalBusinessSchemaProps {
         reviewCount: number;
         bestRating?: number;
     };
+    review?: Array<{
+        author: string;
+        datePublished: string;
+        reviewBody: string;
+        reviewRating: {
+            ratingValue: number;
+            bestRating?: number;
+        };
+    }>;
     sameAs?: string[]; // Social profiles and Google Maps
     areaServed?: string[];
     logo?: string;
@@ -60,6 +71,14 @@ interface FAQSchemaProps {
     faqs: Array<{
         question: string;
         answer: string;
+    }>;
+}
+
+// Breadcrumb Schema Props
+interface BreadcrumbSchemaProps {
+    items: Array<{
+        name: string;
+        item: string;
     }>;
 }
 
@@ -78,24 +97,20 @@ export function generateEnhancedServiceSchema(
         },
     };
 
-    // Add service type if provided
     if (props.serviceType) {
         schema.serviceType = props.serviceType;
     }
 
-    // Add area served (critical for local SEO)
     if (props.areaServed && props.areaServed.length > 0) {
         schema.areaServed = props.areaServed.length === 1
             ? props.areaServed[0]
             : props.areaServed;
     }
 
-    // Add pest expertise to provider Organization (knowsAbout is valid for Organization, not Service)
     if (props.knowsAbout && props.knowsAbout.length > 0) {
         (schema.provider as any).knowsAbout = props.knowsAbout;
     }
 
-    // Add aggregate rating
     if (props.aggregateRating) {
         schema.aggregateRating = {
             '@type': 'AggregateRating',
@@ -119,17 +134,14 @@ export function generateEnhancedLocalBusinessSchema(
         url: props.url,
     };
 
-    // Add legal name if different
     if (props.legalName) {
         (schema as any).legalName = props.legalName;
     }
 
-    // Add logo
     if (props.logo) {
         schema.logo = props.logo;
     }
 
-    // Add contact information
     if (props.telephone) {
         schema.telephone = props.telephone;
     }
@@ -138,7 +150,6 @@ export function generateEnhancedLocalBusinessSchema(
         schema.email = props.email;
     }
 
-    // Add address (critical for NAP consistency)
     if (props.address) {
         schema.address = {
             '@type': 'PostalAddress',
@@ -150,7 +161,6 @@ export function generateEnhancedLocalBusinessSchema(
         };
     }
 
-    // Add geographic coordinates
     if (props.geo) {
         schema.geo = {
             '@type': 'GeoCoordinates',
@@ -159,17 +169,14 @@ export function generateEnhancedLocalBusinessSchema(
         };
     }
 
-    // Add opening hours
     if (props.openingHours && props.openingHours.length > 0) {
         schema.openingHours = props.openingHours;
     }
 
-    // Add price range
     if (props.priceRange) {
         schema.priceRange = props.priceRange;
     }
 
-    // Add aggregate rating (4.8 Google rating!)
     if (props.aggregateRating) {
         schema.aggregateRating = {
             '@type': 'AggregateRating',
@@ -179,12 +186,27 @@ export function generateEnhancedLocalBusinessSchema(
         };
     }
 
-    // Add sameAs (social profiles + Google Maps - critical for verification)
+    if (props.review && props.review.length > 0) {
+        schema.review = props.review.map(r => ({
+            '@type': 'Review',
+            author: {
+                '@type': 'Person',
+                name: r.author
+            },
+            datePublished: r.datePublished,
+            reviewBody: r.reviewBody,
+            reviewRating: {
+                '@type': 'Rating',
+                ratingValue: r.reviewRating.ratingValue,
+                bestRating: r.reviewRating.bestRating || 5
+            }
+        })) as any;
+    }
+
     if (props.sameAs && props.sameAs.length > 0) {
         schema.sameAs = props.sameAs;
     }
 
-    // Add area served
     if (props.areaServed && props.areaServed.length > 0) {
         schema.areaServed = props.areaServed.length === 1
             ? props.areaServed[0]
@@ -209,6 +231,35 @@ export function generateFAQSchema(props: FAQSchemaProps): WithContext<FAQPage> {
     };
 }
 
+export function generateBreadcrumbSchema(props: BreadcrumbSchemaProps): WithContext<BreadcrumbList> {
+    return {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: props.items.map((item, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            name: item.name,
+            item: item.item,
+        })),
+    };
+}
+
+export function generateOrganizationSchema(props: {
+    name: string;
+    url: string;
+    logo?: string;
+    sameAs?: string[];
+}): WithContext<Organization> {
+    return {
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: props.name,
+        url: props.url,
+        logo: props.logo,
+        sameAs: props.sameAs,
+    };
+}
+
 // Homepage Schema with LocalBusiness + FAQ composite
 interface HomepageSchemaProps extends EnhancedLocalBusinessSchemaProps {
     faqs?: Array<{
@@ -219,15 +270,13 @@ interface HomepageSchemaProps extends EnhancedLocalBusinessSchemaProps {
 }
 
 export function generateHomepageSchema(props: HomepageSchemaProps): Array<WithContext<LocalBusiness> | WithContext<FAQPage>> {
-    // Start with the LocalBusiness schema
     const businessSchema = generateEnhancedLocalBusinessSchema(props) as any;
 
-    // Add services offered if provided
     if (props.services && props.services.length > 0) {
         businessSchema.hasOfferCatalog = {
             '@type': 'OfferCatalog',
             name: 'Pest Control Services',
-            itemListElement: props.services.map((service, index) => ({
+            itemListElement: props.services.map((service) => ({
                 '@type': 'Offer',
                 itemOffered: {
                     '@type': 'Service',
@@ -237,10 +286,8 @@ export function generateHomepageSchema(props: HomepageSchemaProps): Array<WithCo
         };
     }
 
-    // Create array of schemas starting with LocalBusiness
     const schemas: Array<WithContext<LocalBusiness> | WithContext<FAQPage>> = [businessSchema];
 
-    // Add separate FAQPage schema if FAQs are provided
     if (props.faqs && props.faqs.length > 0) {
         const faqSchema = generateFAQSchema({ faqs: props.faqs });
         schemas.push(faqSchema);

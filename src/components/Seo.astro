@@ -1,164 +1,61 @@
 ---
-import {
-  generateEnhancedServiceSchema,
-  generateEnhancedLocalBusinessSchema,
-  generateFAQSchema,
-} from '../lib/schema';
-
+// src/components/Seo.astro
 interface Props {
-  // Page metadata
-  title: string;
-  description: string;
-  
-  // Service data
-  serviceName: string;
-  serviceDescription: string;
-  serviceType?: string;
-  
-  // Local SEO data
-  areaServed?: string[];
-  knowsAbout?: string[]; // Pest expertise
-  faqs?: Array<{
-    question: string;
-    answer: string;
-  }>;
-  
-  // Company data
-  companySettings?: {
-    businessName: string;
-    legalName?: string;
-    logo?: string;
-    aggregateRating?: {
-      ratingValue: number;
-      reviewCount: number;
-      bestRating?: number;
-    };
-    address?: {
-      streetAddress: string;
-      addressLocality: string;
-      addressRegion: string;
-      postalCode: string;
-      addressCountry: string;
-    };
-    geo?: {
-      latitude: number;
-      longitude: number;
-    };
-    contactInfo?: {
-      telephone: string;
-      email?: string;
-    };
-    businessHours?: Array<{
-      days: string;
-      opens: string;
-      closes: string;
-    }>;
-    priceRange?: string;
-    sameAs?: Array<{
-      platform: string;
-      url: string;
-    }>;
+  title?: string;
+  description?: string;
+  seo?: {
+    metaTitle?: string;
+    metaDescription?: string;
+    shareImage?: string;
+    canonicalUrl?: string;
+    keywords?: string[];
   };
-  
-  // Social/OG
-  shareImage?: string;
-  canonicalUrl?: string;
+  schemaMarkup?: any | any[];
+  ogType?: string;
 }
 
 const {
-  title,
-  description,
-  serviceName,
-  serviceDescription,
-  serviceType,
-  areaServed,
-  knowsAbout,
-  faqs,
-  companySettings,
-  shareImage,
-  canonicalUrl,
+  title: fallbackTitle,
+  description: fallbackDescription,
+  seo,
+  schemaMarkup,
+  ogType = 'website',
 } = Astro.props;
 
-// Generate Service Schema
-const serviceSchema = generateEnhancedServiceSchema({
-  name: serviceName,
-  description: serviceDescription,
-  serviceType,
-  provider: {
-    name: companySettings?.businessName || 'Pest Experts',
-    url: Astro.site?.toString() || 'https://example.com',
-  },
-  areaServed,
-  knowsAbout,
-  aggregateRating: companySettings?.aggregateRating,
-});
+const siteUrl = Astro.site?.toString() || 'https://pest-experts-site.pages.dev';
+const title = seo?.metaTitle || fallbackTitle || 'Pest Experts | Professional Pest Control';
+const description = seo?.metaDescription || fallbackDescription || 'Professional pest control services across Gauteng Province.';
+const currentUrl = seo?.canonicalUrl || new URL(Astro.url.pathname, siteUrl).href;
+const ogImageUrl = seo?.shareImage || `${siteUrl}/og-image.jpg`;
+const keywords = seo?.keywords?.join(', ');
 
-// Generate LocalBusiness Schema (if company settings available)
-let businessSchema;
-if (companySettings) {
-  const sameAsUrls = companySettings.sameAs?.map((s) => s.url) || [];
-  const openingHours = companySettings.businessHours?.map(
-    (h) => `${h.days} ${h.opens}-${h.closes}`
-  ) || [];
-
-  businessSchema = generateEnhancedLocalBusinessSchema({
-    name: companySettings.businessName,
-    legalName: companySettings.legalName,
-    description: serviceDescription,
-    url: Astro.site?.toString() || 'https://example.com',
-    telephone: companySettings.contactInfo?.telephone,
-    email: companySettings.contactInfo?.email,
-    address: companySettings.address,
-    geo: companySettings.geo,
-    openingHours,
-    priceRange: companySettings.priceRange,
-    aggregateRating: companySettings.aggregateRating,
-    sameAs: sameAsUrls,
-    areaServed,
-    logo: companySettings.logo,
-  });
-}
-
-// Generate FAQ Schema (if FAQs provided)
-let faqSchema;
-if (faqs && faqs.length > 0) {
-  faqSchema = generateFAQSchema({ faqs });
-}
-
-const currentUrl = canonicalUrl || Astro.url.toString();
-const ogImage = shareImage || '/og-default.jpg';
+// Prepare schema array
+const schemas = Array.isArray(schemaMarkup) ? schemaMarkup : (schemaMarkup ? [schemaMarkup] : []);
 ---
 
 <!-- Primary Meta Tags -->
 <title>{title}</title>
 <meta name="title" content={title} />
 <meta name="description" content={description} />
+{keywords && <meta name="keywords" content={keywords} />}
 <meta name="generator" content={Astro.generator} />
 <link rel="canonical" href={currentUrl} />
 
 <!-- Open Graph / Facebook -->
-<meta property="og:type" content="website" />
+<meta property="og:type" content={ogType} />
 <meta property="og:url" content={currentUrl} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
-<meta property="og:image" content={ogImage} />
+<meta property="og:image" content={ogImageUrl} />
 
 <!-- Twitter -->
 <meta property="twitter:card" content="summary_large_image" />
 <meta property="twitter:url" content={currentUrl} />
 <meta property="twitter:title" content={title} />
 <meta property="twitter:description" content={description} />
-<meta property="twitter:image" content={ogImage} />
+<meta property="twitter:image" content={ogImageUrl} />
 
-<!-- Service Schema -->
-<script type="application/ld+json" set:html={JSON.stringify(serviceSchema)} />
-
-<!-- LocalBusiness Schema (with 4.8 Google Rating!) -->
-{businessSchema && (
-  <script type="application/ld+json" set:html={JSON.stringify(businessSchema)} />
-)}
-
-<!-- FAQ Schema (for SERP real estate) -->
-{faqSchema && (
-  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
-)}
+<!-- Schema.org JSON-LD -->
+{schemas.map((schema) => (
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+))}

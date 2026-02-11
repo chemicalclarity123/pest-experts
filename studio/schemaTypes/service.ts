@@ -10,7 +10,16 @@ export const service = {
             title: 'Service Name',
             type: 'string',
             description: 'e.g., "Termite Control", "Rodent Removal"',
-            validation: (Rule: any) => Rule.required(),
+            validation: (Rule: any) => Rule.required().custom((value: string) => {
+                if (!value) return true;
+                if (value.includes('\u00A0')) {
+                    return 'Title contains non-breaking spaces. Please use regular spaces.';
+                }
+                if (value !== value.trim()) {
+                    return 'Title contains leading or trailing whitespace.';
+                }
+                return true;
+            }),
         },
         {
             name: 'slug',
@@ -19,6 +28,13 @@ export const service = {
             options: {
                 source: 'title',
                 maxLength: 96,
+                slugify: (input: string) => input
+                    .toLowerCase()
+                    .replace(/\u00A0/g, ' ') // Replace NBSP with space
+                    .trim()
+                    .replace(/\s+/g, '-')    // Replace spaces with hyphens
+                    .replace(/[^\w-]+/g, '') // Remove non-word characters
+                    .replace(/--+/g, '-')    // Replace multiple hyphens with single hyphen
             },
             validation: (Rule: any) => Rule.required(),
         },

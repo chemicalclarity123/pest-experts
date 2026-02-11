@@ -72,7 +72,7 @@ const schemaMarkup = generateHomepageSchema({
   name: companySettings?.businessName || "Pest Experts Gauteng",
   legalName: companySettings?.legalName,
   description: pageData.seo?.metaDescription || "Professional pest control services in Gauteng. Fast response, guaranteed results. Licensed & insured pest experts.",
-  url: "https://pest-experts-site.pages.dev",
+  url: Astro.site?.toString() || "https://pest-experts-site.pages.dev",
   logo: companySettings?.logo,
   telephone: companySettings?.contactInfo?.telephone || "+27123456789",
   email: companySettings?.contactInfo?.email || "info@pestexperts.co.za",
@@ -83,6 +83,14 @@ const schemaMarkup = generateHomepageSchema({
   ),
   priceRange: companySettings?.priceRange,
   aggregateRating: companySettings?.aggregateRating,
+  review: companySettings?.googleReviews?.map((r: any) => ({
+    author: r.author,
+    datePublished: r.publishDate || new Date().toISOString(),
+    reviewBody: r.text,
+    reviewRating: {
+      ratingValue: r.rating
+    }
+  })),
   sameAs: companySettings?.sameAs?.map((profile: any) => profile.url),
   areaServed: companySettings?.serviceAreas || companySettings?.serviceArea?.gautengAreas || ["Pretoria", "Johannesburg", "Gauteng"],
   services: services?.map((s: any) => s.title) || ["Pest Control", "Rodent Control", "Termite Control"],
@@ -91,11 +99,7 @@ const schemaMarkup = generateHomepageSchema({
 ---
 
 <Layout 
-  title={pageData.seo?.pageTitle || "Pest Control Gauteng | Professional Pest Removal Services"}
-  description={pageData.seo?.metaDescription || "Professional pest control services in Gauteng. Fast response, guaranteed results. Licensed & insured pest experts."}
-  keywords={pageData.seo?.keywords || ["pest control gauteng", "pest removal", "exterminator"]}
-  ogImage={pageData.seo?.ogImage}
-  canonicalUrl={pageData.seo?.canonicalUrl}
+  seo={pageData.seo}
   schemaMarkup={schemaMarkup}
 >
   <!-- Hero Section -->
@@ -130,7 +134,8 @@ const schemaMarkup = generateHomepageSchema({
   <!-- Testimonials -->
   <Testimonials 
     title={companySettings?.testimonials?.title || pageData.testimonials?.title || "What Our Customers Say"}
-    reviews={companySettings?.testimonials?.reviews?.length > 0 ? companySettings.testimonials.reviews : (pageData.testimonials?.reviews || [])}
+    reviews={companySettings?.testimonials?.reviews}
+    googleReviews={companySettings?.googleReviews}
   />
   
   <!-- FAQ Section -->

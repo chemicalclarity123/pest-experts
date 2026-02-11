@@ -1,4 +1,9 @@
 ---
+import { 
+  generateEnhancedServiceSchema, 
+  generateEnhancedLocalBusinessSchema,
+  generateFAQSchema 
+} from '../lib/schema';
 import Seo from '../components/Seo.astro';
 
 interface Props {
@@ -39,6 +44,53 @@ const {
 
 const title = metaTitle || `${serviceName} | ${companySettings?.businessName || 'Pest Experts'}`;
 const description = metaDescription || serviceDescription;
+
+// Generate Schemas for compatibility
+const serviceSchema = generateEnhancedServiceSchema({
+  name: serviceName,
+  description: serviceDescription,
+  serviceType: serviceType || 'PestControl',
+  provider: {
+    name: companySettings?.businessName || 'Pest Experts',
+    url: Astro.site?.toString() || 'https://pest-experts-site.pages.dev',
+  },
+  areaServed,
+  knowsAbout,
+  aggregateRating: companySettings?.aggregateRating,
+});
+
+let businessSchema;
+if (companySettings) {
+  businessSchema = generateEnhancedLocalBusinessSchema({
+    name: companySettings.businessName,
+    description: serviceDescription,
+    url: Astro.site?.toString() || 'https://pest-experts-site.pages.dev',
+    telephone: companySettings.contactInfo?.telephone,
+    email: companySettings.contactInfo?.email,
+    address: companySettings.address,
+    geo: companySettings.geo,
+    openingHours: companySettings.businessHours?.map((h: any) => `${h.days} ${h.opens}-${h.closes}`),
+    priceRange: companySettings.priceRange,
+    aggregateRating: companySettings.aggregateRating,
+    sameAs: companySettings.sameAs?.map((s: any) => s.url),
+    areaServed,
+    logo: companySettings.logo,
+  });
+}
+
+const faqSchema = faqs && faqs.length > 0 ? generateFAQSchema({ faqs }) : null;
+
+const schemaMarkup = [
+  serviceSchema,
+  ...(businessSchema ? [businessSchema] : []),
+  ...(faqSchema ? [faqSchema] : [])
+];
+
+const seo = {
+  metaTitle: title,
+  metaDescription: description,
+  shareImage,
+};
 ---
 
 <!DOCTYPE html>
@@ -49,16 +101,8 @@ const description = metaDescription || serviceDescription;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     
     <Seo
-      title={title}
-      description={description}
-      serviceName={serviceName}
-      serviceDescription={serviceDescription}
-      serviceType={serviceType}
-      areaServed={areaServed}
-      knowsAbout={knowsAbout}
-      faqs={faqs}
-      companySettings={companySettings}
-      shareImage={shareImage}
+      seo={seo}
+      schemaMarkup={schemaMarkup}
     />
   </head>
   <body>
