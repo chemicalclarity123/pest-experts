@@ -58,6 +58,27 @@ export const serviceArea = {
             of: [{ type: 'block' }],
         },
         {
+            name: 'isHub',
+            title: 'Is Hub Area?',
+            type: 'boolean',
+            description: 'Check this if this is a major city (Hub) that links to smaller suburbs (Spokes)',
+            initialValue: false,
+        },
+        {
+            name: 'nearbyAreas',
+            title: 'Nearby Areas (Spoke/Hub Links)',
+            type: 'array',
+            description: 'Link to other areas. Hubs should link to their Spokes, and Spokes should link back to their Hub.',
+            of: [{ type: 'reference', to: [{ type: 'serviceArea' }] }],
+        },
+        {
+            name: 'selectedReviews',
+            title: 'Selected Google Reviews',
+            type: 'array',
+            description: 'Manually select reviews to display for this area. If empty, will fallback to recent 5-star reviews.',
+            of: [{ type: 'reference', to: [{ type: 'googleReview' }] }],
+        },
+        {
             name: 'seo',
             title: 'SEO',
             type: 'object',

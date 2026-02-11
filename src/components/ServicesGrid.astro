@@ -3,7 +3,7 @@
 // Services grid fetched from Sanity
 interface Service {
   title: string;
-  slug: { current: string };
+  slug: string | { current: string };
   description?: string;
   seo?: {
     shareImage?: any;
@@ -46,8 +46,10 @@ const getServiceIcon = (title: string) => {
     <h2 class="section-title">{title}</h2>
     
     <div class="services-grid">
-      {services.map((service) => (
-        <a href={`/services/${service.slug.current}/`} class="service-card">
+      {services.map((service) => {
+        const slug = typeof service.slug === 'string' ? service.slug : service.slug.current;
+        return (
+        <a href={`/services/${slug}/`} class="service-card">
           <div class="service-icon">
             {getServiceIcon(service.title)}
           </div>
@@ -59,7 +61,7 @@ const getServiceIcon = (title: string) => {
             Learn More →
           </span>
         </a>
-      ))}
+      )})}
     </div>
   </div>
 </section>

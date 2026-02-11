@@ -1,0 +1,296 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ServicesGrid from '../../components/ServicesGrid.astro';
+import Testimonials from '../../components/Testimonials.astro';
+import LeadFormCompact from '../../components/LeadFormCompact.astro';
+import WhatsAppWidget from '../../components/WhatsAppWidget.astro';
+import { PortableText } from "astro-portabletext";
+import { fetchServiceAreas, fetchCompanySettings, fetchServices, urlFor } from '../../lib/sanity-client';
+import { generateLocalBusinessSchema, generateBreadcrumbSchema } from '../../lib/schema';
+
+export async function getStaticPaths() {
+  const areas = await fetchServiceAreas();
+  return areas.map((area: any) => ({
+    params: { slug: area.slug },
+    props: { area }
+  }));
+}
+
+const { area } = Astro.props;
+const companySettings = await fetchCompanySettings();
+const services = await fetchServices();
+
+const areaName = area.title;
+const isHub = area.isHub;
+
+// Schema Generation
+const businessSchema = generateLocalBusinessSchema({
+  name: `${companySettings?.businessName} ${areaName}`,
+  description: area.seo?.metaDescription || `Professional pest control services in ${areaName}.`,
+  url: Astro.url.href,
+  image: area.image ? urlFor(area.image).url() : companySettings?.logo,
+  telephone: companySettings?.contactInfo?.telephone,
+  address: {
+    ...companySettings?.address,
+    addressLocality: areaName
+  },
+  areaServed: [areaName],
+  priceRange: companySettings?.priceRange
+});
+
+// Breadcrumbs
+const breadcrumbItems = [
+  { name: 'Home', item: '/' },
+  { name: 'Areas', item: '/areas' }, // Assuming an areas index exists or just structural
+  { name: areaName, item: Astro.url.href }
+];
+
+const breadcrumbSchema = generateBreadcrumbSchema({
+    items: breadcrumbItems
+});
+
+// Reviews Logic: Prefer manual selection, fallback to featured
+const reviewsToDisplay = area.selectedReviews && area.selectedReviews.length > 0 
+    ? { title: `Reviews in ${areaName}`, reviews: [], googleReviews: area.selectedReviews }
+    : { title: "What Our Customers Say", reviews: [], googleReviews: companySettings?.googleReviews };
+
+const heroImage = area.image ? urlFor(area.image).width(1920).url() : '/images/hero-bg.jpg';
+---
+
+<Layout 
+  seo={area.seo} 
+  title={`Pest Control ${areaName} | Built For Speed`}
+  description={`Best pest control services in ${areaName}. Fast, safe, and effective.`}
+  schemaMarkup={[businessSchema, breadcrumbSchema]}
+>
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-bg">
+      <img src={heroImage} alt={`Pest control in ${areaName}`} class="hero-image" />
+      <div class="hero-overlay"></div>
+    </div>
+    
+    <div class="container hero-container">
+      <div class="hero-content">
+        <h1 class="hero-title">Pest Control in <span class="highlight">{areaName}</span></h1>
+        <p class="hero-subtitle">{area.description || "Professional, licensed, and insured pest control experts serving your neighborhood."}</p>
+        
+        <div class="hero-cta">
+            <a href={"tel:" + companySettings?.contactInfo?.telephone} class="cta-btn primary">
+                Call {companySettings?.contactInfo?.telephone}
+            </a>
+            <a href="#lead-form" class="cta-btn secondary">Get a Quote</a>
+        </div>
+      </div>
+      
+      <div class="hero-form-wrapper" id="lead-form">
+        <LeadFormCompact 
+            title={`Get a Quote in ${areaName}`} 
+            serviceTitle={`Pest Control ${areaName}`}
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Service Grid -->
+  <section class="section-spacing">
+    <div class="container">
+      <h2 class="section-title">Services Available in {areaName}</h2>
+      <ServicesGrid services={services} />
+    </div>
+  </section>
+
+  <!-- Area Content -->
+  {area.content && (
+    <section class="section-spacing bg-gray">
+        <div class="container prose-container">
+            <div class="prose">
+                <PortableText value={area.content} />
+            </div>
+        </div>
+    </section>
+  )}
+
+  <!-- Reviews -->
+  <Testimonials 
+    title={reviewsToDisplay.title}
+    googleReviews={reviewsToDisplay.googleReviews}
+    reviews={[]}
+  />
+
+  <!-- Nearby Areas (Spoke/Hub) -->
+  {area.nearbyAreas && area.nearbyAreas.length > 0 && (
+    <section class="section-spacing">
+        <div class="container">
+            <h2 class="section-title">Areas Near {areaName}</h2>
+            <div class="areas-grid">
+                {area.nearbyAreas.map((nearby: any) => (
+                    <a href={`/areas/${nearby.slug}`} class="area-card">
+                        <span class="area-name">{nearby.title}</span>
+                        <span class="area-arrow">→</span>
+                    </a>
+                ))}
+            </div>
+        </div>
+    </section>
+  )}
+
+  <WhatsAppWidget 
+    phoneNumber={companySettings?.contactInfo?.whatsapp} 
+    message={`Hi, I need pest control in ${areaName}.`} 
+  />
+</Layout>
+
+<style>
+    .hero-section {
+        position: relative;
+        min-height: 60vh;
+        display: flex;
+        align-items: center;
+        color: white;
+        padding: 4rem 0;
+    }
+
+    .hero-bg {
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+    }
+
+    .hero-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8));
+    }
+
+    .hero-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
+    }
+
+    .highlight {
+        color: #fbbf24;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 1rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+    }
+
+    .hero-cta {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .cta-btn {
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    .primary {
+        background: #2b6b2a;
+        color: white;
+    }
+
+    .primary:hover {
+        background: #1d4e1c;
+    }
+
+    .secondary {
+        background: rgba(255,255,255,0.1);
+        color: white;
+        border: 2px solid white;
+    }
+
+    .secondary:hover {
+        background: white;
+        color: #2b6b2a;
+    }
+
+    .section-spacing {
+        padding: 5rem 0;
+    }
+
+    .bg-gray {
+        background: #f9f9f9;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 3rem;
+        color: #1f2937;
+    }
+
+    .areas-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .area-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        text-decoration: none;
+        color: #1f2937;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .area-card:hover {
+        border-color: #2b6b2a;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        color: #2b6b2a;
+    }
+
+    .content-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    @media (max-width: 768px) {
+        .hero-container {
+            grid-template-columns: 1fr;
+            text-align: center;
+        }
+
+        .hero-cta {
+            justify-content: center;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+        }
+    }
+</style>

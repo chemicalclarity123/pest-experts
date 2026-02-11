@@ -66,30 +66,45 @@ const bgImageUrl = (hasValidImage && typeof backgroundImage === 'object' && back
           <p class="form-subtitle">We'll respond within 1 hour</p>
           
           <form id="heroForm" class="hero-form">
-            <input 
-              type="text" 
-              name="name" 
-              placeholder="Full Name *" 
-              required 
-            />
-            <input 
-              type="tel" 
-              name="phone" 
-              placeholder="Phone Number *" 
-              required 
-            />
-            <input 
-              type="email" 
-              name="email" 
-              placeholder="Email" 
-            />
-            <select name="service">
-              <option value="">Select Service</option>
-              <option value="Pest Control">General Pest Control</option>
-              <option value="Termite Control">Termite Control</option>
-              <option value="Rodent Control">Rodent Control</option>
-              <option value="Other">Other</option>
-            </select>
+            <div>
+              <label for="name" class="sr-only">Full Name</label>
+              <input 
+                type="text" 
+                id="name"
+                name="name" 
+                placeholder="Full Name *" 
+                required 
+              />
+            </div>
+            <div>
+              <label for="phone" class="sr-only">Phone Number</label>
+              <input 
+                type="tel" 
+                id="phone"
+                name="phone" 
+                placeholder="Phone Number *" 
+                required 
+              />
+            </div>
+            <div>
+              <label for="email" class="sr-only">Email Address</label>
+              <input 
+                type="email" 
+                id="email"
+                name="email" 
+                placeholder="Email" 
+              />
+            </div>
+            <div>
+              <label for="service" class="sr-only">Select Service</label>
+              <select id="service" name="service">
+                <option value="">Select Service</option>
+                <option value="Pest Control">General Pest Control</option>
+                <option value="Termite Control">Termite Control</option>
+                <option value="Rodent Control">Rodent Control</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
             <input type="hidden" name="source" value="homepage_hero" />
             <button type="submit" class="cta-btn">
               <span class="btn-text">{ctaText}</span>
@@ -331,5 +346,18 @@ const bgImageUrl = (hasValidImage && typeof backgroundImage === 'object' && back
   .form-message.error {
     background: #fee2e2;
     color: #991b1b;
+  }
+
+  /* Screen reader only utility */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
   }
 </style>

@@ -112,7 +112,21 @@ export async function fetchServiceAreas() {
     const query = `*[_type == "serviceArea"] | order(title asc){
       title,
       "slug": slug.current,
-      ${SEO_FRAGMENT}
+      ${SEO_FRAGMENT},
+      isHub,
+      nearbyAreas[]->{
+        title,
+        "slug": slug.current
+      },
+      selectedReviews[]->{
+        author,
+        rating,
+        text,
+        relativeTime,
+        publishDate,
+        authorPhoto,
+        location
+      }
     }`;
     const areas = await client.fetch(query);
     return areas.map((area: any) => ({
