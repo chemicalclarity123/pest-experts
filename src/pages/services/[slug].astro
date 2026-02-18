@@ -78,6 +78,9 @@ const heroImage = service.image?.asset
 // Get key features from Sanity
 const keyFeatures = service.features || [];
 
+/* Genera un heading SEO dinámico para la sección de contenido completo */
+const fullContentHeading = `Professional ${service.title} in Gauteng`;
+
 // Breadcrumb Items
 const breadcrumbItems = [
   { name: 'Home', item: Astro.site?.toString() || '/' },
@@ -196,23 +199,22 @@ const breadcrumbItems = [
     </div>
   </section>
 
-  <!-- Contenido principal del servicio desde Sanity (campo "Full Content") -->
-  {service.content?.length > 0 && (
-    <section class="full-content-section">
-      <div class="content-container">
-        <div class="full-content-body prose prose-lg">
-          <PortableText value={service.content} />
-        </div>
-      </div>
-    </section>
-  )}
-
   <!-- Main Content -->
   <div class="content-container section-spacing">
+    <!-- Contenido principal del servicio desde Sanity (campo "Full Content") -->
+    {service.content?.length > 0 && (
+      <section class="content-section">
+        <h2 class="section-title">{fullContentHeading}</h2>
+        <div class="prose prose-lg max-w-none">
+          <PortableText value={service.content} />
+        </div>
+      </section>
+    )}
+
     <!-- Overview -->
     {service.overview && (
       <section class="content-section overview-section">
-        <h2 class="overview-heading">{service.overviewHeading || "Why Choose Professional Pest Control?"}</h2>
+        <h2 class="section-title">{service.overviewHeading || "Why Choose Professional Pest Control?"}</h2>
         <div class="prose prose-lg max-w-none">
           <PortableText value={service.overview} />
         </div>
@@ -314,66 +316,7 @@ const breadcrumbItems = [
     overflow: hidden;
   }
 
-  /* Sección de contenido completo — aparece justo después del hero */
-  .full-content-section {
-    padding: 3rem 0;
-    background: #f9fafb;
-    border-bottom: 1px solid #e5e7eb;
-  }
 
-  .full-content-body {
-    max-width: 800px;
-    margin: 0 auto;
-  }
-
-  .full-content-body h2 {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: #2b6b2a;
-    margin-top: 2.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .full-content-body h2:first-child {
-    margin-top: 0;
-  }
-
-  .full-content-body h3 {
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: #2b6b2a;
-    margin-top: 2rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .full-content-body p {
-    color: #4b5563;
-    line-height: 1.8;
-    margin-bottom: 1.25rem;
-    font-size: 1.05rem;
-  }
-
-  .full-content-body ul,
-  .full-content-body ol {
-    padding-left: 1.5rem;
-    margin-bottom: 1.25rem;
-  }
-
-  .full-content-body li {
-    color: #4b5563;
-    line-height: 1.7;
-    margin-bottom: 0.5rem;
-  }
-
-  .full-content-body blockquote {
-    border-left: 4px solid #2b6b2a;
-    padding: 1rem 1.5rem;
-    margin: 1.5rem 0;
-    background: #f0fdf4;
-    border-radius: 0 8px 8px 0;
-    font-style: italic;
-    color: #374151;
-  }
 
   .hero-background {
     position: absolute;
@@ -616,7 +559,9 @@ const breadcrumbItems = [
     margin-bottom: 2rem;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.75rem;
+    text-align: center;
   }
 
   .title-icon {
@@ -853,13 +798,7 @@ const breadcrumbItems = [
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
   }
 
-  .overview-heading {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: #2b6b2a;
-    margin-bottom: 1.5rem;
-    text-align: center;
-  }
+
 
   /* Increase font size for overview text to make it stand out */
   .overview-section .prose {
