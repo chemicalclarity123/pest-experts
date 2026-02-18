@@ -201,6 +201,8 @@ export async function fetchServices() {
       "slug": slug.current,
       featured,
       description,
+      image,
+      features,
       ${SEO_FRAGMENT},
       ${LOCAL_CONTEXT_FRAGMENT},
       pricing
