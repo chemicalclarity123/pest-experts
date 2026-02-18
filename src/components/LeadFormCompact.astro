@@ -25,39 +25,41 @@ const {
   <form class="compact-lead-form" id="compactLeadForm">
     <input type="hidden" name="source" value={source} />
     <div class="form-group">
-      <label for="fullName">Full Name *</label>
+      <label for="fullName" class="sr-only">Full Name</label>
       <input 
         type="text" 
         id="fullName" 
         name="fullName" 
         required 
-        placeholder="John Doe"
+        aria-required="true"
+        placeholder="Full Name *"
       />
     </div>
     
     <div class="form-group">
-      <label for="phone">Phone Number *</label>
+      <label for="phone" class="sr-only">Phone Number</label>
       <input 
         type="tel" 
         id="phone" 
         name="phone" 
         required 
-        placeholder="+27 11 123 4567"
+        aria-required="true"
+        placeholder="Phone Number *"
       />
     </div>
 
     <div class="form-group">
-      <label for="email">Email</label>
+      <label for="email" class="sr-only">Email</label>
       <input 
         type="email" 
         id="email" 
         name="email" 
-        placeholder="john@example.com"
+        placeholder="Email"
       />
     </div>
     
     <div class="form-group">
-      <label for="serviceNeeded">Service Needed</label>
+      <label for="serviceNeeded" class="sr-only">Service Needed</label>
       <select id="serviceNeeded" name="serviceNeeded">
         {serviceTitle && <option value={serviceTitle} selected>{serviceTitle}</option>}
         <option value="">Select a service</option>
@@ -70,12 +72,12 @@ const {
     </div>
 
     <div class="form-group">
-      <label for="message">Message</label>
+      <label for="message" class="sr-only">Message</label>
       <textarea 
         id="message" 
         name="message" 
         rows="2"
-        placeholder="Tell us about your pest problem..."
+        placeholder="Message"
       ></textarea>
     </div>
 
@@ -171,7 +173,19 @@ const {
   .form-group {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+  }
+
+  /* Oculta visualmente las etiquetas pero las mantiene accesibles para screen readers y SEO */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
   }
 
   label {
