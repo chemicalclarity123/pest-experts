@@ -18,7 +18,7 @@ import {
   fetchHomepage,
   urlFor 
 } from '../../lib/sanity-client';
-import { generateLocalBusinessSchema, generateBreadcrumbSchema, generateFAQSchema } from '../../lib/schema';
+import { generateLocalBusinessSchema, generateFAQSchema } from '../../lib/schema';
 
 // Generar rutas estáticas desde Sanity
 export async function getStaticPaths() {
@@ -99,8 +99,8 @@ const breadcrumbItems = [
   { name: areaName, item: Astro.url.href }
 ];
 
-const breadcrumbSchema = generateBreadcrumbSchema({ items: breadcrumbItems });
-const schemaMarkup = [businessSchema, breadcrumbSchema];
+/* El componente Breadcrumbs ya genera su propio JSON-LD, así que solo se pasa el schema de negocio */
+const schemaMarkup = [businessSchema];
 ---
 
 <Layout 

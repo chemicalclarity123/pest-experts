@@ -26,7 +26,8 @@ const siteUrl = Astro.site?.toString() || 'https://pest-experts-site.pages.dev';
 const title = seo?.metaTitle || fallbackTitle || 'Pest Experts | Professional Pest Control';
 const description = seo?.metaDescription || fallbackDescription || 'Professional pest control services across Gauteng Province.';
 const currentUrl = seo?.canonicalUrl || new URL(Astro.url.pathname, siteUrl).href;
-const ogImageUrl = seo?.shareImage || `${siteUrl}/og-image.jpg`;
+/* Construye la URL de la imagen OG sin doble barra */
+const ogImageUrl = seo?.shareImage || new URL('og-image.jpg', siteUrl).href;
 const keywords = seo?.keywords?.join(', ');
 
 // Prepare schema array
@@ -38,8 +39,15 @@ const schemas = Array.isArray(schemaMarkup) ? schemaMarkup : (schemaMarkup ? [sc
 <meta name="title" content={title} />
 <meta name="description" content={description} />
 {keywords && <meta name="keywords" content={keywords} />}
+<meta name="robots" content="index, follow" />
 <meta name="generator" content={Astro.generator} />
 <link rel="canonical" href={currentUrl} />
+
+<!-- Geo meta tags — local SEO para Gauteng, Sudáfrica -->
+<meta name="geo.region" content="ZA-GT" />
+<meta name="geo.placename" content="Gauteng" />
+<meta name="geo.position" content="-25.7479;28.2293" />
+<meta name="ICBM" content="-25.7479, 28.2293" />
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content={ogType} />
