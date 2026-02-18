@@ -1,5 +1,5 @@
 ---
-// src/pages/areas/[slug].astro
+// src/pages/service-areas/[slug].astro
 // Páginas de áreas de servicio con contenido rico para SEO local y CRO
 import Layout from '../../layouts/Layout.astro';
 import ServicesGrid from '../../components/ServicesGrid.astro';
@@ -95,7 +95,7 @@ const businessSchema = generateLocalBusinessSchema({
 // Breadcrumbs
 const breadcrumbItems = [
   { name: 'Home', item: Astro.site?.toString() || '/' },
-  { name: 'Service Areas', item: new URL('/areas', Astro.site || 'https://pest-experts-site.pages.dev').href },
+  { name: 'Service Areas', item: new URL('/service-areas', Astro.site || 'https://built-for-speed.pages.dev').href },
   { name: areaName, item: Astro.url.href }
 ];
 
@@ -283,7 +283,7 @@ const schemaMarkup = [businessSchema, breadcrumbSchema];
         <h2 class="section-heading">We Also Serve Areas Near {areaName}</h2>
         <div class="areas-grid">
           {area.nearbyAreas.map((nearby: any) => (
-            <a href={`/areas/${nearby.slug}/`} class="area-card">
+            <a href={`/service-areas/${nearby.slug}/`} class="area-card">
               <div class="area-card-content">
                 <span class="area-name">{nearby.title}</span>
                 {nearby.description && (
