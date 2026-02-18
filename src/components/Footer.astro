@@ -69,7 +69,7 @@ const footerAreas = serviceAreas.slice(0, 6);
       <div class="footer-grid">
         <!-- Información de la empresa -->
         <div class="footer-column">
-          <h3 class="footer-title">{businessName}</h3>
+          <p class="footer-title">{businessName}</p>
           <p class="footer-description">
             Professional pest control services across Gauteng Province. Fast, local, and effective solutions.
           </p>
@@ -85,7 +85,7 @@ const footerAreas = serviceAreas.slice(0, 6);
 
         <!-- Quick Links dinámicos desde Sanity -->
         <div class="footer-column">
-          <h4 class="footer-heading">Quick Links</h4>
+          <p class="footer-heading">Quick Links</p>
           <ul class="footer-links">
             <li><a href="/">Home</a></li>
             {quickLinkServices.map((service: any) => (
@@ -99,7 +99,7 @@ const footerAreas = serviceAreas.slice(0, 6);
 
         <!-- Service Areas dinámicas desde Sanity -->
         <div class="footer-column">
-          <h4 class="footer-heading">Service Areas</h4>
+          <p class="footer-heading">Service Areas</p>
           <ul class="footer-links">
             {footerAreas.length > 0 ? (
               footerAreas.map((area: any) => (
@@ -121,7 +121,7 @@ const footerAreas = serviceAreas.slice(0, 6);
 
         <!-- Horarios de negocio dinámicos -->
         <div class="footer-column">
-          <h4 class="footer-heading">Business Hours</h4>
+          <p class="footer-heading">Business Hours</p>
           <ul class="footer-links no-hover">
             {businessHours.map((hours: any) => (
               <li>
@@ -174,7 +174,7 @@ const footerAreas = serviceAreas.slice(0, 6);
   }
 
   .breadcrumbs a {
-    color: rgba(255, 255, 255, 0.9);
+    color: white;
     text-decoration: none;
     transition: color 0.2s;
   }
@@ -224,7 +224,7 @@ const footerAreas = serviceAreas.slice(0, 6);
   }
 
   .footer-description {
-    color: rgba(255, 255, 255, 0.9);
+    color: white;
     line-height: 1.6;
     font-size: 0.95rem;
   }
@@ -264,12 +264,12 @@ const footerAreas = serviceAreas.slice(0, 6);
   }
 
   .footer-links li {
-    color: rgba(255, 255, 255, 0.9);
+    color: white;
     font-size: 0.95rem;
   }
 
   .footer-links a {
-    color: rgba(255, 255, 255, 0.9);
+    color: white;
     text-decoration: none;
     transition: all 0.2s;
     display: inline-block;
@@ -308,7 +308,7 @@ const footerAreas = serviceAreas.slice(0, 6);
   }
 
   .footer-bottom-links a {
-    color: rgba(255, 255, 255, 0.9);
+    color: white;
     text-decoration: none;
     transition: color 0.2s;
   }

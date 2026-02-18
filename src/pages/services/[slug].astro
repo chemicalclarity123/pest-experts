@@ -101,6 +101,10 @@ const breadcrumbItems = [
         src={heroImage} 
         alt={service.image?.alt || service.title}
         class="hero-image"
+        width="1920"
+        height="800"
+        fetchpriority="high"
+        decoding="async"
       />
       <div class="hero-overlay"></div>
     </div>
@@ -361,12 +365,12 @@ const breadcrumbItems = [
     align-items: center;
     gap: 0.5rem;
     font-size: 0.875rem;
-    color: rgba(255, 255, 255, 0.9);
+    color: white;
     margin-bottom: 1.5rem;
   }
 
   .breadcrumb a {
-    color: rgba(255, 255, 255, 0.9);
+    color: white;
     text-decoration: none;
     transition: color 0.2s;
   }
@@ -413,7 +417,7 @@ const breadcrumbItems = [
   .hero-subheading {
     font-size: 1.25rem;
     line-height: 1.6;
-    color: rgba(255, 255, 255, 0.95);
+    color: white;
     margin-bottom: 2rem;
   }
 
@@ -457,7 +461,7 @@ const breadcrumbItems = [
     gap: 0.5rem;
     font-size: 0.875rem;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.95);
+    color: white;
   }
 
   .badge-icon {
