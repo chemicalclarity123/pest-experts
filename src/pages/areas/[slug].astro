@@ -1,296 +1,828 @@
 ---
+// src/pages/areas/[slug].astro
+// Páginas de áreas de servicio con contenido rico para SEO local y CRO
 import Layout from '../../layouts/Layout.astro';
 import ServicesGrid from '../../components/ServicesGrid.astro';
 import Testimonials from '../../components/Testimonials.astro';
 import LeadFormCompact from '../../components/LeadFormCompact.astro';
+import WhyChooseUs from '../../components/WhyChooseUs.astro';
 import WhatsAppWidget from '../../components/WhatsAppWidget.astro';
+import Footer from '../../components/Footer.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { PortableText } from "astro-portabletext";
-import { fetchServiceAreas, fetchCompanySettings, fetchServices, urlFor } from '../../lib/sanity-client';
-import { generateLocalBusinessSchema, generateBreadcrumbSchema } from '../../lib/schema';
+import { 
+  fetchServiceAreas, 
+  fetchServiceAreaBySlug, 
+  fetchCompanySettings, 
+  fetchServices,
+  fetchHomepage,
+  urlFor 
+} from '../../lib/sanity-client';
+import { generateLocalBusinessSchema, generateBreadcrumbSchema, generateFAQSchema } from '../../lib/schema';
 
+// Generar rutas estáticas desde Sanity
 export async function getStaticPaths() {
   const areas = await fetchServiceAreas();
   return areas.map((area: any) => ({
     params: { slug: area.slug },
-    props: { area }
   }));
 }
 
-const { area } = Astro.props;
+const { slug } = Astro.params;
+
+// Obtener datos completos del área y datos compartidos
+const area = await fetchServiceAreaBySlug(slug as string);
 const companySettings = await fetchCompanySettings();
 const services = await fetchServices();
+const homepage = await fetchHomepage();
+
+// Redirigir si no existe
+if (!area) {
+  return Astro.redirect('/404');
+}
 
 const areaName = area.title;
-const isHub = area.isHub;
+const phone = companySettings?.contactInfo?.telephone || "+27 12 345 6789";
+const whatsappNumber = companySettings?.contactInfo?.whatsapp || "+27123456789";
 
-// Schema Generation
+// Imagen del hero con fallback
+const heroImage = area.image?.asset 
+  ? urlFor(area.image).width(1920).height(800).url() 
+  : '/images/hero-bg.jpg';
+
+// Subtítulo del hero con cadena de fallbacks
+const heroSubheading = area.heroSubheading 
+  || area.description 
+  || `Professional, licensed, and insured pest control experts serving ${areaName} and surrounding areas.`;
+
+// Revisar: preferir seleccionadas manualmente, fallback a reviews globales
+const reviewsToDisplay = area.selectedReviews?.length > 0
+  ? { title: `What ${areaName} Customers Say`, reviews: [], googleReviews: area.selectedReviews }
+  : { title: "What Our Customers Say", reviews: [], googleReviews: companySettings?.googleReviews };
+
+// Features: área-específicas o fallback a homepage
+const whyChooseFeatures = area.serviceHighlights?.length > 0
+  ? area.serviceHighlights
+  : homepage?.whyChooseUs?.features;
+
+const whyChooseTitle = area.serviceHighlights?.length > 0
+  ? `Why Choose Us in ${areaName}`
+  : homepage?.whyChooseUs?.title || "Why Choose Us";
+
+// CTA inferior con fallbacks
+const ctaHeading = area.ctaHeading || `Ready to Solve Your Pest Problem in ${areaName}?`;
+const ctaDescription = area.ctaDescription || `Get fast, professional pest control in ${areaName}. Our licensed experts respond within 1 hour.`;
+
+// Schema.org — LocalBusiness con datos del área
 const businessSchema = generateLocalBusinessSchema({
-  name: `${companySettings?.businessName} ${areaName}`,
-  description: area.seo?.metaDescription || `Professional pest control services in ${areaName}.`,
+  name: `${companySettings?.businessName || "Pest Experts"} — ${areaName}`,
+  description: area.seo?.metaDescription || `Professional pest control services in ${areaName}, Gauteng. Fast response, guaranteed results.`,
   url: Astro.url.href,
-  image: area.image ? urlFor(area.image).url() : companySettings?.logo,
-  telephone: companySettings?.contactInfo?.telephone,
-  address: {
-    ...companySettings?.address,
+  logo: companySettings?.logo,
+  telephone: phone,
+  email: companySettings?.contactInfo?.email,
+  address: companySettings?.address ? {
+    ...companySettings.address,
     addressLocality: areaName
-  },
+  } : undefined,
+  geo: companySettings?.geo,
   areaServed: [areaName],
-  priceRange: companySettings?.priceRange
+  priceRange: companySettings?.priceRange,
+  aggregateRating: companySettings?.aggregateRating,
+  sameAs: companySettings?.sameAs?.map((p: any) => p.url),
 });
 
 // Breadcrumbs
 const breadcrumbItems = [
-  { name: 'Home', item: '/' },
-  { name: 'Areas', item: '/areas' }, // Assuming an areas index exists or just structural
+  { name: 'Home', item: Astro.site?.toString() || '/' },
+  { name: 'Service Areas', item: new URL('/areas', Astro.site || 'https://pest-experts-site.pages.dev').href },
   { name: areaName, item: Astro.url.href }
 ];
 
-const breadcrumbSchema = generateBreadcrumbSchema({
-    items: breadcrumbItems
-});
-
-// Reviews Logic: Prefer manual selection, fallback to featured
-const reviewsToDisplay = area.selectedReviews && area.selectedReviews.length > 0 
-    ? { title: `Reviews in ${areaName}`, reviews: [], googleReviews: area.selectedReviews }
-    : { title: "What Our Customers Say", reviews: [], googleReviews: companySettings?.googleReviews };
-
-const heroImage = area.image ? urlFor(area.image).width(1920).url() : '/images/hero-bg.jpg';
+const breadcrumbSchema = generateBreadcrumbSchema({ items: breadcrumbItems });
+const schemaMarkup = [businessSchema, breadcrumbSchema];
 ---
 
 <Layout 
-  seo={area.seo} 
-  title={`Pest Control ${areaName} | Built For Speed`}
-  description={`Best pest control services in ${areaName}. Fast, safe, and effective.`}
-  schemaMarkup={[businessSchema, breadcrumbSchema]}
+  seo={area.seo}
+  title={`Pest Control ${areaName} | Licensed Experts | Built For Speed`}
+  description={`Professional pest control in ${areaName}. Fast response, guaranteed results. Licensed & insured.`}
+  schemaMarkup={schemaMarkup}
 >
-  <!-- Hero Section -->
+  <!-- ═══════════════════════════════
+       1. HERO — H1 + LeadFormCompact
+       ═══════════════════════════════ -->
   <section class="hero-section">
     <div class="hero-bg">
-      <img src={heroImage} alt={`Pest control in ${areaName}`} class="hero-image" />
+      <img src={heroImage} alt={`Pest control services in ${areaName}`} class="hero-image" loading="eager" />
       <div class="hero-overlay"></div>
     </div>
-    
-    <div class="container hero-container">
+
+    <div class="content-container hero-container">
+      <!-- Columna izquierda: contenido -->
       <div class="hero-content">
-        <h1 class="hero-title">Pest Control in <span class="highlight">{areaName}</span></h1>
-        <p class="hero-subtitle">{area.description || "Professional, licensed, and insured pest control experts serving your neighborhood."}</p>
-        
-        <div class="hero-cta">
-            <a href={"tel:" + companySettings?.contactInfo?.telephone} class="cta-btn primary">
-                Call {companySettings?.contactInfo?.telephone}
-            </a>
-            <a href="#lead-form" class="cta-btn secondary">Get a Quote</a>
+        <Breadcrumbs items={breadcrumbItems} />
+
+        <h1 class="hero-title">
+          Pest Control in <span class="highlight">{areaName}</span>
+        </h1>
+        <p class="hero-subtitle">{heroSubheading}</p>
+
+        <!-- Trust badges — señales de confianza inmediatas -->
+        <div class="trust-badges">
+          <div class="badge">
+            <svg class="badge-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <span>Licensed & Insured</span>
+          </div>
+          <div class="badge">
+            <svg class="badge-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>1-Hour Response</span>
+          </div>
+          <div class="badge">
+            <svg class="badge-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+            </svg>
+            <span>Guaranteed Results</span>
+          </div>
+        </div>
+
+        <!-- CTAs — teléfono y scroll al formulario -->
+        <div class="hero-cta-buttons">
+          <a href={`tel:${phone.replace(/\s+/g, '')}`} class="cta-primary">
+            <svg class="cta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+            </svg>
+            Call {phone}
+          </a>
+          <a href="#lead-form" class="cta-secondary">Get a Free Quote</a>
         </div>
       </div>
-      
+
+      <!-- Columna derecha: formulario reutilizado -->
       <div class="hero-form-wrapper" id="lead-form">
         <LeadFormCompact 
-            title={`Get a Quote in ${areaName}`} 
-            serviceTitle={`Pest Control ${areaName}`}
+          title={`Get a Quote in ${areaName}`}
+          description="Fast response across Gauteng"
+          serviceTitle={`Pest Control — ${areaName}`}
+          source={`area_${slug}`}
         />
+        <!-- Stats rápidas debajo del formulario -->
+        <div class="quick-stats">
+          <div class="stat">
+            <div class="stat-value">★ 4.8</div>
+            <div class="stat-label">Google Rating</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">10+</div>
+            <div class="stat-label">Years Experience</div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Service Grid -->
+  <!-- ═══════════════════════════════
+       2. SERVICES AVAILABLE
+       ═══════════════════════════════ -->
   <section class="section-spacing">
-    <div class="container">
-      <h2 class="section-title">Services Available in {areaName}</h2>
+    <div class="content-container">
+      <h2 class="section-heading">Services Available in {areaName}</h2>
+      <p class="section-subtext">
+        We provide comprehensive pest control solutions across {areaName} and surrounding areas.
+      </p>
       <ServicesGrid services={services} />
     </div>
   </section>
 
-  <!-- Area Content -->
-  {area.content && (
-    <section class="section-spacing bg-gray">
-        <div class="container prose-container">
-            <div class="prose">
-                <PortableText value={area.content} />
+  <!-- ═══════════════════════════════
+       3. COMMON PESTS — contenido local para keywords
+       ═══════════════════════════════ -->
+  {area.localPests && area.localPests.length > 0 && (
+    <section class="section-spacing bg-light">
+      <div class="content-container">
+        <h2 class="section-heading">Common Pests in {areaName}</h2>
+        <p class="section-subtext">
+          These pests are frequently found in {areaName} due to the local climate and environment.
+        </p>
+        <div class="pest-grid">
+          {area.localPests.map((pest: any) => (
+            <div class="pest-card">
+              <div class="pest-icon-wrapper">
+                <span class="pest-icon-emoji">🪲</span>
+              </div>
+              <h3 class="pest-name">{pest.name}</h3>
+              {pest.description && (
+                <p class="pest-description">{pest.description}</p>
+              )}
+              <a href="#lead-form" class="pest-cta">Get Treatment →</a>
             </div>
+          ))}
         </div>
+      </div>
     </section>
   )}
 
-  <!-- Reviews -->
+  <!-- ═══════════════════════════════
+       4. WHY LOCAL — Portable Text con contexto local
+       ═══════════════════════════════ -->
+  {area.whyLocal?.body && (
+    <section class="section-spacing">
+      <div class="content-container">
+        <div class="why-local-section">
+          <h2 class="section-heading">
+            {area.whyLocal.title || `Why ${areaName} Needs Professional Pest Control`}
+          </h2>
+          <div class="prose">
+            <PortableText value={area.whyLocal.body} />
+          </div>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- ═══════════════════════════════
+       5. ADDITIONAL CONTENT — bloque rico opcional
+       ═══════════════════════════════ -->
+  {area.content && (
+    <section class="section-spacing bg-light">
+      <div class="content-container">
+        <div class="prose">
+          <PortableText value={area.content} />
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- ═══════════════════════════════
+       6. WHY CHOOSE US — features dinámicas o homepage fallback
+       ═══════════════════════════════ -->
+  <WhyChooseUs 
+    title={whyChooseTitle}
+    features={whyChooseFeatures}
+  />
+
+  <!-- ═══════════════════════════════
+       7. TESTIMONIALS
+       ═══════════════════════════════ -->
   <Testimonials 
     title={reviewsToDisplay.title}
     googleReviews={reviewsToDisplay.googleReviews}
     reviews={[]}
   />
 
-  <!-- Nearby Areas (Spoke/Hub) -->
+  <!-- ═══════════════════════════════
+       8. NEARBY AREAS — internal linking para SEO
+       ═══════════════════════════════ -->
   {area.nearbyAreas && area.nearbyAreas.length > 0 && (
     <section class="section-spacing">
-        <div class="container">
-            <h2 class="section-title">Areas Near {areaName}</h2>
-            <div class="areas-grid">
-                {area.nearbyAreas.map((nearby: any) => (
-                    <a href={`/areas/${nearby.slug}`} class="area-card">
-                        <span class="area-name">{nearby.title}</span>
-                        <span class="area-arrow">→</span>
-                    </a>
-                ))}
-            </div>
+      <div class="content-container">
+        <h2 class="section-heading">We Also Serve Areas Near {areaName}</h2>
+        <div class="areas-grid">
+          {area.nearbyAreas.map((nearby: any) => (
+            <a href={`/areas/${nearby.slug}/`} class="area-card">
+              <div class="area-card-content">
+                <span class="area-name">{nearby.title}</span>
+                {nearby.description && (
+                  <span class="area-desc">{nearby.description}</span>
+                )}
+              </div>
+              <span class="area-arrow">→</span>
+            </a>
+          ))}
         </div>
+      </div>
     </section>
   )}
 
+  <!-- ═══════════════════════════════
+       9. BOTTOM CTA — segunda oportunidad de conversión
+       ═══════════════════════════════ -->
+  <section class="bottom-cta-section">
+    <div class="content-container">
+      <div class="bottom-cta-grid">
+        <div class="bottom-cta-text">
+          <h2 class="bottom-cta-heading">{ctaHeading}</h2>
+          <p class="bottom-cta-description">{ctaDescription}</p>
+          <div class="bottom-cta-trust">
+            <div class="trust-item">✅ No obligation quote</div>
+            <div class="trust-item">✅ Same-day service available</div>
+            <div class="trust-item">✅ 6-month treatment guarantee</div>
+          </div>
+        </div>
+        <div class="bottom-cta-form">
+          <LeadFormCompact 
+            title="Get Your Free Quote"
+            description={`Serving ${areaName} & surrounds`}
+            serviceTitle={`Pest Control — ${areaName}`}
+            source={`area_${slug}_bottom`}
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
   <WhatsAppWidget 
-    phoneNumber={companySettings?.contactInfo?.whatsapp} 
-    message={`Hi, I need pest control in ${areaName}.`} 
+    phoneNumber={whatsappNumber}
+    message={`Hi! I need pest control in ${areaName}.`}
   />
+
+  <Footer />
 </Layout>
 
 <style>
+  /* ══════════════════════════════════════
+     HERO SECTION
+     ══════════════════════════════════════ */
+  .hero-section {
+    position: relative;
+    min-height: 600px;
+    display: flex;
+    align-items: center;
+    padding: 6rem 0;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.5) 100%);
+  }
+
+  .hero-container {
+    position: relative;
+    z-index: 10;
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  .hero-content {
+    color: white;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 2.5rem;
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+  }
+
+  .hero-title {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    color: white;
+  }
+
+  .highlight {
+    color: #fbbf24;
+  }
+
+  .hero-subtitle {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: 2rem;
+  }
+
+  /* Trust badges */
+  .trust-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+  }
+
+  .badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.95);
+  }
+
+  .badge-icon {
+    width: 20px;
+    height: 20px;
+    color: #fbbf24;
+  }
+
+  /* CTA Buttons */
+  .hero-cta-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .cta-primary,
+  .cta-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .cta-primary {
+    background: white;
+    color: #2b6b2a;
+  }
+
+  .cta-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+  }
+
+  .cta-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 2px solid white;
+    backdrop-filter: blur(10px);
+  }
+
+  .cta-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .cta-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Hero form */
+  .hero-form-wrapper {
+    position: sticky;
+    top: 2rem;
+  }
+
+  .quick-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .stat {
+    background: white;
+    padding: 1rem;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2b6b2a;
+    margin-bottom: 0.25rem;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    color: #6b7280;
+    font-weight: 600;
+  }
+
+  /* ══════════════════════════════════════
+     SHARED SECTION STYLES
+     ══════════════════════════════════════ */
+  .section-spacing {
+    padding: 5rem 0;
+  }
+
+  .bg-light {
+    background: #f9fafb;
+  }
+
+  .section-heading {
+    font-size: 2.25rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #1d5f20 0%, #2d7a30 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .section-subtext {
+    text-align: center;
+    color: #6b7280;
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto 3rem;
+    line-height: 1.6;
+  }
+
+  /* ══════════════════════════════════════
+     COMMON PESTS — tarjetas locales
+     ══════════════════════════════════════ */
+  .pest-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .pest-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: center;
+  }
+
+  .pest-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(29, 95, 32, 0.12);
+    border-color: #2b6b2a;
+  }
+
+  .pest-icon-wrapper {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, rgba(29, 95, 32, 0.1) 0%, rgba(45, 122, 48, 0.15) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    transition: all 0.3s;
+  }
+
+  .pest-card:hover .pest-icon-wrapper {
+    background: linear-gradient(135deg, #1d5f20 0%, #2d7a30 100%);
+    transform: scale(1.1);
+  }
+
+  .pest-icon-emoji {
+    font-size: 1.75rem;
+    transition: filter 0.3s;
+  }
+
+  .pest-card:hover .pest-icon-emoji {
+    filter: brightness(10);
+  }
+
+  .pest-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #2b6b2a;
+    margin-bottom: 0.75rem;
+  }
+
+  .pest-description {
+    color: #6b7280;
+    line-height: 1.6;
+    font-size: 0.95rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .pest-cta {
+    color: #2b6b2a;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    display: inline-block;
+  }
+
+  .pest-cta:hover {
+    color: #15803d;
+    transform: translateX(4px);
+  }
+
+  /* ══════════════════════════════════════
+     WHY LOCAL — Portable Text styling
+     ══════════════════════════════════════ */
+  .why-local-section {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+  }
+
+  .prose {
+    color: #374151;
+    line-height: 1.8;
+    font-size: 1.05rem;
+  }
+
+  .prose :global(p) {
+    margin-bottom: 1.25rem;
+  }
+
+  .prose :global(h3) {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2b6b2a;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .prose :global(ul) {
+    list-style-type: disc;
+    padding-left: 1.625rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .prose :global(li) {
+    margin-bottom: 0.5rem;
+  }
+
+  .prose :global(strong) {
+    font-weight: 600;
+    color: #1f2937;
+  }
+
+  /* ══════════════════════════════════════
+     NEARBY AREAS
+     ══════════════════════════════════════ */
+  .areas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .area-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    text-decoration: none;
+    color: #1f2937;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .area-card:hover {
+    border-color: #2b6b2a;
+    box-shadow: 0 8px 16px rgba(43, 107, 42, 0.12);
+    transform: translateY(-2px);
+  }
+
+  .area-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .area-name {
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: #1f2937;
+  }
+
+  .area-card:hover .area-name {
+    color: #2b6b2a;
+  }
+
+  .area-desc {
+    font-size: 0.8rem;
+    color: #9ca3af;
+  }
+
+  .area-arrow {
+    font-size: 1.25rem;
+    color: #d1d5db;
+    transition: all 0.2s;
+  }
+
+  .area-card:hover .area-arrow {
+    color: #2b6b2a;
+    transform: translateX(4px);
+  }
+
+  /* ══════════════════════════════════════
+     BOTTOM CTA — segunda conversión
+     ══════════════════════════════════════ */
+  .bottom-cta-section {
+    background: linear-gradient(135deg, #1d5f20 0%, #0f4a12 100%);
+    padding: 5rem 0;
+    color: white;
+  }
+
+  .bottom-cta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .bottom-cta-heading {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: white;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+
+  .bottom-cta-description {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+  }
+
+  .bottom-cta-trust {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .trust-item {
+    font-size: 1rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.95);
+  }
+
+  /* ══════════════════════════════════════
+     RESPONSIVE
+     ══════════════════════════════════════ */
+  @media (max-width: 1023px) {
     .hero-section {
-        position: relative;
-        min-height: 60vh;
-        display: flex;
-        align-items: center;
-        color: white;
-        padding: 4rem 0;
-    }
-
-    .hero-bg {
-        position: absolute;
-        inset: 0;
-        z-index: -1;
-    }
-
-    .hero-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .hero-overlay {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8));
+      min-height: auto;
+      padding: 4rem 0;
     }
 
     .hero-container {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 4rem;
-        align-items: center;
+      grid-template-columns: 1fr;
     }
 
-    .highlight {
-        color: #fbbf24;
+    .hero-form-wrapper {
+      position: static;
     }
 
+    .bottom-cta-grid {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+  }
+
+  @media (max-width: 640px) {
     .hero-title {
-        font-size: 3.5rem;
-        font-weight: 800;
-        line-height: 1.1;
-        margin-bottom: 1rem;
+      font-size: 2rem;
     }
 
     .hero-subtitle {
-        font-size: 1.25rem;
-        margin-bottom: 2rem;
-        opacity: 0.9;
+      font-size: 1.05rem;
     }
 
-    .hero-cta {
-        display: flex;
-        gap: 1rem;
+    .trust-badges {
+      gap: 0.75rem;
     }
 
-    .cta-btn {
-        padding: 1rem 2rem;
-        border-radius: 8px;
-        font-weight: 600;
-        text-decoration: none;
-        transition: all 0.3s;
+    .badge {
+      font-size: 0.8rem;
     }
 
-    .primary {
-        background: #2b6b2a;
-        color: white;
+    .cta-primary,
+    .cta-secondary {
+      width: 100%;
+      justify-content: center;
+      padding: 0.875rem 1.5rem;
+      font-size: 1rem;
     }
 
-    .primary:hover {
-        background: #1d4e1c;
-    }
-
-    .secondary {
-        background: rgba(255,255,255,0.1);
-        color: white;
-        border: 2px solid white;
-    }
-
-    .secondary:hover {
-        background: white;
-        color: #2b6b2a;
+    .section-heading {
+      font-size: 1.75rem;
     }
 
     .section-spacing {
-        padding: 5rem 0;
+      padding: 3rem 0;
     }
 
-    .bg-gray {
-        background: #f9f9f9;
+    .bottom-cta-heading {
+      font-size: 1.75rem;
     }
 
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 1.5rem;
+    .pest-grid {
+      grid-template-columns: 1fr;
     }
-
-    .section-title {
-        font-size: 2.5rem;
-        font-weight: 700;
-        text-align: center;
-        margin-bottom: 3rem;
-        color: #1f2937;
-    }
-
-    .areas-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 1.5rem;
-    }
-
-    .area-card {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1.5rem;
-        background: white;
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
-        text-decoration: none;
-        color: #1f2937;
-        font-weight: 500;
-        transition: all 0.2s;
-    }
-
-    .area-card:hover {
-        border-color: #2b6b2a;
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-        color: #2b6b2a;
-    }
-
-    .content-container {
-        max-width: 800px;
-        margin: 0 auto;
-    }
-
-    @media (max-width: 768px) {
-        .hero-container {
-            grid-template-columns: 1fr;
-            text-align: center;
-        }
-
-        .hero-cta {
-            justify-content: center;
-        }
-
-        .hero-title {
-            font-size: 2.5rem;
-        }
-    }
+  }
 </style>

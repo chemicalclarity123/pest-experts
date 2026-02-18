@@ -1,6 +1,8 @@
 ---
 // src/components/Footer.astro
-// Footer with company info, links, and breadcrumbs support
+// Footer dinámico con datos de Sanity CMS
+import { fetchCompanySettings, fetchServices, fetchServiceAreas } from '../lib/sanity-client';
+
 interface Props {
   showBreadcrumbs?: boolean;
   breadcrumbs?: Array<{ label: string; href: string }>;
@@ -8,7 +10,35 @@ interface Props {
 
 const { showBreadcrumbs = false, breadcrumbs = [] } = Astro.props;
 
+// Obtener datos dinámicos de Sanity
+const companySettings = await fetchCompanySettings();
+const services = await fetchServices();
+const serviceAreas = await fetchServiceAreas();
+
 const currentYear = new Date().getFullYear();
+
+// Datos con fallback por si Sanity está vacío
+const businessName = companySettings?.businessName || "Pest Control Experts";
+const phone = companySettings?.contactInfo?.telephone || "+27 12 345 6789";
+const email = companySettings?.contactInfo?.email || "info@pestexperts.co.za";
+const businessHours = companySettings?.businessHours || [
+  { days: "Monday - Friday", opens: "08:00", closes: "17:00" },
+  { days: "Saturday", opens: "08:00", closes: "13:00" },
+  { days: "Sunday", opens: "Closed", closes: "" },
+];
+
+// Tomar los primeros 4 servicios destacados para Quick Links
+const featuredServices = services
+  .filter((s: any) => s.featured)
+  .slice(0, 4);
+
+// Si no hay suficientes destacados, rellenar con los primeros disponibles
+const quickLinkServices = featuredServices.length >= 4
+  ? featuredServices
+  : [...featuredServices, ...services.filter((s: any) => !s.featured)].slice(0, 4);
+
+// Primeras áreas de servicio para el footer
+const footerAreas = serviceAreas.slice(0, 6);
 ---
 
 <footer class="footer">
@@ -37,51 +67,69 @@ const currentYear = new Date().getFullYear();
   <div class="footer-main">
     <div class="container">
       <div class="footer-grid">
-        <!-- Company Info -->
+        <!-- Información de la empresa -->
         <div class="footer-column">
-          <h3 class="footer-title">Pest Control Experts</h3>
+          <h3 class="footer-title">{businessName}</h3>
           <p class="footer-description">
             Professional pest control services across Gauteng Province. Fast, local, and effective solutions.
           </p>
           <div class="contact-info">
-            <a href="tel:0715906630" class="contact-link">
-              📞 071 590 6630
+            <a href={`tel:${phone.replace(/\s+/g, '')}`} class="contact-link">
+              📞 {phone}
             </a>
-            <a href="mailto:info@pestexperts.co.za" class="contact-link">
-              ✉️ info@pestexperts.co.za
+            <a href={`mailto:${email}`} class="contact-link">
+              ✉️ {email}
             </a>
           </div>
         </div>
 
-        <!-- Quick Links -->
+        <!-- Quick Links dinámicos desde Sanity -->
         <div class="footer-column">
           <h4 class="footer-heading">Quick Links</h4>
           <ul class="footer-links">
             <li><a href="/">Home</a></li>
-            <li><a href="/services/pest-control">Pest Control</a></li>
-            <li><a href="/services/termite-control">Termite Control</a></li>
-            <li><a href="/services/rodent-control">Rodent Control</a></li>
+            {quickLinkServices.map((service: any) => (
+              <li>
+                <a href={`/services/${service.slug}/`}>{service.title}</a>
+              </li>
+            ))}
+            <li><a href="/contact">Contact</a></li>
           </ul>
         </div>
 
-        <!-- Service Areas -->
+        <!-- Service Areas dinámicas desde Sanity -->
         <div class="footer-column">
           <h4 class="footer-heading">Service Areas</h4>
           <ul class="footer-links">
-            <li><a href="#">Johannesburg</a></li>
-            <li><a href="#">Pretoria</a></li>
-            <li><a href="#">Sandton</a></li>
-            <li><a href="#">Centurion</a></li>
+            {footerAreas.length > 0 ? (
+              footerAreas.map((area: any) => (
+                <li>
+                  <a href={`/service-areas/${area.slug}/`}>{area.title}</a>
+                </li>
+              ))
+            ) : (
+              /* Fallback estático si no hay datos */
+              <>
+                <li><a href="#">Johannesburg</a></li>
+                <li><a href="#">Pretoria</a></li>
+                <li><a href="#">Sandton</a></li>
+                <li><a href="#">Centurion</a></li>
+              </>
+            )}
           </ul>
         </div>
 
-        <!-- Business Hours -->
+        <!-- Horarios de negocio dinámicos -->
         <div class="footer-column">
           <h4 class="footer-heading">Business Hours</h4>
           <ul class="footer-links no-hover">
-            <li>Monday - Friday: 8:00 - 17:00</li>
-            <li>Saturday: 8:00 - 13:00</li>
-            <li>Sunday: Closed</li>
+            {businessHours.map((hours: any) => (
+              <li>
+                {hours.days}: {hours.closes
+                  ? `${hours.opens} - ${hours.closes}`
+                  : hours.opens}
+              </li>
+            ))}
             <li class="emergency">24/7 Emergency Service</li>
           </ul>
         </div>
@@ -92,7 +140,7 @@ const currentYear = new Date().getFullYear();
   <div class="footer-bottom">
     <div class="container">
       <div class="footer-bottom-content">
-        <p>&copy; {currentYear} Pest Control Experts. All rights reserved.</p>
+        <p>&copy; {currentYear} {businessName}. All rights reserved.</p>
         <div class="footer-bottom-links">
           <a href="/privacy-policy">Privacy Policy</a>
           <span class="separator">|</span>

@@ -139,6 +139,58 @@ export async function fetchServiceAreas() {
   }
 }
 
+// Obtener un service area individual con todos los campos ricos
+export async function fetchServiceAreaBySlug(slug: string) {
+  try {
+    const query = `*[_type == "serviceArea" && slug.current == $slug][0]{
+      title,
+      "slug": slug.current,
+      image,
+      description,
+      heroSubheading,
+      content,
+      localPests[]{
+        name,
+        description,
+        icon
+      },
+      whyLocal{
+        title,
+        body
+      },
+      serviceHighlights[]{
+        icon,
+        title,
+        description
+      },
+      ctaHeading,
+      ctaDescription,
+      isHub,
+      nearbyAreas[]->{
+        title,
+        "slug": slug.current,
+        image,
+        description
+      },
+      selectedReviews[]->{
+        author,
+        rating,
+        text,
+        relativeTime,
+        publishDate,
+        authorPhoto,
+        location
+      },
+      ${SEO_FRAGMENT}
+    }`;
+    const area = await client.fetch(query, { slug });
+    return area;
+  } catch (error) {
+    console.error(`Error fetching service area "${slug}":`, error);
+    return null;
+  }
+}
+
 // Fetch all services with local SEO data
 export async function fetchServices() {
   try {
