@@ -14,8 +14,12 @@ export const POST: APIRoute = async ({ request }) => {
     try {
         const data = await request.json();
 
+        // Acepta ambos nombres de campo (antiguos y nuevos) para compatibilidad
+        const name = data.fullName || data.name;
+        const phone = data.phone;
+
         // Validate required fields
-        if (!data.name || !data.phone) {
+        if (!name || !phone) {
             return new Response(
                 JSON.stringify({ error: 'Name and phone number are required' }),
                 { status: 400, headers: { 'Content-Type': 'application/json' } }
@@ -25,10 +29,10 @@ export const POST: APIRoute = async ({ request }) => {
         // Create document in Sanity
         const submission = await sanityClient.create({
             _type: 'formSubmission',
-            name: data.name,
-            phone: data.phone,
+            name: name,
+            phone: phone,
             email: data.email || '',
-            serviceInterest: data.service || '',
+            serviceInterest: data.pestChallenge || data.service || data.serviceNeeded || '',
             message: data.message || '',
             submittedAt: new Date().toISOString(),
             status: 'new',

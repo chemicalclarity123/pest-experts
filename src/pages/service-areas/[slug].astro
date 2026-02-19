@@ -152,7 +152,7 @@ const schemaMarkup = [businessSchema];
 
         <!-- CTAs — teléfono y scroll al formulario -->
         <div class="hero-cta-buttons">
-          <a href={`tel:${phone.replace(/\s+/g, '')}`} class="cta-primary">
+          <a href={`tel:${phone.replace(/\s+/g, '')}`} class="cta-primary" data-gtm="click_to_call" onclick="window.dataLayer && window.dataLayer.push({event:'click_to_call'})">
             <svg class="cta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
             </svg>
@@ -167,8 +167,8 @@ const schemaMarkup = [businessSchema];
         <LeadFormCompact 
           title={`Get a Quote in ${areaName}`}
           description="Fast response across Gauteng"
-          serviceTitle={`Pest Control — ${areaName}`}
           source={`area_${slug}`}
+          formId="areaHeroForm"
         />
         <!-- Stats rápidas debajo del formulario -->
         <div class="quick-stats">
@@ -317,8 +317,8 @@ const schemaMarkup = [businessSchema];
           <LeadFormCompact 
             title="Get Your Free Quote"
             description={`Serving ${areaName} & surrounds`}
-            serviceTitle={`Pest Control — ${areaName}`}
             source={`area_${slug}_bottom`}
+            formId="areaBottomForm"
           />
         </div>
       </div>

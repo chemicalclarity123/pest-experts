@@ -1,34 +1,44 @@
 ---
 // src/components/LeadFormCompact.astro
-// Compact lead form variant for hero sections
+// Componente único de formulario de leads — se usa en TODAS las páginas
+// Soporta dos variantes: "card" (fondo blanco) y "dark" (fondo verde oscuro)
 interface Props {
   title?: string;
   description?: string;
-  serviceTitle?: string;
   source?: string;
+  formId?: string;
+  variant?: 'card' | 'dark';
+  headingLevel?: 'h2' | 'h3';
 }
 
 const { 
   title = "Get A Free Quote",
   description = "Fill out the form and we'll contact you within 1 hour",
-  serviceTitle = "",
-  source = "general"
+  source = "general",
+  formId = "leadForm",
+  variant = "card",
+  headingLevel = "h3"
 } = Astro.props;
+
+/* Tag HTML dinámico para el encabezado según contexto SEO */
+const HeadingTag = headingLevel;
 ---
 
-<div class="compact-form-wrapper">
+<!-- Wrapper con clase de variante para estilos condicionales -->
+<div class:list={["lead-form-wrapper", `lead-form--${variant}`]} id={`${formId}-wrapper`}>
   <div class="form-header">
-    <h3>{title}</h3>
+    <HeadingTag>{title}</HeadingTag>
     {description && <p class="form-description">{description}</p>}
   </div>
   
-  <form class="compact-lead-form" id="compactLeadForm">
+  <form class="lead-form" id={formId} data-form="lead">
     <input type="hidden" name="source" value={source} />
+
     <div class="form-group">
-      <label for="fullName" class="sr-only">Full Name</label>
+      <label for={`${formId}-name`} class="sr-only">Full Name</label>
       <input 
         type="text" 
-        id="fullName" 
+        id={`${formId}-name`}
         name="fullName" 
         required 
         aria-required="true"
@@ -37,10 +47,10 @@ const {
     </div>
     
     <div class="form-group">
-      <label for="phone" class="sr-only">Phone Number</label>
+      <label for={`${formId}-phone`} class="sr-only">Phone Number</label>
       <input 
         type="tel" 
-        id="phone" 
+        id={`${formId}-phone`}
         name="phone" 
         required 
         aria-required="true"
@@ -49,35 +59,32 @@ const {
     </div>
 
     <div class="form-group">
-      <label for="email" class="sr-only">Email</label>
+      <label for={`${formId}-email`} class="sr-only">Email</label>
       <input 
         type="email" 
-        id="email" 
+        id={`${formId}-email`}
         name="email" 
         placeholder="Email"
       />
     </div>
-    
+
     <div class="form-group">
-      <label for="serviceNeeded" class="sr-only">Service Needed</label>
-      <select id="serviceNeeded" name="serviceNeeded">
-        {serviceTitle && <option value={serviceTitle} selected>{serviceTitle}</option>}
-        <option value="">Select a service</option>
-        <option value="pest-control">General Pest Control</option>
-        <option value="termite-control">Termite Control</option>
-        <option value="rodent-control">Rodent Control</option>
-        <option value="termite-inspection">Termite Inspection</option>
-        <option value="other">Other</option>
-      </select>
+      <label for={`${formId}-pest`} class="sr-only">Pest Challenge</label>
+      <input 
+        type="text" 
+        id={`${formId}-pest`}
+        name="pestChallenge" 
+        placeholder="Describe your pest challenge"
+      />
     </div>
 
     <div class="form-group">
-      <label for="message" class="sr-only">Message</label>
+      <label for={`${formId}-message`} class="sr-only">Message</label>
       <textarea 
-        id="message" 
+        id={`${formId}-message`}
         name="message" 
         rows="2"
-        placeholder="Message"
+        placeholder="Any additional details (optional)"
       ></textarea>
     </div>
 
@@ -85,66 +92,80 @@ const {
       Get Free Quote
     </button>
 
-    <div id="compactFormMessage" class="form-message" style="display: none;"></div>
+    <div class="form-message" style="display: none;"></div>
   </form>
 </div>
 
 <script>
-  const form = document.getElementById('compactLeadForm') as HTMLFormElement;
-  const messageDiv = document.getElementById('compactFormMessage') as HTMLDivElement;
-  const submitBtn = form.querySelector('.submit-btn') as HTMLButtonElement;
+  /* Inicializa todos los formularios de leads en la página */
+  document.querySelectorAll<HTMLFormElement>('[data-form="lead"]').forEach(form => {
+    const messageDiv = form.querySelector('.form-message') as HTMLDivElement;
+    const submitBtn = form.querySelector('.submit-btn') as HTMLButtonElement;
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Sending...';
-    
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
-    
-    try {
-      const response = await fetch('/api/submit-lead', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
+    /* Evitar doble binding si el script ya se ejecutó (Astro islands) */
+    if (form.dataset.bound) return;
+    form.dataset.bound = 'true';
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
       
-      const result = await response.json();
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending...';
+      messageDiv.style.display = 'none';
       
-      if (response.ok) {
-        messageDiv.textContent = result.message || 'Thank you! We\'ll contact you within 1 hour.';
-        messageDiv.className = 'form-message success';
-        messageDiv.style.display = 'block';
-        form.reset();
-      } else {
-        messageDiv.textContent = result.error || 'Something went wrong. Please try again.';
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+      
+      try {
+        const response = await fetch('/api/submit-lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          messageDiv.textContent = result.message || "Thank you! We'll contact you within 1 hour.";
+          messageDiv.className = 'form-message success';
+          messageDiv.style.display = 'block';
+          form.reset();
+
+          /* GTM dataLayer push para tracking de conversiones */
+          if (typeof window !== 'undefined' && (window as any).dataLayer) {
+            (window as any).dataLayer.push({
+              event: 'form_submission',
+              form_source: data.source || 'unknown',
+            });
+          }
+        } else {
+          messageDiv.textContent = result.error || 'Something went wrong. Please try again.';
+          messageDiv.className = 'form-message error';
+          messageDiv.style.display = 'block';
+        }
+      } catch (error) {
+        messageDiv.textContent = 'Network error. Please try again.';
         messageDiv.className = 'form-message error';
         messageDiv.style.display = 'block';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Get Free Quote';
+        
+        setTimeout(() => {
+          messageDiv.style.display = 'none';
+        }, 5000);
       }
-    } catch (error) {
-      messageDiv.textContent = 'Network error. Please try again.';
-      messageDiv.className = 'form-message error';
-      messageDiv.style.display = 'block';
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Get Free Quote';
-      
-      setTimeout(() => {
-        messageDiv.style.display = 'none';
-      }, 5000);
-    }
+    });
   });
 </script>
 
 <style>
-  .compact-form-wrapper {
-    background: white;
+  /* ═══════════════════════════════════
+     Base — se aplica a ambas variantes
+     ═══════════════════════════════════ */
+  .lead-form-wrapper {
     border-radius: 16px;
     padding: 1.25rem 1.5rem;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   }
 
   .form-header {
@@ -152,19 +173,18 @@ const {
     text-align: center;
   }
 
+  .form-header h2,
   .form-header h3 {
-    font-size: 1.25rem;
+    font-size: 1.5rem;
     font-weight: 700;
-    color: #2b6b2a;
     margin-bottom: 0.25rem;
   }
 
   .form-description {
     font-size: 0.875rem;
-    color: #6b7280;
   }
 
-  .compact-lead-form {
+  .lead-form {
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
@@ -175,7 +195,6 @@ const {
     flex-direction: column;
   }
 
-  /* Oculta visualmente las etiquetas pero las mantiene accesibles para screen readers y SEO */
   .sr-only {
     position: absolute;
     width: 1px;
@@ -188,41 +207,15 @@ const {
     border-width: 0;
   }
 
-  label {
-    font-weight: 600;
-    color: #374151;
-    font-size: 0.875rem;
-  }
-
   input,
-  select,
   textarea {
     width: 100%;
-    padding: 0.5rem 0.75rem;
-    border: 1.5px solid #e5e7eb;
+    box-sizing: border-box;
+    padding: 0.625rem 0.875rem;
     border-radius: 8px;
     font-size: 0.9rem;
     transition: all 0.2s;
     font-family: inherit;
-    background: white;
-    color: #1f2937;
-  }
-
-  input::placeholder,
-  textarea::placeholder {
-    color: #9ca3af;
-  }
-
-  select {
-    cursor: pointer;
-  }
-
-  input:focus,
-  select:focus,
-  textarea:focus {
-    outline: none;
-    border-color: #2b6b2a;
-    box-shadow: 0 0 0 3px rgba(43, 107, 42, 0.1);
   }
 
   textarea {
@@ -231,9 +224,8 @@ const {
   }
 
   .submit-btn {
-    background: #2b6b2a;
     color: white;
-    padding: 0.7rem 1.5rem;
+    padding: 0.75rem 1.5rem;
     border: none;
     border-radius: 8px;
     font-size: 1rem;
@@ -242,12 +234,6 @@ const {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     margin-top: 0.25rem;
     width: 100%;
-  }
-
-  .submit-btn:hover:not(:disabled) {
-    background: #15803d;
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px -5px rgba(43, 107, 42, 0.3);
   }
 
   .submit-btn:disabled {
@@ -263,32 +249,144 @@ const {
     font-size: 0.875rem;
   }
 
-  .form-message.success {
+  /* ═══════════════════════════════════
+     Variante: card (fondo blanco)
+     ═══════════════════════════════════ */
+  .lead-form--card {
+    background: white;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+                0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+
+  .lead-form--card .form-header h2,
+  .lead-form--card .form-header h3 {
+    color: #2b6b2a;
+  }
+
+  .lead-form--card .form-description {
+    color: #6b7280;
+  }
+
+  .lead-form--card input,
+  .lead-form--card textarea {
+    border: 1.5px solid #e5e7eb;
+    background: white;
+    color: #1f2937;
+  }
+
+  .lead-form--card input::placeholder,
+  .lead-form--card textarea::placeholder {
+    color: #9ca3af;
+  }
+
+  .lead-form--card input:focus,
+  .lead-form--card textarea:focus {
+    outline: none;
+    border-color: #2b6b2a;
+    box-shadow: 0 0 0 3px rgba(43, 107, 42, 0.1);
+  }
+
+  .lead-form--card .submit-btn {
+    background: #2b6b2a;
+  }
+
+  .lead-form--card .submit-btn:hover:not(:disabled) {
+    background: #15803d;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(43, 107, 42, 0.3);
+  }
+
+  .lead-form--card .form-message.success {
     background: #dcfce7;
     color: #166534;
     border: 1px solid #86efac;
   }
 
-  .form-message.error {
+  .lead-form--card .form-message.error {
     background: #fee2e2;
     color: #991b1b;
     border: 1px solid #fca5a5;
   }
 
-  /* Mobile optimization */
+  /* ═══════════════════════════════════
+     Variante: dark (fondo verde oscuro)
+     ═══════════════════════════════════ */
+  .lead-form--dark {
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .lead-form--dark .form-header h2,
+  .lead-form--dark .form-header h3 {
+    color: white;
+    font-size: 2rem;
+  }
+
+  .lead-form--dark .form-description {
+    color: white;
+  }
+
+  .lead-form--dark input,
+  .lead-form--dark textarea {
+    border: none;
+    background: rgba(173, 216, 230, 0.15);
+    color: white;
+  }
+
+  .lead-form--dark input::placeholder,
+  .lead-form--dark textarea::placeholder {
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .lead-form--dark input:focus,
+  .lead-form--dark textarea:focus {
+    outline: none;
+    background: rgba(173, 216, 230, 0.25);
+    box-shadow: 0 0 0 2px rgba(173, 216, 230, 0.3);
+  }
+
+  .lead-form--dark .submit-btn {
+    background: rgba(0, 0, 0, 0.2);
+    color: #fbbf24;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .lead-form--dark .submit-btn:hover:not(:disabled) {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .lead-form--dark .form-message.success {
+    background: rgba(173, 216, 230, 0.2);
+    color: white;
+    border: 1px solid rgba(173, 216, 230, 0.3);
+  }
+
+  .lead-form--dark .form-message.error {
+    background: rgba(220, 38, 38, 0.2);
+    color: white;
+    border: 1px solid rgba(220, 38, 38, 0.3);
+  }
+
+  /* ═══════════════════════════════════
+     Mobile
+     ═══════════════════════════════════ */
   @media (max-width: 640px) {
-    .compact-form-wrapper {
+    .lead-form--card {
       padding: 1.5rem;
     }
 
+    .form-header h2,
     .form-header h3 {
       font-size: 1.25rem;
     }
 
     input,
-    select,
     textarea {
-      font-size: 16px; /* Prevents zoom on focus in iOS */
+      font-size: 16px; /* Previene zoom en iOS al enfocar */
     }
   }
 </style>

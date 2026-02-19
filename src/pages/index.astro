@@ -9,7 +9,7 @@ import WhyChooseUs from '../components/WhyChooseUs.astro';
 import ServicesGrid from '../components/ServicesGrid.astro';
 import Testimonials from '../components/Testimonials.astro';
 import FAQ from '../components/FAQ.astro';
-import LeadForm from '../components/LeadForm.astro';
+import LeadFormCompact from '../components/LeadFormCompact.astro';
 import WhatsAppWidget from '../components/WhatsAppWidget.astro';
 import Footer from '../components/Footer.astro';
 import { fetchHomepage, fetchServices, fetchCompanySettings, urlFor } from '../lib/sanity-client';
@@ -146,13 +146,19 @@ const schemaMarkup = generateHomepageSchema({
     />
   )}
 
-  <!-- Lead Form -->
-  <LeadForm 
-    title={pageData.leadForm?.title || "Get A Free Quote"}
-    description={pageData.leadForm?.description || "Fill out the form and we'll contact you within 1 hour"}
-    successMessage={pageData.leadForm?.successMessage}
-    source="homepage"
-  />
+  <!-- Lead Form — variante oscura con fondo verde -->
+  <section class="lead-form-section">
+    <div class="lead-form-container">
+      <LeadFormCompact 
+        title={pageData.leadForm?.title || "Get A Free Quote"}
+        description={pageData.leadForm?.description || "Fill out the form and we'll contact you within 1 hour"}
+        source="homepage_bottom"
+        formId="bottomForm"
+        variant="dark"
+        headingLevel="h2"
+      />
+    </div>
+  </section>
 
   <!-- WhatsApp Widget -->
   <WhatsAppWidget 
@@ -164,4 +170,15 @@ const schemaMarkup = generateHomepageSchema({
   <Footer />
 </Layout>
 
+<style>
+  .lead-form-section {
+    background: #1d5f20;
+    padding: 4rem 0;
+  }
 
+  .lead-form-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+</style>
