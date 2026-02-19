@@ -27,8 +27,11 @@ export async function getStaticPaths() {
 const { slug } = Astro.params;
 const service = await fetchServiceBySlug(slug as string);
 
-const companySettings = await fetchCompanySettings();
-const homepage = await fetchHomepage();
+// Lanza queries independientes en paralelo para reducir TTFB
+const [companySettings, homepage] = await Promise.all([
+  fetchCompanySettings(),
+  fetchHomepage(),
+]);
 
 if (!service) {
   return Astro.redirect('/404');
@@ -48,15 +51,22 @@ const faqTitle = service.localContext?.faqs?.length > 0
   : homepage?.faq?.title;
 
 const whatsappNumber = companySettings?.contactInfo?.whatsapp || "+27123456789";
+
+// Imagen hero — se necesita antes del schema
+const heroImage = service.image?.asset 
+  ? urlFor(service.image).width(1920).height(800).url() 
+  : '/images/hero-bg.jpg';
   
-// Schema Generation
+// Schema Generation — incluye imagen y URL para rich results en Google
 const serviceSchema = generateServiceSchema({
   name: service.title,
   description: service.description,
   serviceType: service.localContext?.serviceType || "PestControl",
+  image: heroImage,
+  url: Astro.url.href,
   provider: {
     name: companySettings?.businessName || "Built For Speed Pest Experts",
-    url: import.meta.env.SITE || "https://pest-experts.co.za",
+    url: import.meta.env.SITE || "https://pestexperts.co.za",
   },
   areaServed: service.localContext?.areas || companySettings?.serviceAreas || ["Pretoria", "Johannesburg"],
   knowsAbout: service.localContext?.pests,
@@ -70,10 +80,6 @@ const schemaMarkup = [
     serviceSchema,
     ...(faqSchema ? [faqSchema] : [])
 ];
-
-const heroImage = service.image?.asset 
-  ? urlFor(service.image).width(1920).height(800).url() 
-  : '/images/hero-bg.jpg';
 
 // Get key features from Sanity
 const keyFeatures = service.features || [];
@@ -307,7 +313,7 @@ const breadcrumbItems = [
     message={`Hi! I'd like to get a quote for ${service.title}.`}
   />
 
-  <Footer slot="footer" />
+  <Footer slot="footer" companyData={companySettings} />
 </Layout>
 
 <style>

@@ -22,7 +22,7 @@ const {
   ogType = 'website',
 } = Astro.props;
 
-const siteUrl = Astro.site?.toString() || 'https://pest-experts-site.pages.dev';
+const siteUrl = Astro.site?.toString() || 'https://pestexperts.co.za';
 const title = seo?.metaTitle || fallbackTitle || 'Pest Experts | Professional Pest Control';
 const description = seo?.metaDescription || fallbackDescription || 'Professional pest control services across Gauteng Province.';
 const currentUrl = seo?.canonicalUrl || new URL(Astro.url.pathname, siteUrl).href;
@@ -42,6 +42,7 @@ const schemas = Array.isArray(schemaMarkup) ? schemaMarkup : (schemaMarkup ? [sc
 <meta name="robots" content="index, follow" />
 <meta name="generator" content={Astro.generator} />
 <link rel="canonical" href={currentUrl} />
+<link rel="alternate" hreflang="en-ZA" href={currentUrl} />
 
 <!-- Geo meta tags — local SEO para Gauteng, Sudáfrica -->
 <meta name="geo.region" content="ZA-GT" />
@@ -55,6 +56,7 @@ const schemas = Array.isArray(schemaMarkup) ? schemaMarkup : (schemaMarkup ? [sc
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:image" content={ogImageUrl} />
+<meta property="og:locale" content="en_ZA" />
 
 <!-- Twitter -->
 <meta property="twitter:card" content="summary_large_image" />

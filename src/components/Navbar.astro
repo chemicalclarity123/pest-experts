@@ -2,10 +2,12 @@
 // src/components/Navbar.astro
 import { fetchCompanySettings, fetchServices, fetchServiceAreas, urlFor } from '../lib/sanity-client';
 
-// Fetch data
-const companySettings = await fetchCompanySettings();
-const services = await fetchServices();
-const serviceAreas = await fetchServiceAreas();
+// Lanza las tres queries en paralelo para reducir TTFB
+const [companySettings, services, serviceAreas] = await Promise.all([
+  fetchCompanySettings(),
+  fetchServices(),
+  fetchServiceAreas(),
+]);
 
 const logo = companySettings?.logo || '/favicon.svg';
 const phone = companySettings?.contactInfo?.telephone || '+27 12 345 6789';
@@ -40,7 +42,7 @@ const displayLogo = logo;
     <div class="container navbar-content">
       <!-- Logo -->
       <a href="/" class="logo-link">
-        <img src={displayLogo} alt="Pest Experts Logo" class="logo" />
+        <img src={displayLogo} alt="Pest Experts Logo" class="logo" width="120" height="48" />
       </a>
 
       <!-- Desktop Navigation -->
@@ -86,6 +88,7 @@ const displayLogo = logo;
           </div>
         </div>
 
+        <a href="/knowledge-base/" class="nav-link">Knowledge Base</a>
         <a href="/contact" class="nav-link">Contact</a>
       </div>
 
@@ -104,7 +107,7 @@ const displayLogo = logo;
   <!-- Mobile Drawer -->
   <div id="mobile-drawer" class="mobile-drawer">
     <div class="drawer-header">
-      <img src={displayLogo} alt="Pest Experts Logo" class="drawer-logo" />
+      <img src={displayLogo} alt="Pest Experts Logo" class="drawer-logo" width="90" height="36" />
       <button id="close-drawer" class="close-btn" aria-label="Close Menu">
         <svg xmlns="http://www.w3.org/2000/svg" class="close-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -155,6 +158,7 @@ const displayLogo = logo;
         </div>
       </div>
 
+      <a href="/knowledge-base/" class="drawer-link">Knowledge Base</a>
       <a href="/contact" class="drawer-link">Contact</a>
 
       <div class="drawer-cta-wrapper">

@@ -26,10 +26,22 @@ const hasValidImage = backgroundImage && (
   (typeof backgroundImage === 'object' && backgroundImage.asset)
 );
 
-// Optimiza la URL de imagen si es un objeto de Sanity
-const bgImageUrl = (hasValidImage && typeof backgroundImage === 'object' && backgroundImage.asset)
-  ? urlFor(backgroundImage).width(1920).quality(80).auto('format').url()
-  : backgroundImage; 
+// Genera URLs optimizadas por tamaño para srcset responsivo
+const isSanityImage = hasValidImage && typeof backgroundImage === 'object' && backgroundImage.asset;
+
+// URL principal (desktop) — q65 equilibra calidad y tamaño para LCP
+const bgImageUrl = isSanityImage
+  ? urlFor(backgroundImage).width(1280).quality(65).auto('format').url()
+  : backgroundImage;
+
+// URLs para srcset — mobile recibe imagen más pequeña y más comprimida (ahorra ~70% de datos)
+const bgImageMobile = isSanityImage
+  ? urlFor(backgroundImage).width(640).quality(50).auto('format').url()
+  : backgroundImage;
+
+const bgImageDesktop = isSanityImage
+  ? urlFor(backgroundImage).width(1440).quality(65).auto('format').url()
+  : backgroundImage;
 ---
 
 <section class="hero" class:list={[{ 'hero-no-image': !hasValidImage }]}>
@@ -37,11 +49,14 @@ const bgImageUrl = (hasValidImage && typeof backgroundImage === 'object' && back
     <div class="hero-bg">
       <img 
         src={bgImageUrl} 
+        srcset={hasValidImage && bgImageMobile !== bgImageUrl ? `${bgImageMobile} 640w, ${bgImageUrl} 1280w, ${bgImageDesktop} 1440w` : undefined}
+        sizes={hasValidImage && bgImageMobile !== bgImageUrl ? "(max-width: 768px) 640px, (max-width: 1280px) 1280px, 1440px" : undefined}
         alt="Pest control service" 
-        width="1920"
-        height="800"
+        width="1280"
+        height="534"
         fetchpriority="high"
-        decoding="async"
+        loading="eager"
+        decoding="sync"
         class="hero-image"
       />
       <div class="hero-overlay"></div>

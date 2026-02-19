@@ -36,8 +36,10 @@ const {
           {service.image && (
             <div class="service-image">
               <img 
-                src={urlFor(service.image).width(600).height(400).url()} 
+                src={urlFor(service.image).width(600).height(400).quality(75).auto('format').url()} 
                 alt={service.image.alt || service.heading}
+                width="600"
+                height="400"
                 loading="lazy"
               />
             </div>

@@ -13,12 +13,15 @@ interface EnhancedServiceSchemaProps {
     name: string;
     description: string;
     serviceType?: string;
+    image?: string;
+    url?: string;
     provider: {
         name: string;
         url: string;
     };
     areaServed?: string[];
     knowsAbout?: string[]; // Pest expertise
+    priceRange?: string;
     aggregateRating?: {
         ratingValue: number;
         reviewCount: number;
@@ -99,6 +102,18 @@ export function generateEnhancedServiceSchema(
 
     if (props.serviceType) {
         schema.serviceType = props.serviceType;
+    }
+
+    if (props.image) {
+        schema.image = props.image;
+    }
+
+    if (props.url) {
+        (schema as any).url = props.url;
+    }
+
+    if (props.priceRange) {
+        (schema as any).priceRange = props.priceRange;
     }
 
     if (props.areaServed && props.areaServed.length > 0) {
@@ -303,4 +318,51 @@ export function generateServiceSchema(props: any) {
 
 export function generateLocalBusinessSchema(props: any) {
     return generateEnhancedLocalBusinessSchema(props);
+}
+
+// Blog post Article schema for rich results
+interface BlogPostSchemaProps {
+    headline: string;
+    description: string;
+    image?: string;
+    datePublished: string;
+    dateModified?: string;
+    author: string;
+    url: string;
+    publisher: {
+        name: string;
+        url: string;
+        logo?: string;
+    };
+}
+
+export function generateBlogPostSchema(props: BlogPostSchemaProps) {
+    return {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: props.headline,
+        description: props.description,
+        ...(props.image && { image: props.image }),
+        datePublished: props.datePublished,
+        ...(props.dateModified && { dateModified: props.dateModified }),
+        author: {
+            '@type': 'Person',
+            name: props.author,
+        },
+        publisher: {
+            '@type': 'Organization',
+            name: props.publisher.name,
+            url: props.publisher.url,
+            ...(props.publisher.logo && {
+                logo: {
+                    '@type': 'ImageObject',
+                    url: props.publisher.logo,
+                },
+            }),
+        },
+        mainEntityOfPage: {
+            '@type': 'WebPage',
+            '@id': props.url,
+        },
+    };
 }

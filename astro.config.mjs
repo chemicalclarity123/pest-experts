@@ -9,9 +9,11 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://pest-experts-site.pages.dev',
+  site: 'https://pestexperts.co.za',
   adapter: cloudflare(),
-  integrations: [sitemap()],
+  integrations: [sitemap({
+    filter: (page) => !page.includes('/test-sanity')
+  })],
 
   vite: {
     plugins: [tailwindcss()]

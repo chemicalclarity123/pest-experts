@@ -1,0 +1,199 @@
+---
+// src/pages/404.astro
+// Página 404 personalizada — mantiene a los usuarios en el sitio
+import Layout from '../layouts/Layout.astro';
+import Footer from '../components/Footer.astro';
+import { fetchCompanySettings } from '../lib/sanity-client';
+
+const companySettings = await fetchCompanySettings();
+const phone = companySettings?.contactInfo?.telephone || "+27 71 590 6630";
+
+const title = "Page Not Found | Pest Experts";
+const description = "The page you're looking for doesn't exist. Find our pest control services, contact us, or return to the homepage.";
+---
+
+<Layout 
+  title={title} 
+  description={description}
+>
+  <section class="error-section">
+    <div class="error-container">
+      <div class="error-icon">🐛</div>
+      <h1>Page Not Found</h1>
+      <p class="error-message">
+        Sorry, the page you're looking for doesn't exist or may have moved.
+      </p>
+
+      <div class="error-actions">
+        <a href="/" class="btn-primary">
+          ← Back to Home
+        </a>
+        <a href="/contact" class="btn-secondary">
+          Get a Free Quote
+        </a>
+      </div>
+
+      <div class="helpful-links">
+        <h2>Looking for something specific?</h2>
+        <ul>
+          <li><a href="/services/residential-pest-control-services">Residential Pest Control</a></li>
+          <li><a href="/services/commercial-pest-control-solutions">Commercial Pest Control</a></li>
+          <li><a href="/services/termite-control-soil-poisoning">Termite Control</a></li>
+          <li><a href="/services/cockroach-extermination">Cockroach Extermination</a></li>
+          <li><a href="/services/rodent-control-bait-station-management">Rodent Control</a></li>
+          <li><a href="/contact">Contact Us</a></li>
+        </ul>
+      </div>
+
+      <p class="phone-cta">
+        Or call us now: <a href={`tel:${phone.replace(/\s+/g, '')}`}>{phone}</a>
+      </p>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>
+
+<style>
+  .error-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    padding: 4rem 1.5rem;
+    background: linear-gradient(180deg, #f0fdf4 0%, #fff 100%);
+  }
+
+  .error-container {
+    max-width: 640px;
+    text-align: center;
+  }
+
+  .error-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    animation: wiggle 2s ease-in-out infinite;
+  }
+
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-10deg); }
+    75% { transform: rotate(10deg); }
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #1f2937;
+    margin-bottom: 1rem;
+  }
+
+  .error-message {
+    font-size: 1.125rem;
+    color: #6b7280;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .error-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.875rem 2rem;
+    background: #2b6b2a;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: background 0.2s;
+  }
+
+  .btn-primary:hover {
+    background: #15803d;
+  }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.875rem 2rem;
+    background: white;
+    color: #2b6b2a;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    border: 2px solid #2b6b2a;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover {
+    background: #f0fdf4;
+  }
+
+  .helpful-links {
+    text-align: left;
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+  }
+
+  .helpful-links h2 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #2b6b2a;
+    margin-bottom: 1rem;
+  }
+
+  .helpful-links ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  @media (max-width: 500px) {
+    .helpful-links ul {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .helpful-links a {
+    color: #2b6b2a;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 0;
+    display: block;
+    transition: color 0.2s;
+  }
+
+  .helpful-links a:hover {
+    color: #15803d;
+    text-decoration: underline;
+  }
+
+  .phone-cta {
+    font-size: 1rem;
+    color: #6b7280;
+  }
+
+  .phone-cta a {
+    color: #2b6b2a;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .phone-cta a:hover {
+    text-decoration: underline;
+  }
+</style>

@@ -1,0 +1,187 @@
+---
+// src/pages/privacy-policy.astro
+// Política de privacidad — requerida por POPIA y para confianza del usuario
+import Layout from '../layouts/Layout.astro';
+import Footer from '../components/Footer.astro';
+import { fetchCompanySettings } from '../lib/sanity-client';
+
+const companySettings = await fetchCompanySettings();
+const businessName = companySettings?.businessName || "Pest Experts";
+const email = companySettings?.contactInfo?.email || "info@pestexperts.co.za";
+const phone = companySettings?.contactInfo?.telephone || "+27 12 345 6789";
+const siteUrl = "https://pestexperts.co.za";
+
+const seoData = {
+  metaTitle: `Privacy Policy | ${businessName}`,
+  metaDescription: `Read the privacy policy for ${businessName}. Learn how we collect, use, and protect your personal information in compliance with POPIA.`,
+};
+---
+
+<Layout seo={seoData}>
+  <section class="page-hero">
+    <div class="container">
+      <h1>Privacy Policy</h1>
+      <p class="hero-sub">How we protect your information</p>
+    </div>
+  </section>
+
+  <section class="content-section">
+    <div class="container prose">
+      <p class="last-updated"><strong>Last updated:</strong> February 2026</p>
+
+      <h2>1. Introduction</h2>
+      <p>
+        {businessName} ("we", "us", or "our") is committed to protecting your personal information 
+        in compliance with the Protection of Personal Information Act 4 of 2013 (POPIA). 
+        This Privacy Policy explains how we collect, use, store, and protect your personal data 
+        when you use our website at <a href={siteUrl}>{siteUrl}</a> or engage our pest control services.
+      </p>
+
+      <h2>2. Information We Collect</h2>
+      <p>We collect the following types of personal information:</p>
+      <ul>
+        <li><strong>Contact details:</strong> Name, email address, phone number, and physical address</li>
+        <li><strong>Service enquiry details:</strong> Type of pest problem, property type, and preferred service times</li>
+        <li><strong>Website usage data:</strong> Pages visited, browser type, device information, and IP address (via cookies and analytics)</li>
+        <li><strong>Communication records:</strong> Messages sent through our contact forms or WhatsApp</li>
+      </ul>
+
+      <h2>3. How We Use Your Information</h2>
+      <p>We use your personal information to:</p>
+      <ul>
+        <li>Respond to your enquiries and provide pest control quotes</li>
+        <li>Schedule and deliver pest control services</li>
+        <li>Send service confirmations and follow-up communications</li>
+        <li>Improve our website and services through analytics</li>
+        <li>Comply with legal obligations</li>
+      </ul>
+
+      <h2>4. Legal Basis for Processing</h2>
+      <p>
+        Under POPIA, we process your personal information based on:
+      </p>
+      <ul>
+        <li><strong>Consent:</strong> When you submit a contact or quote request form</li>
+        <li><strong>Contractual necessity:</strong> To fulfil pest control services you request</li>
+        <li><strong>Legitimate interest:</strong> To improve our services and website experience</li>
+      </ul>
+
+      <h2>5. Third-Party Services</h2>
+      <p>We use the following third-party services that may process your data:</p>
+      <ul>
+        <li><strong>Google Analytics / Tag Manager:</strong> Website usage analytics</li>
+        <li><strong>Sanity CMS:</strong> Content management (no personal data stored)</li>
+        <li><strong>Cloudflare:</strong> Website hosting and security</li>
+      </ul>
+      <p>We do not sell, trade, or rent your personal information to third parties.</p>
+
+      <h2>6. Data Retention</h2>
+      <p>
+        We retain your personal information only for as long as necessary to fulfil the purposes 
+        outlined in this policy, or as required by law. Lead enquiry data is retained for up to 
+        24 months after your last interaction with us.
+      </p>
+
+      <h2>7. Your Rights Under POPIA</h2>
+      <p>You have the right to:</p>
+      <ul>
+        <li>Access your personal information we hold</li>
+        <li>Request correction of inaccurate information</li>
+        <li>Request deletion of your personal information</li>
+        <li>Object to the processing of your personal information</li>
+        <li>Lodge a complaint with the Information Regulator</li>
+      </ul>
+
+      <h2>8. Security</h2>
+      <p>
+        We implement appropriate technical and organisational measures to protect your personal 
+        information against unauthorised access, alteration, disclosure, or destruction. Our website 
+        uses HTTPS encryption for all data transmission.
+      </p>
+
+      <h2>9. Cookies</h2>
+      <p>
+        Our website uses cookies for analytics and functionality. By using our website, you consent 
+        to the use of cookies. You can disable cookies in your browser settings, though some features 
+        may not function properly.
+      </p>
+
+      <h2>10. Contact Us</h2>
+      <p>
+        For any privacy-related enquiries or to exercise your rights, please contact us:
+      </p>
+      <ul>
+        <li><strong>Email:</strong> <a href={`mailto:${email}`}>{email}</a></li>
+        <li><strong>Phone:</strong> <a href={`tel:${phone.replace(/\s+/g, '')}`}>{phone}</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>
+
+<style>
+  .page-hero {
+    background: linear-gradient(135deg, #1d5f20 0%, #0f4a12 100%);
+    color: white;
+    padding: 4rem 0;
+    text-align: center;
+  }
+
+  .page-hero h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+  }
+
+  .hero-sub {
+    font-size: 1.125rem;
+    opacity: 0.9;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .content-section {
+    padding: 4rem 0;
+  }
+
+  .prose {
+    color: #374151;
+    line-height: 1.8;
+  }
+
+  .prose h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1d5f20;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .prose p {
+    margin-bottom: 1.25rem;
+  }
+
+  .prose ul {
+    padding-left: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .prose li {
+    margin-bottom: 0.5rem;
+  }
+
+  .prose a {
+    color: #1d5f20;
+    text-decoration: underline;
+  }
+
+  .last-updated {
+    color: #6b7280;
+    font-size: 0.95rem;
+  }
+</style>

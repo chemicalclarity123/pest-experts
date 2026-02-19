@@ -1,0 +1,571 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Footer from '../../components/Footer.astro';
+import LeadFormCompact from '../../components/LeadFormCompact.astro';
+import WhatsAppWidget from '../../components/WhatsAppWidget.astro';
+import { fetchBlogPosts, fetchBlogPostBySlug, fetchCompanySettings, urlFor } from '../../lib/sanity-client';
+import { generateBlogPostSchema, generateBreadcrumbSchema } from '../../lib/schema';
+import { PortableText } from 'astro-portabletext';
+
+export async function getStaticPaths() {
+  const posts = await fetchBlogPosts();
+  return posts.map((post: any) => ({
+    params: { slug: post.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const [post, companySettings] = await Promise.all([
+  fetchBlogPostBySlug(slug!),
+  fetchCompanySettings(),
+]);
+
+if (!post) {
+  return Astro.redirect('/knowledge-base/');
+}
+
+const whatsappNumber = companySettings?.contactInfo?.whatsapp || "+27123456789";
+const businessName = companySettings?.businessName || "Pest Experts";
+const siteUrl = import.meta.env.SITE || "https://pestexperts.co.za";
+
+const heroImage = post.featuredImage
+  ? urlFor(post.featuredImage).width(1200).height(630).url()
+  : '/og-image.jpg';
+
+const seoData = {
+  metaTitle: post.seo?.metaTitle || `${post.title} | ${businessName} Blog`,
+  metaDescription: post.seo?.metaDescription || post.excerpt,
+  keywords: post.seo?.keywords || post.tags,
+  shareImage: post.seo?.shareImage || post.featuredImage,
+  ogType: 'article' as const,
+};
+
+const articleSchema = generateBlogPostSchema({
+  headline: post.title,
+  description: post.excerpt,
+  image: heroImage,
+  datePublished: post.publishedAt,
+  dateModified: post.updatedAt || post.publishedAt,
+  author: post.author || 'Pest Experts Team',
+  url: Astro.url.href,
+  publisher: {
+    name: businessName,
+    url: siteUrl,
+    logo: `${siteUrl}/favicon.svg`,
+  },
+});
+
+const breadcrumbItems = [
+  { name: 'Home', item: siteUrl },
+  { name: 'Knowledge Base', item: `${siteUrl}/knowledge-base/` },
+  { name: post.title, item: Astro.url.href },
+];
+
+const breadcrumbSchema = generateBreadcrumbSchema({ items: breadcrumbItems });
+const schemaMarkup = [articleSchema, breadcrumbSchema];
+
+const categoryLabels: Record<string, string> = {
+  'pest-tips': 'Pest Tips',
+  'seasonal': 'Seasonal',
+  'diy-vs-pro': 'DIY vs Pro',
+  'industry': 'Industry',
+};
+
+function formatDate(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString('en-ZA', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+
+const ctaHeading = post.ctaOverride?.heading || "Need Professional Pest Control?";
+const ctaDescription = post.ctaOverride?.description || "Get a free, no-obligation quote from our Gauteng pest experts.";
+const ctaButton = post.ctaOverride?.buttonText || "Get a Free Quote";
+---
+
+<Layout seo={seoData} schemaMarkup={schemaMarkup}>
+
+  <!-- Breadcrumbs -->
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <div class="container">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/knowledge-base/">Knowledge Base</a></li>
+        <li aria-current="page">{post.title}</li>
+      </ol>
+    </div>
+  </nav>
+
+  <article class="blog-post">
+    <div class="container">
+
+      <!-- Post Header -->
+      <header class="post-header">
+        {post.category && (
+          <span class="category-badge">{categoryLabels[post.category] || post.category}</span>
+        )}
+        <h1>{post.title}</h1>
+        <div class="post-meta">
+          <span class="meta-author">By {post.author || 'Pest Experts Team'}</span>
+          <span class="meta-sep">·</span>
+          <time datetime={post.publishedAt}>{formatDate(post.publishedAt)}</time>
+          {post.readingTime && (
+            <>
+              <span class="meta-sep">·</span>
+              <span>{post.readingTime} min read</span>
+            </>
+          )}
+        </div>
+      </header>
+
+      <!-- Hero Image -->
+      {post.featuredImage && (
+        <div class="post-hero-image">
+          <img
+            src={urlFor(post.featuredImage).width(1100).height(500).url()}
+            alt={post.featuredImage.alt || post.title}
+            width="1100"
+            height="500"
+            loading="eager"
+          />
+        </div>
+      )}
+
+      <!-- Content + Sidebar Layout -->
+      <div class="content-layout">
+
+        <!-- Main Content -->
+        <div class="post-content prose">
+          <PortableText value={post.content} />
+        </div>
+
+        <!-- Sticky Sidebar CTA (desktop) -->
+        <aside class="sidebar">
+          <div class="sidebar-cta">
+            <h3>{ctaHeading}</h3>
+            <p>{ctaDescription}</p>
+            <a href="/contact/" class="sidebar-cta-btn">{ctaButton}</a>
+            {whatsappNumber && (
+              <a href={`https://wa.me/${whatsappNumber.replace(/\D/g, '')}`} class="sidebar-wa-btn" target="_blank" rel="noopener">
+                WhatsApp Us
+              </a>
+            )}
+          </div>
+        </aside>
+      </div>
+
+      <!-- Tags -->
+      {post.tags && post.tags.length > 0 && (
+        <div class="post-tags">
+          {post.tags.map((tag: string) => (
+            <span class="tag">{tag}</span>
+          ))}
+        </div>
+      )}
+
+      <!-- Related Services -->
+      {post.relatedServices && post.relatedServices.length > 0 && (
+        <section class="related-services">
+          <h2>Related Services</h2>
+          <div class="services-grid">
+            {post.relatedServices.map((service: any) => (
+              <a href={`/services/${service.slug}/`} class="service-card">
+                {service.image && (
+                  <img
+                    src={urlFor(service.image).width(400).height(220).url()}
+                    alt={service.image?.alt || service.title}
+                    width="400"
+                    height="220"
+                    loading="lazy"
+                  />
+                )}
+                <div class="service-card-body">
+                  <h3>{service.title}</h3>
+                  <p>{service.description}</p>
+                  {service.price && (
+                    <span class="service-price">From R{service.price}</span>
+                  )}
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+  </article>
+
+  <!-- Bottom CTA -->
+  <section class="bottom-cta">
+    <div class="container form-container">
+      <LeadFormCompact
+        variant="dark"
+        headingLevel="h2"
+        source={`blog_${post.slug}`}
+      />
+    </div>
+  </section>
+
+  <WhatsAppWidget
+    phoneNumber={whatsappNumber}
+    message={`Hi! I just read your article about "${post.title}" and have a question.`}
+  />
+
+  <Footer companyData={companySettings} />
+</Layout>
+
+<style>
+  .breadcrumbs {
+    background: #f9fafb;
+    padding: 0.75rem 0;
+    font-size: 0.85rem;
+  }
+
+  .breadcrumbs ol {
+    list-style: none;
+    display: flex;
+    gap: 0.5rem;
+    padding: 0;
+    margin: 0;
+  }
+
+  .breadcrumbs li::after {
+    content: '›';
+    margin-left: 0.5rem;
+    color: #9ca3af;
+  }
+
+  .breadcrumbs li:last-child::after {
+    display: none;
+  }
+
+  .breadcrumbs a {
+    color: #1d5f20;
+    text-decoration: none;
+  }
+
+  .breadcrumbs li:last-child {
+    color: #6b7280;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .blog-post {
+    padding: 2rem 0 4rem;
+  }
+
+  /* Post Header */
+  .post-header {
+    max-width: 750px;
+    margin-bottom: 2rem;
+  }
+
+  .category-badge {
+    display: inline-block;
+    background: #dcfce7;
+    color: #1d5f20;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 1rem;
+  }
+
+  .post-header h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #111827;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6b7280;
+    font-size: 0.95rem;
+    flex-wrap: wrap;
+  }
+
+  .meta-sep {
+    color: #d1d5db;
+  }
+
+  /* Hero Image */
+  .post-hero-image {
+    margin-bottom: 2.5rem;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .post-hero-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Content Layout */
+  .content-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .post-content {
+    max-width: 750px;
+  }
+
+  .prose {
+    color: #374151;
+    line-height: 1.8;
+    font-size: 1.05rem;
+  }
+
+  .prose :global(h2) {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #111827;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .prose :global(h3) {
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .prose :global(h4) {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #374151;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .prose :global(p) {
+    margin-bottom: 1.25rem;
+  }
+
+  .prose :global(ul),
+  .prose :global(ol) {
+    padding-left: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .prose :global(li) {
+    margin-bottom: 0.5rem;
+  }
+
+  .prose :global(blockquote) {
+    border-left: 4px solid #1d5f20;
+    padding-left: 1.5rem;
+    margin: 1.5rem 0;
+    color: #4b5563;
+    font-style: italic;
+  }
+
+  .prose :global(a) {
+    color: #1d5f20;
+    text-decoration: underline;
+  }
+
+  .prose :global(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+  }
+
+  .prose :global(strong) {
+    font-weight: 700;
+    color: #111827;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    position: sticky;
+    top: 2rem;
+  }
+
+  .sidebar-cta {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border: 2px solid #1d5f20;
+    border-radius: 12px;
+    padding: 1.75rem;
+    text-align: center;
+  }
+
+  .sidebar-cta h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1d5f20;
+    margin-bottom: 0.5rem;
+  }
+
+  .sidebar-cta p {
+    color: #374151;
+    font-size: 0.9rem;
+    margin-bottom: 1.25rem;
+    line-height: 1.5;
+  }
+
+  .sidebar-cta-btn {
+    display: block;
+    background: #1d5f20;
+    color: white;
+    padding: 0.875rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 700;
+    text-decoration: none;
+    text-align: center;
+    transition: background 0.2s ease;
+    margin-bottom: 0.75rem;
+  }
+
+  .sidebar-cta-btn:hover {
+    background: #166318;
+  }
+
+  .sidebar-wa-btn {
+    display: block;
+    background: #25D366;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    font-size: 0.9rem;
+    transition: background 0.2s ease;
+  }
+
+  .sidebar-wa-btn:hover {
+    background: #1ebe57;
+  }
+
+  /* Tags */
+  .post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  .tag {
+    background: #f3f4f6;
+    color: #4b5563;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+  }
+
+  /* Related Services */
+  .related-services {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  .related-services h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 1.5rem;
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .service-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .service-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .service-card img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+  }
+
+  .service-card-body {
+    padding: 1.25rem;
+  }
+
+  .service-card-body h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1d5f20;
+    margin-bottom: 0.5rem;
+  }
+
+  .service-card-body p {
+    font-size: 0.9rem;
+    color: #6b7280;
+    line-height: 1.5;
+  }
+
+  .service-price {
+    display: inline-block;
+    margin-top: 0.75rem;
+    font-weight: 700;
+    color: #1d5f20;
+    font-size: 0.95rem;
+  }
+
+  /* Bottom CTA */
+  .bottom-cta {
+    background: #1d5f20;
+    padding: 4rem 0;
+  }
+
+  .form-container {
+    max-width: 800px;
+  }
+
+  @media (max-width: 900px) {
+    .content-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+      position: static;
+      order: -1;
+    }
+
+    .post-header h1 {
+      font-size: 2rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .post-header h1 {
+      font-size: 1.75rem;
+    }
+  }
+</style>

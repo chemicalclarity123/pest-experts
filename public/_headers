@@ -1,0 +1,32 @@
+# Dev domain — bloquea indexación para evitar contenido duplicado con pestexperts.co.za
+https://built-for-speed.pages.dev/*
+  X-Robots-Tag: noindex, nofollow
+
+# Todos los subdominios *.pages.dev — misma protección
+https://*.built-for-speed.pages.dev/*
+  X-Robots-Tag: noindex, nofollow
+
+# Archivos estáticos de Astro — inmutables, cache de 1 año
+/_astro/*
+  Cache-Control: public, max-age=31536000, s-maxage=31536000, immutable
+
+# Imágenes y SVGs estáticos — cache de 1 semana
+/favicon.svg
+  Cache-Control: public, max-age=604800, s-maxage=604800
+/favicon.ico
+  Cache-Control: public, max-age=604800, s-maxage=604800
+/og-image.jpg
+  Cache-Control: public, max-age=604800, s-maxage=604800
+/google-places-logo.svg
+  Cache-Control: public, max-age=604800, s-maxage=604800
+/llms.txt
+  Cache-Control: public, max-age=86400, s-maxage=86400
+  Content-Type: text/plain; charset=utf-8
+
+# Headers de seguridad globales + edge caching para SSR pages
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Cache-Control: public, s-maxage=60, stale-while-revalidate=86400
+

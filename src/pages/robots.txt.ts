@@ -1,29 +1,18 @@
 import type { APIRoute } from 'astro';
 
-const robotsTxt = `
+// Genera robots.txt dinámicamente usando Astro.site como fuente de verdad
+export const GET: APIRoute = ({ site }) => {
+    const siteUrl = site?.toString() || 'https://pestexperts.co.za';
+
+    const robotsTxt = `
 User-agent: *
 Allow: /
 
-# Agentic Search & AI Crawlers
-User-agent: GPTBot
-Allow: /
+Disallow: /test-sanity
 
-User-agent: CCBot
-Allow: /
-
-User-agent: Google-Extended
-Allow: /
-
-User-agent: Claude-Web
-Allow: /
-
-User-agent: Applebot-Extended
-Allow: /
-
-sitemap: https://pest-experts-site.pages.dev/sitemap-index.xml
+Sitemap: ${siteUrl}sitemap-index.xml
 `.trim();
 
-export const GET: APIRoute = () => {
     return new Response(robotsTxt, {
         headers: {
             'Content-Type': 'text/plain; charset=utf-8',

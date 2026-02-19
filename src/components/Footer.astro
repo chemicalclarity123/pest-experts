@@ -6,14 +6,24 @@ import { fetchCompanySettings, fetchServices, fetchServiceAreas } from '../lib/s
 interface Props {
   showBreadcrumbs?: boolean;
   breadcrumbs?: Array<{ label: string; href: string }>;
+  /* Props opcionales para evitar re-fetches cuando la página padre ya tiene estos datos */
+  companyData?: any;
+  servicesData?: any[];
+  areasData?: any[];
 }
 
-const { showBreadcrumbs = false, breadcrumbs = [] } = Astro.props;
+const { 
+  showBreadcrumbs = false, 
+  breadcrumbs = [],
+  companyData,
+  servicesData,
+  areasData
+} = Astro.props;
 
-// Obtener datos dinámicos de Sanity
-const companySettings = await fetchCompanySettings();
-const services = await fetchServices();
-const serviceAreas = await fetchServiceAreas();
+// Usa props si están disponibles, si no fetch (backward compatible)
+const companySettings = companyData || await fetchCompanySettings();
+const services = servicesData || await fetchServices();
+const serviceAreas = areasData || await fetchServiceAreas();
 
 const currentYear = new Date().getFullYear();
 
@@ -93,6 +103,7 @@ const footerAreas = serviceAreas.slice(0, 6);
                 <a href={`/services/${service.slug}/`}>{service.title}</a>
               </li>
             ))}
+            <li><a href="/knowledge-base/">Knowledge Base</a></li>
             <li><a href="/contact">Contact</a></li>
           </ul>
         </div>

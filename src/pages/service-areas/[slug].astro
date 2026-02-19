@@ -30,11 +30,13 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 
-// Obtener datos completos del área y datos compartidos
-const area = await fetchServiceAreaBySlug(slug as string);
-const companySettings = await fetchCompanySettings();
-const services = await fetchServices();
-const homepage = await fetchHomepage();
+// Obtener datos completos del área y datos compartidos — en paralelo
+const [area, companySettings, services, homepage] = await Promise.all([
+  fetchServiceAreaBySlug(slug as string),
+  fetchCompanySettings(),
+  fetchServices(),
+  fetchHomepage(),
+]);
 
 // Redirigir si no existe
 if (!area) {
@@ -330,7 +332,7 @@ const schemaMarkup = [businessSchema];
     message={`Hi! I need pest control in ${areaName}.`}
   />
 
-  <Footer />
+  <Footer companyData={companySettings} servicesData={services} />
 </Layout>
 
 <style>

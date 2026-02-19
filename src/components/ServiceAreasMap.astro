@@ -25,7 +25,7 @@ const hasMapImage = mapImage && (
 
 // Optimize image URL if it's a Sanity object
 const mapImageUrl = (hasMapImage && typeof mapImage === 'object' && mapImage.asset)
-  ? urlFor(mapImage).width(800).auto('format').url()
+  ? urlFor(mapImage).width(800).quality(75).auto('format').url()
   : mapImage;
 ---
 
@@ -43,6 +43,8 @@ const mapImageUrl = (hasMapImage && typeof mapImage === 'object' && mapImage.ass
             src={mapImageUrl} 
             alt="Gauteng service areas map" 
             class="map-image"
+            width="800"
+            height="500"
             loading="lazy"
           />
         </div>

@@ -1,0 +1,198 @@
+---
+// src/pages/terms-of-service.astro
+// Términos de servicio — protección legal y confianza del usuario
+import Layout from '../layouts/Layout.astro';
+import Footer from '../components/Footer.astro';
+import { fetchCompanySettings } from '../lib/sanity-client';
+
+const companySettings = await fetchCompanySettings();
+const businessName = companySettings?.businessName || "Pest Experts";
+const email = companySettings?.contactInfo?.email || "info@pestexperts.co.za";
+const phone = companySettings?.contactInfo?.telephone || "+27 12 345 6789";
+
+const seoData = {
+  metaTitle: `Terms of Service | ${businessName}`,
+  metaDescription: `Terms of service for ${businessName} pest control services. Read our service terms, warranties, pricing policies, and customer obligations.`,
+};
+---
+
+<Layout seo={seoData}>
+  <section class="page-hero">
+    <div class="container">
+      <h1>Terms of Service</h1>
+      <p class="hero-sub">Service terms and conditions</p>
+    </div>
+  </section>
+
+  <section class="content-section">
+    <div class="container prose">
+      <p class="last-updated"><strong>Last updated:</strong> February 2026</p>
+
+      <h2>1. Acceptance of Terms</h2>
+      <p>
+        By using the {businessName} website or engaging our pest control services, you agree to 
+        be bound by these Terms of Service. If you do not agree to these terms, please do not use 
+        our website or services.
+      </p>
+
+      <h2>2. Services</h2>
+      <p>
+        {businessName} provides professional pest control services across Gauteng Province, South Africa. 
+        Our services include inspection, treatment, and prevention of pest infestations for residential, 
+        commercial, and industrial properties.
+      </p>
+
+      <h2>3. Quotes and Pricing</h2>
+      <ul>
+        <li>All quotes are provided free of charge and are valid for 30 days unless otherwise stated</li>
+        <li>Final pricing may vary based on the actual scope of work required upon inspection</li>
+        <li>We reserve the right to adjust pricing with reasonable notice</li>
+        <li>Payment terms are due upon completion of service or as agreed in writing</li>
+      </ul>
+
+      <h2>4. Service Guarantees</h2>
+      <p>
+        We stand behind the quality of our work. Treatment warranties vary by service type:
+      </p>
+      <ul>
+        <li><strong>General pest control:</strong> 3-month retreatment guarantee</li>
+        <li><strong>Termite treatment:</strong> 5-year structural guarantee (soil poisoning)</li>
+        <li><strong>Rodent control:</strong> Ongoing management as per service agreement</li>
+      </ul>
+      <p>
+        Guarantees are subject to customers following recommended prevention measures and maintaining 
+        scheduled treatment programmes where applicable.
+      </p>
+
+      <h2>5. Customer Obligations</h2>
+      <p>To ensure effective treatment, customers agree to:</p>
+      <ul>
+        <li>Provide accurate information about pest issues and property conditions</li>
+        <li>Allow reasonable access to the property for inspection and treatment</li>
+        <li>Follow pre-treatment preparation instructions provided by our technicians</li>
+        <li>Report any adverse reactions or concerns promptly</li>
+      </ul>
+
+      <h2>6. Cancellations</h2>
+      <ul>
+        <li>Cancellations made more than 24 hours before a scheduled appointment incur no charge</li>
+        <li>Late cancellations (less than 24 hours) may be subject to a call-out fee</li>
+        <li>No-shows without notice will be charged a call-out fee</li>
+      </ul>
+
+      <h2>7. Limitation of Liability</h2>
+      <p>
+        {businessName} carries professional liability insurance. Our liability for any claim arising 
+        from our services is limited to the cost of the service provided. We are not liable for 
+        pre-existing structural damage, damage caused by pests prior to treatment, or indirect or 
+        consequential losses.
+      </p>
+
+      <h2>8. Health and Safety</h2>
+      <p>
+        All our treatments comply with South African health and safety regulations. We use registered 
+        pest control products and follow manufacturer guidelines. Material Safety Data Sheets (MSDS) 
+        are available upon request for all products used.
+      </p>
+
+      <h2>9. Website Use</h2>
+      <ul>
+        <li>The content on this website is for general information purposes only</li>
+        <li>We make reasonable efforts to keep information accurate and up to date</li>
+        <li>We reserve the right to modify or remove content without notice</li>
+        <li>Unauthorised use of this website may give rise to a claim for damages</li>
+      </ul>
+
+      <h2>10. Governing Law</h2>
+      <p>
+        These terms are governed by the laws of the Republic of South Africa. Any disputes arising 
+        from these terms or our services shall be subject to the jurisdiction of the courts of 
+        Gauteng Province.
+      </p>
+
+      <h2>11. Changes to Terms</h2>
+      <p>
+        We may update these terms from time to time. Changes will be posted on this page with an 
+        updated revision date. Continued use of our services after changes are posted constitutes 
+        acceptance of the revised terms.
+      </p>
+
+      <h2>12. Contact</h2>
+      <p>
+        For questions about these terms, please contact us:
+      </p>
+      <ul>
+        <li><strong>Email:</strong> <a href={`mailto:${email}`}>{email}</a></li>
+        <li><strong>Phone:</strong> <a href={`tel:${phone.replace(/\s+/g, '')}`}>{phone}</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>
+
+<style>
+  .page-hero {
+    background: linear-gradient(135deg, #1d5f20 0%, #0f4a12 100%);
+    color: white;
+    padding: 4rem 0;
+    text-align: center;
+  }
+
+  .page-hero h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+  }
+
+  .hero-sub {
+    font-size: 1.125rem;
+    opacity: 0.9;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .content-section {
+    padding: 4rem 0;
+  }
+
+  .prose {
+    color: #374151;
+    line-height: 1.8;
+  }
+
+  .prose h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1d5f20;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .prose p {
+    margin-bottom: 1.25rem;
+  }
+
+  .prose ul {
+    padding-left: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .prose li {
+    margin-bottom: 0.5rem;
+  }
+
+  .prose a {
+    color: #1d5f20;
+    text-decoration: underline;
+  }
+
+  .last-updated {
+    color: #6b7280;
+    font-size: 0.95rem;
+  }
+</style>

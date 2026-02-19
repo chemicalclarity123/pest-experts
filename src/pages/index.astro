@@ -15,10 +15,14 @@ import Footer from '../components/Footer.astro';
 import { fetchHomepage, fetchServices, fetchCompanySettings, urlFor } from '../lib/sanity-client';
 import { generateHomepageSchema } from '../lib/schema';
 
-// Fetch data from Sanity
-const homepage = await fetchHomepage();
-const services = await fetchServices();
-const companySettings = await fetchCompanySettings();
+// Genera URLs de preload para que el browser descargue la imagen LCP antes del render
+
+// Lanza las tres queries en paralelo — elimina la latencia en cascada
+const [homepage, services, companySettings] = await Promise.all([
+  fetchHomepage(),
+  fetchServices(),
+  fetchCompanySettings(),
+]);
 
 // Fallback data if Sanity is empty
 const fallbackHomepage = {
@@ -64,6 +68,13 @@ const fallbackHomepage = {
 
 const pageData = homepage || fallbackHomepage;
 
+// Pre-calcula URLs del hero para preload en <head>
+const heroImg = pageData.hero?.backgroundImage;
+const hasHeroImage = heroImg && typeof heroImg === 'object' && heroImg.asset;
+const preloadMobile = hasHeroImage ? urlFor(heroImg).width(640).quality(50).auto('format').url() : null;
+const preloadDesktop = hasHeroImage ? urlFor(heroImg).width(1280).quality(65).auto('format').url() : null;
+const preloadFull = hasHeroImage ? urlFor(heroImg).width(1440).quality(65).auto('format').url() : null;
+
 // Get WhatsApp number from company settings
 const whatsappNumber = companySettings?.contactInfo?.whatsapp || "+27123456789";
 
@@ -72,7 +83,7 @@ const schemaMarkup = generateHomepageSchema({
   name: companySettings?.businessName || "Pest Experts Gauteng",
   legalName: companySettings?.legalName,
   description: pageData.seo?.metaDescription || "Professional pest control services in Gauteng. Fast response, guaranteed results. Licensed & insured pest experts.",
-  url: Astro.site?.toString() || "https://pest-experts-site.pages.dev",
+  url: Astro.site?.toString() || "https://pestexperts.co.za",
   logo: companySettings?.logo,
   telephone: companySettings?.contactInfo?.telephone || "+27123456789",
   email: companySettings?.contactInfo?.email || "info@pestexperts.co.za",
@@ -102,6 +113,18 @@ const schemaMarkup = generateHomepageSchema({
   seo={pageData.seo}
   schemaMarkup={schemaMarkup}
 >
+  {/* Preload hero image — reduce LCP en ~2s al iniciar la descarga durante parsing del HTML */}
+  {preloadDesktop && (
+    <link
+      slot="preload"
+      rel="preload"
+      as="image"
+      href={preloadDesktop}
+      imagesrcset={`${preloadMobile} 640w, ${preloadDesktop} 1280w, ${preloadFull} 1440w`}
+      imagesizes="(max-width: 768px) 640px, (max-width: 1280px) 1280px, 1440px"
+      fetchpriority="high"
+    />
+  )}
   <!-- Hero Section -->
   <Hero 
     headline={pageData.hero?.headline}
@@ -166,8 +189,8 @@ const schemaMarkup = generateHomepageSchema({
     message="Hi! I'd like to get a quote for pest control services in Gauteng."
   />
 
-  <!-- Footer -->
-  <Footer />
+  <!-- Footer — pasa datos ya obtenidos para evitar re-fetches -->
+  <Footer companyData={companySettings} servicesData={services} />
 </Layout>
 
 <style>

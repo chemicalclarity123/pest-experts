@@ -115,11 +115,18 @@ const schemaMarkup = {
   schemaMarkup={schemaMarkup}
 >
   <!-- Hero Section -->
-  <section 
-    class="page-hero" 
-    style={mapImageUrl ? `background-image: linear-gradient(rgba(29, 95, 32, 0.15), rgba(29, 95, 32, 0.1)), url('${mapImageUrl}');` : ''}
-    aria-label="Contact page header with service area map background"
-  >
+  <section class="page-hero" aria-label="Contact page header">
+    {mapImageUrl && (
+      <img 
+        src={mapImageUrl} 
+        alt="Pest Experts service area map - Gauteng" 
+        class="hero-bg-img"
+        width="1200"
+        height="400"
+        loading="eager"
+      />
+    )}
+    <div class="hero-overlay"></div>
     <div class="container hero-content">
       <h1>Contact Us</h1>
       <p class="hero-sub">Fast, Effective Pest Control Solutions</p>
@@ -226,20 +233,39 @@ const schemaMarkup = {
   />
 
   {whatsapp && <WhatsAppWidget phoneNumber={whatsapp} />}
-  <Footer />
+  <Footer companyData={companySettings} />
 </Layout>
 
 <style>
   .page-hero {
+    position: relative;
     background-color: #1f2937;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
     color: white;
     padding: 6rem 0;
     text-align: center;
+    overflow: hidden;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  }
+
+  .hero-bg-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(rgba(29, 95, 32, 0.15), rgba(29, 95, 32, 0.1));
+    z-index: 1;
+  }
+
+  .hero-content {
     position: relative;
-    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.6); /* Strong shadow for legibility */
+    z-index: 2;
   }
 
   .page-hero h1 {

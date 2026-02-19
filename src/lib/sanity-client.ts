@@ -5,7 +5,8 @@ export const client = createClient({
   projectId: 'vc8zkv1m',
   dataset: 'production',
   apiVersion: '2026-02-04',
-  useCdn: false,
+  // CDN activado — cachea queries de lectura en el edge global de Sanity (~50ms vs ~1500ms)
+  useCdn: true,
 });
 
 // Image URL builder
@@ -369,3 +370,63 @@ export async function fetchDocumentsByType(type: string) {
     return [];
   }
 }
+
+// Blog post listing — ordered by featured first then publishedAt desc
+export async function fetchBlogPosts() {
+  try {
+    const query = `*[_type == "blogPost"] | order(featured desc, publishedAt desc) {
+      _id,
+      title,
+      "slug": slug.current,
+      excerpt,
+      featuredImage,
+      category,
+      tags,
+      readingTime,
+      author,
+      publishedAt,
+      featured
+    }`;
+    return await client.fetch(query);
+  } catch (error) {
+    console.error('Error fetching blog posts:', error);
+    return [];
+  }
+}
+
+// Single blog post by slug with full content and resolved service references
+export async function fetchBlogPostBySlug(slug: string) {
+  try {
+    const normalized = normalizeSlug(slug);
+    const query = `*[_type == "blogPost" && slug.current == $slug][0] {
+      _id,
+      title,
+      "slug": slug.current,
+      excerpt,
+      featuredImage,
+      content,
+      author,
+      publishedAt,
+      updatedAt,
+      category,
+      tags,
+      readingTime,
+      featured,
+      seo,
+      ctaOverride,
+      "relatedServices": relatedServices[]-> {
+        _id,
+        title,
+        "slug": slug.current,
+        description,
+        image,
+        price
+      }
+    }`;
+    return await client.fetch(query, { slug: normalized });
+  } catch (error) {
+    console.error('Error fetching blog post:', error);
+    return null;
+  }
+}
+

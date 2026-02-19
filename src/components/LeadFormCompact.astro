@@ -31,7 +31,7 @@ const HeadingTag = headingLevel;
     {description && <p class="form-description">{description}</p>}
   </div>
   
-  <form class="lead-form" id={formId} data-form="lead">
+  <form class="lead-form" id={formId} data-form="lead" novalidate>
     <input type="hidden" name="source" value={source} />
 
     <div class="form-group">
@@ -43,7 +43,9 @@ const HeadingTag = headingLevel;
         required 
         aria-required="true"
         placeholder="Full Name *"
+        minlength="2"
       />
+      <span class="validation-tip">Please enter your full name</span>
     </div>
     
     <div class="form-group">
@@ -55,7 +57,9 @@ const HeadingTag = headingLevel;
         required 
         aria-required="true"
         placeholder="Phone Number *"
+        pattern="[\d\s\+\-\(\)]{7,}"
       />
+      <span class="validation-tip">Enter a valid phone number (e.g. 071 590 6630)</span>
     </div>
 
     <div class="form-group">
@@ -63,19 +67,26 @@ const HeadingTag = headingLevel;
       <input 
         type="email" 
         id={`${formId}-email`}
-        name="email" 
-        placeholder="Email"
+        name="email"
+        required
+        aria-required="true"
+        placeholder="Email Address *"
       />
+      <span class="validation-tip">Enter a valid email address (e.g. name@example.com)</span>
     </div>
 
     <div class="form-group">
-      <label for={`${formId}-pest`} class="sr-only">Pest Challenge</label>
+      <label for={`${formId}-suburb`} class="sr-only">Suburb</label>
       <input 
         type="text" 
-        id={`${formId}-pest`}
-        name="pestChallenge" 
-        placeholder="Describe your pest challenge"
+        id={`${formId}-suburb`}
+        name="suburb"
+        required
+        aria-required="true"
+        placeholder="Suburb *"
+        minlength="2"
       />
+      <span class="validation-tip">Please enter your suburb or area</span>
     </div>
 
     <div class="form-group">
@@ -84,8 +95,12 @@ const HeadingTag = headingLevel;
         id={`${formId}-message`}
         name="message" 
         rows="2"
-        placeholder="Any additional details (optional)"
+        required
+        aria-required="true"
+        placeholder="Tell us how we can help *"
+        minlength="5"
       ></textarea>
+      <span class="validation-tip">Briefly describe how we can assist you</span>
     </div>
 
     <button type="submit" class="submit-btn">
@@ -106,8 +121,52 @@ const HeadingTag = headingLevel;
     if (form.dataset.bound) return;
     form.dataset.bound = 'true';
 
+    /* Validación en tiempo real: muestra tips cuando el campo pierde foco */
+    form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea').forEach(field => {
+      if (field.type === 'hidden') return;
+
+      field.addEventListener('blur', () => {
+        if (field.value.trim()) {
+          field.classList.add('touched');
+        }
+      });
+
+      /* Limpia el estado de error cuando el usuario corrige */
+      field.addEventListener('input', () => {
+        if (field.validity.valid) {
+          field.classList.remove('invalid');
+          field.classList.add('valid');
+        } else if (field.classList.contains('touched')) {
+          field.classList.add('invalid');
+          field.classList.remove('valid');
+        }
+      });
+    });
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+
+      /* Marca todos los campos como tocados y valida */
+      let isValid = true;
+      form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea').forEach(field => {
+        if (field.type === 'hidden') return;
+        field.classList.add('touched');
+        if (!field.validity.valid || !field.value.trim()) {
+          field.classList.add('invalid');
+          field.classList.remove('valid');
+          isValid = false;
+        } else {
+          field.classList.remove('invalid');
+          field.classList.add('valid');
+        }
+      });
+
+      if (!isValid) {
+        /* Hace scroll al primer campo inválido */
+        const firstInvalid = form.querySelector('.invalid') as HTMLElement;
+        if (firstInvalid) firstInvalid.focus();
+        return;
+      }
       
       submitBtn.disabled = true;
       submitBtn.textContent = 'Sending...';
@@ -130,6 +189,11 @@ const HeadingTag = headingLevel;
           messageDiv.className = 'form-message success';
           messageDiv.style.display = 'block';
           form.reset();
+
+          /* Limpia estados de validación tras reset */
+          form.querySelectorAll('.valid, .invalid, .touched').forEach(el => {
+            el.classList.remove('valid', 'invalid', 'touched');
+          });
 
           /* GTM dataLayer push — conversiones + Enhanced Conversions (datos de usuario) */
           if (typeof window !== 'undefined' && (window as any).dataLayer) {
@@ -200,6 +264,7 @@ const HeadingTag = headingLevel;
   .form-group {
     display: flex;
     flex-direction: column;
+    position: relative;
   }
 
   .sr-only {
@@ -229,6 +294,24 @@ const HeadingTag = headingLevel;
     resize: vertical;
     min-height: 56px;
   }
+
+  /* ═══════════════════════════════════
+     Validation — tips y bordes
+     ═══════════════════════════════════ */
+  .validation-tip {
+    font-size: 0.75rem;
+    margin-top: 3px;
+    padding-left: 2px;
+    display: none;
+    line-height: 1.3;
+  }
+
+  /* Muestra el tip cuando el campo es inválido */
+  .invalid + .validation-tip {
+    display: block;
+  }
+
+  /* Colores de validación por variante — ver secciones card/dark más abajo */
 
   .submit-btn {
     color: white;
@@ -293,6 +376,20 @@ const HeadingTag = headingLevel;
     box-shadow: 0 0 0 3px rgba(43, 107, 42, 0.1);
   }
 
+  /* Validación — card */
+  .lead-form--card .invalid {
+    border-color: #dc2626 !important;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08);
+  }
+
+  .lead-form--card .valid.touched {
+    border-color: #16a34a !important;
+  }
+
+  .lead-form--card .validation-tip {
+    color: #dc2626;
+  }
+
   .lead-form--card .submit-btn {
     background: #2b6b2a;
   }
@@ -351,6 +448,20 @@ const HeadingTag = headingLevel;
     outline: none;
     background: rgba(173, 216, 230, 0.25);
     box-shadow: 0 0 0 2px rgba(173, 216, 230, 0.3);
+  }
+
+  /* Validación — dark */
+  .lead-form--dark .invalid {
+    box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.6) !important;
+    background: rgba(220, 38, 38, 0.15);
+  }
+
+  .lead-form--dark .valid.touched {
+    box-shadow: 0 0 0 2px rgba(134, 239, 172, 0.4);
+  }
+
+  .lead-form--dark .validation-tip {
+    color: #fca5a5;
   }
 
   .lead-form--dark .submit-btn {
