@@ -131,11 +131,18 @@ const HeadingTag = headingLevel;
           messageDiv.style.display = 'block';
           form.reset();
 
-          /* GTM dataLayer push para tracking de conversiones */
+          /* GTM dataLayer push — conversiones + Enhanced Conversions (datos de usuario) */
           if (typeof window !== 'undefined' && (window as any).dataLayer) {
             (window as any).dataLayer.push({
               event: 'form_submission',
               form_source: data.source || 'unknown',
+              /* Enhanced Conversions: GTM hashea automáticamente estos datos antes de enviarlos */
+              enhanced_conversions: {
+                email: data.email || '',
+                phone_number: data.phone || '',
+                first_name: (data.fullName || '').split(' ')[0],
+                last_name: (data.fullName || '').split(' ').slice(1).join(' '),
+              },
             });
           }
         } else {
