@@ -135,4 +135,12 @@
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
         background: #15803d;
     }
+
+    /* Limita el ancho de texto largo para legibilidad consistente */
+    .section-description,
+    .prose {
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+    }
 }

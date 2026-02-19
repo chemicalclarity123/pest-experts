@@ -115,9 +115,15 @@ const displayLogo = logo;
     <div class="drawer-content">
       <a href="/" class="drawer-link">Home</a>
       
-      <div class="drawer-group">
-        <span class="drawer-label">Services</span>
-        <div class="drawer-submenu">
+      <!-- Accordion: Services -->
+      <div class="drawer-accordion">
+        <button class="drawer-toggle" aria-expanded="false" data-target="services-panel">
+          <span>Services</span>
+          <svg class="toggle-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        </button>
+        <div id="services-panel" class="drawer-panel" hidden>
           {services.map((service: any) => (
             <a href={`/services/${service.slug}/`} class="drawer-sublink">
               {service.title}
@@ -126,18 +132,24 @@ const displayLogo = logo;
         </div>
       </div>
 
-      <div class="drawer-group">
-        <span class="drawer-label">Service Areas</span>
-        <div class="drawer-submenu areas-grid-mobile">
+      <!-- Accordion: Service Areas -->
+      <div class="drawer-accordion">
+        <button class="drawer-toggle" aria-expanded="false" data-target="areas-panel">
+          <span>Service Areas</span>
+          <svg class="toggle-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        </button>
+        <div id="areas-panel" class="drawer-panel" hidden>
           {serviceAreas.length > 0 ? (
             serviceAreas.map((area: any) => (
-              <a href={`/service-areas/${area.slug}/`} class="drawer-sublink area">
+              <a href={`/service-areas/${area.slug}/`} class="drawer-sublink">
                 {area.title}
               </a>
             ))
           ) : (
             legacyAreas.map((area: string) => (
-              <span class="drawer-sublink area">{area}</span>
+              <span class="drawer-sublink">{area}</span>
             ))
           )}
         </div>
@@ -187,6 +199,30 @@ const displayLogo = logo;
   const drawerLinks = drawer?.querySelectorAll('a');
   drawerLinks?.forEach(link => {
     link.addEventListener('click', closeMenu);
+  });
+
+  /* Accordion toggles para Services y Service Areas */
+  const toggleBtns = document.querySelectorAll('.drawer-toggle');
+  toggleBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetId = btn.getAttribute('data-target');
+      const panel = document.getElementById(targetId!);
+      const isOpen = btn.getAttribute('aria-expanded') === 'true';
+
+      /* Cierra otros paneles abiertos */
+      toggleBtns.forEach(otherBtn => {
+        if (otherBtn !== btn) {
+          otherBtn.setAttribute('aria-expanded', 'false');
+          const otherId = otherBtn.getAttribute('data-target');
+          const otherPanel = document.getElementById(otherId!);
+          if (otherPanel) otherPanel.hidden = true;
+        }
+      });
+
+      /* Alterna el panel actual */
+      btn.setAttribute('aria-expanded', String(!isOpen));
+      if (panel) panel.hidden = isOpen;
+    });
   });
 </script>
 
@@ -450,38 +486,58 @@ const displayLogo = logo;
     text-decoration: none;
   }
 
-  .drawer-label {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #9ca3af;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 0.75rem;
-    display: block;
+  /* Accordion toggles para el drawer móvil */
+  .drawer-accordion {
+    border-bottom: 1px solid #f3f4f6;
+    padding-bottom: 0.25rem;
   }
 
-  .drawer-submenu {
+  .drawer-toggle {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+    font-family: inherit;
+  }
+
+  .toggle-chevron {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #9ca3af;
+    transition: transform 0.25s ease;
+  }
+
+  /* Rota el chevron cuando el panel está abierto */
+  .drawer-toggle[aria-expanded="true"] .toggle-chevron {
+    transform: rotate(180deg);
+    color: #1d5f20;
+  }
+
+  .drawer-panel {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    padding-left: 0.5rem;
-    border-left: 2px solid #f3f4f6;
+    gap: 0.5rem;
+    padding: 0 0 0.75rem 0.75rem;
+    border-left: 2px solid #e5e7eb;
+    margin-left: 0.25rem;
+  }
+
+  .drawer-panel[hidden] {
+    display: none;
   }
 
   .drawer-sublink {
-    font-size: 1rem;
+    font-size: 0.9375rem;
     color: #4b5563;
     text-decoration: none;
-  }
-
-  .areas-grid-mobile {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
-  }
-
-  .area {
-    font-size: 0.875rem;
+    padding: 0.25rem 0;
   }
 
   .drawer-cta-wrapper {
