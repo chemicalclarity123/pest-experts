@@ -22,13 +22,27 @@ The site provides information about various services, each with:
 - Operating hours
 - Price range
 
+### Service Areas (Local SEO)
+We have implemented a dynamic, hyper-local SEO strategy for service areas (e.g., Pretoria, Sandton).
+- Each Area page includes specific geographic content (Intro Text, Local Pests).
+- Features dynamic Google Review aggregations and localized Lead Forms.
+- Includes nearby service area cross-linking for topological SEO silos.
+
+### Knowledge Base (Articles)
+The site includes a robust Knowledge Base for evergreen content and blog posts.
+- Articles are built using Sanity PortableText.
+- Includes Related Services cross-linking at the end of articles.
+- Features dynamic CTA injection natively inside the `blogPost` schema.
+
 ### Schema Implementation
-All service pages include:
+All service and area pages include:
 1. **Service Schema** - Describes the service offering
 2. **LocalBusiness Schema** - Provides business details and location
+3. **FAQPage Schema** - Injected where applicable
 
-## API Endpoints
-- Sanity GraphQL: https://vc8zkv1m.api.sanity.io/v1/graphql/production/default
+## API & Data Fetching
+- **GraphQL:** Legacy Apollo imports (https://vc8zkv1m.api.sanity.io/v1/graphql/production/default)
+- **REST / GROQ:** Primary data fetching for new features (Service Areas, Knowledge Base, Global Settings) uses `@sanity/client` configured with `useCdn: true` for edge caching.
 
 ## Key Features
 - Server-side rendering with Astro
