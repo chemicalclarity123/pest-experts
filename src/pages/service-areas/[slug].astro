@@ -115,6 +115,11 @@ const schemaMarkup = [businessSchema];
   description={`Professional pest control in ${areaName}. Fast response, guaranteed results. Licensed & insured.`}
   schemaMarkup={schemaMarkup}
 >
+  <Fragment slot="preload">
+    <link rel="preload" href={heroImageMobile} as="image" fetchpriority="high" media="(max-width: 767px)" />
+    <link rel="preload" href={heroImageDesktop} as="image" fetchpriority="high" media="(min-width: 768px)" />
+  </Fragment>
+
   <!-- ═══════════════════════════════
        1. HERO — H1 + LeadFormCompact
        ═══════════════════════════════ -->
@@ -238,29 +243,19 @@ const schemaMarkup = [businessSchema];
             )}
 
             {area.introBodyText && (
-              <div class="prose prose-lg prose-green area-intro-prose max-w-none text-gray-600">
+              <div class="prose prose-lg prose-green area-intro-prose max-w-none text-gray-600 text-left">
                 <PortableText value={area.introBodyText} />
               </div>
             )}
-
-            {/* Premium Dynamic CTA Button */}
-            <div class="mt-12">
-              <a href="#lead-form" class="premium-cta group inline-flex items-center gap-4 bg-green-700 hover:bg-green-800 text-white px-8 py-4.5 rounded-xl font-bold text-lg transition-all duration-300 shadow-[0_8px_30px_rgb(21,128,61,0.25)] hover:shadow-[0_8px_30px_rgb(21,128,61,0.4)] hover:-translate-y-1">
-                <span>Protect Your Property Today</span>
-                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-white/20 group-hover:bg-white/30 transition-colors">
-                  <svg class="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300 relative left-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                  </svg>
-                </span>
-              </a>
-            </div>
           </div>
 
           {/* Visual Highlight/Stats Column */}
           <div class="w-full lg:w-2/5 mt-10 lg:mt-0 relative">
             <div class="relative bg-white rounded-3xl p-8 lg:p-10 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.1)] border border-gray-100 z-10 sticky top-32">
-              <div class="absolute -top-6 -right-6 w-24 h-24 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg transform rotate-12 z-20">
-                <span class="text-white text-3xl font-black">24/7</span>
+              <div class="absolute -top-6 -right-6 w-24 h-24 bg-yellow-400 rounded-full flex flex-col items-center justify-center shadow-lg transform rotate-12 z-20 border-4 border-white">
+                <svg class="w-8 h-8 text-white mb-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <span class="text-white text-xs font-black uppercase tracking-wider leading-none">Top</span>
+                <span class="text-white text-sm font-black uppercase tracking-wider leading-none">Rated</span>
               </div>
               
               <h3 class="text-2xl font-bold text-gray-900 mb-6 border-b border-gray-100 pb-4">
@@ -286,6 +281,18 @@ const schemaMarkup = [businessSchema];
             {/* Background decorative square behind the card */}
             <div class="absolute inset-0 bg-green-700/5 rounded-3xl transform translate-x-4 translate-y-4 -z-10"></div>
           </div>
+        </div>
+
+        {/* Centered CTA below columns */}
+        <div class="flex justify-center mt-12 lg:mt-16 relative z-20">
+          <a href="#lead-form" class="premium-cta group inline-flex items-center gap-4 bg-green-700 hover:bg-green-800 text-white px-10 py-5 rounded-xl font-bold text-xl transition-all duration-300 shadow-[0_8px_30px_rgb(21,128,61,0.25)] hover:shadow-[0_8px_30px_rgb(21,128,61,0.4)] hover:-translate-y-1">
+            <span>Protect Your Property Today</span>
+            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-white/20 group-hover:bg-white/30 transition-colors">
+              <svg class="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300 relative left-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </span>
+          </a>
         </div>
 
       </div>
@@ -775,15 +782,7 @@ const schemaMarkup = [businessSchema];
     box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0,0,0,0.03);
   }
 
-  .area-intro-prose :global(h1),
-  .area-intro-prose :global(h2),
-  .area-intro-prose :global(h3),
-  .area-intro-prose :global(h4),
-  .area-intro-prose :global(h5),
-  .area-intro-prose :global(h6),
-  .area-intro-prose :global(p) {
-    text-align: center;
-  }
+
 
   /* ══════════════════════════════════════
      NEARBY AREAS
