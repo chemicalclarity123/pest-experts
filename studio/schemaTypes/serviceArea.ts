@@ -2,9 +2,9 @@ export const serviceArea = {
     name: 'serviceArea',
     title: 'Service Area',
     type: 'document',
-    // Organizar campos en grupos para una edición limpia en el CMS
     fieldsets: [
         { name: 'hero', title: 'Hero Section', options: { collapsible: true } },
+        { name: 'areaIntro', title: 'Intro Content (Under Hero)', options: { collapsible: true } },
         { name: 'localContent', title: 'Local Content (SEO)', options: { collapsible: true } },
         { name: 'cta', title: 'Call to Action', options: { collapsible: true } },
         { name: 'connections', title: 'Hub/Spoke & Reviews', options: { collapsible: true } },
@@ -69,6 +69,31 @@ export const serviceArea = {
             fieldset: 'hero',
             rows: 3,
             description: 'Optional longer description for the hero. If empty, falls back to "description" above.',
+        },
+
+        // --- Intro Content (Under Hero) ---
+        {
+            name: 'introHeadline',
+            title: 'Intro Headline',
+            type: 'string',
+            fieldset: 'areaIntro',
+            description: 'Optional headline just below the hero section. e.g., "Pest Control Services in Pretoria"',
+        },
+        {
+            name: 'introShortDescription',
+            title: 'Intro Short Description',
+            type: 'text',
+            fieldset: 'areaIntro',
+            rows: 3,
+            description: 'Optional short introductory paragraph below the headline.',
+        },
+        {
+            name: 'introBodyText',
+            title: 'Intro Body Text',
+            type: 'array',
+            fieldset: 'areaIntro',
+            of: [{ type: 'block' }],
+            description: 'Main body copy for the service area (~400 words recommended). Appears below the short description in two columns.',
         },
 
         // --- Local Content (SEO) ---

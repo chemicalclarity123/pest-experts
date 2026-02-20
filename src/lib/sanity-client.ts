@@ -149,6 +149,9 @@ export async function fetchServiceAreaBySlug(slug: string) {
       image,
       description,
       heroSubheading,
+      introHeadline,
+      introShortDescription,
+      introBodyText,
       content,
       localPests[]{
         name,

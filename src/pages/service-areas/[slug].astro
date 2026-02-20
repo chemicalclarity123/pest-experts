@@ -188,6 +188,31 @@ const schemaMarkup = [businessSchema];
   </section>
 
   <!-- ═══════════════════════════════
+       1.5 AREA INTRO (NEW CMS CONTENT)
+       ═══════════════════════════════ -->
+  {(area.introHeadline || area.introBodyText) && (
+    <section class="section-spacing bg-light">
+      <div class="content-container">
+        <div class="intro-section">
+          {area.introHeadline && (
+            <h2 class="section-heading" style="text-align: left;">{area.introHeadline}</h2>
+          )}
+          {area.introShortDescription && (
+            <p class="section-subtext" style="text-align: left; margin-left: 0; max-width: 800px;">
+              {area.introShortDescription}
+            </p>
+          )}
+          {area.introBodyText && (
+            <div class="prose area-intro-prose" style="max-width: none;">
+              <PortableText value={area.introBodyText} />
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- ═══════════════════════════════
        2. SERVICES AVAILABLE
        ═══════════════════════════════ -->
   <section class="section-spacing">
@@ -658,6 +683,17 @@ const schemaMarkup = [businessSchema];
   .prose :global(strong) {
     font-weight: 600;
     color: #1f2937;
+  }
+
+  .area-intro-prose {
+    column-count: 2;
+    column-gap: 3rem;
+  }
+
+  @media (max-width: 768px) {
+    .area-intro-prose {
+      column-count: 1;
+    }
   }
 
   /* ══════════════════════════════════════
