@@ -199,7 +199,7 @@ const schemaMarkup = [businessSchema];
        1.5 PREMIUM AREA INTRO (AESTHETIC UPGRADE)
        ═══════════════════════════════ -->
   {(area.introHeadline || area.introBodyText) && (
-    <section class="relative pt-20 pb-24 lg:pt-32 lg:pb-32 overflow-hidden bg-gradient-to-b from-white to-gray-50/50">
+    <section class="relative pt-20 pb-12 lg:pt-32 lg:pb-16 overflow-hidden bg-gradient-to-b from-white to-gray-50/50">
       
       {/* Decorative Background Elements */}
       <div class="absolute top-0 right-0 w-1/2 h-full bg-green-50/30 transform -skew-x-12 translate-x-32 hidden lg:block -z-10"></div>
@@ -256,36 +256,23 @@ const schemaMarkup = [businessSchema];
                 <span class="text-white text-3xl font-black">24/7</span>
               </div>
               
-              <h3 class="text-2xl font-bold text-gray-900 mb-6 border-b border-gray-100 pb-4">Why choose Pest Experts in {areaName}?</h3>
+              <h3 class="text-2xl font-bold text-gray-900 mb-6 border-b border-gray-100 pb-4">
+                {whyChooseTitle || `Why choose Pest Experts in ${areaName}?`}
+              </h3>
               
               <ul class="space-y-6">
-                <li class="flex items-start gap-4">
-                  <div class="flex-shrink-0 w-12 h-12 rounded-full bg-green-50 flex items-center justify-center text-green-600 mt-1">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                  </div>
-                  <div>
-                    <strong class="block text-gray-900 text-lg mb-1">Rapid Local Response</strong>
-                    <p class="text-gray-600 leading-snug">Based near {areaName}, we guarantee fast arrival times for emergencies.</p>
-                  </div>
-                </li>
-                <li class="flex items-start gap-4">
-                  <div class="flex-shrink-0 w-12 h-12 rounded-full bg-green-50 flex items-center justify-center text-green-600 mt-1">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                  </div>
-                  <div>
-                    <strong class="block text-gray-900 text-lg mb-1">Guaranteed Results</strong>
-                    <p class="text-gray-600 leading-snug">Our heavy-duty, weather-resistant solutions eliminate colonies at the source.</p>
-                  </div>
-                </li>
-                <li class="flex items-start gap-4">
-                  <div class="flex-shrink-0 w-12 h-12 rounded-full bg-green-50 flex items-center justify-center text-green-600 mt-1">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                  </div>
-                  <div>
-                    <strong class="block text-gray-900 text-lg mb-1">Child & Pet Safe</strong>
-                    <p class="text-gray-600 leading-snug">We use discreet, highly-targeted treatments that prioritize family safety.</p>
-                  </div>
-                </li>
+                {whyChooseFeatures && whyChooseFeatures.slice(0, 4).map((feature: any) => (
+                  <li class="flex items-start gap-4">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-full bg-green-50 flex items-center justify-center text-green-600 mt-1">
+                      {/* Check mark fallback if no icon is specified in CMS */}
+                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    </div>
+                    <div>
+                      <strong class="block text-gray-900 text-lg mb-1">{feature.title}</strong>
+                      <p class="text-gray-600 leading-snug">{feature.description}</p>
+                    </div>
+                  </li>
+                ))}
               </ul>
             </div>
             
