@@ -203,7 +203,7 @@ const schemaMarkup = [businessSchema];
             </p>
           )}
           {area.introBodyText && (
-            <div class="prose max-w-none" style="margin-top: 2rem;">
+            <div class="prose area-intro-prose max-w-none" style="margin-top: 2rem;">
               <PortableText value={area.introBodyText} />
             </div>
           )}
@@ -683,6 +683,15 @@ const schemaMarkup = [businessSchema];
   .prose :global(strong) {
     font-weight: 600;
     color: #1f2937;
+  }
+
+  .area-intro-prose :global(h1),
+  .area-intro-prose :global(h2),
+  .area-intro-prose :global(h3),
+  .area-intro-prose :global(h4),
+  .area-intro-prose :global(h5),
+  .area-intro-prose :global(h6) {
+    text-align: center;
   }
 
   /* ══════════════════════════════════════
