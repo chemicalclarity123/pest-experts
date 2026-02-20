@@ -880,16 +880,58 @@ const breadcrumbItems = [
     }
   }
 
-  /* Prose styling for PortableText */
-  .prose {
-    color: #374151;
-    line-height: 1.75;
+  /* ══════════════════════════════════════
+     SHARED SECTION STYLES
+     ══════════════════════════════════════ */
+  .section-spacing {
+    padding: 5rem 0;
   }
 
+  .section-heading {
+    font-size: 2.25rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #1d5f20 0%, #2d7a30 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .section-subtext {
+    text-align: center;
+    color: #6b7280;
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto 3rem;
+    line-height: 1.6;
+  }
+
+  /* ══════════════════════════════════════
+     PREMIUM PROSE STYLING
+     ══════════════════════════════════════ */
+  .area-intro-prose,
+  .prose {
+    color: #374151;
+    line-height: 1.8;
+    font-size: 1.05rem;
+  }
+
+  .area-intro-prose p,
   .prose p {
     margin-bottom: 1.25rem;
   }
 
+  .area-intro-prose h2,
+  .prose h2 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #1d5f20;
+    margin-top: 2.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .area-intro-prose h3,
   .prose h3 {
     font-size: 1.5rem;
     font-weight: 700;
@@ -898,16 +940,19 @@ const breadcrumbItems = [
     margin-bottom: 1rem;
   }
 
+  .area-intro-prose ul,
   .prose ul {
     list-style-type: disc;
     padding-left: 1.625rem;
     margin-bottom: 1.25rem;
   }
 
+  .area-intro-prose li,
   .prose li {
     margin-bottom: 0.5rem;
   }
 
+  .area-intro-prose strong,
   .prose strong {
     font-weight: 600;
     color: #1f2937;
