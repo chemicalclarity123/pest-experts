@@ -273,7 +273,7 @@ export const service = {
                     name: 'freeQuote',
                     title: 'Free Quote Available',
                     type: 'boolean',
-                    description: 'Do you offer free quotes/inspections?',
+                    description: 'Do you offer free quotes?',
                     initialValue: true,
                 },
                 {

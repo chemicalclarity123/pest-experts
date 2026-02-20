@@ -32,7 +32,7 @@ const areas = [
             ],
         },
         serviceHighlights: [
-            { _key: 'h1', icon: 'clock', title: 'Same-Day Service in Pretoria', description: 'We\'re based in Gauteng with technicians across Pretoria — most callouts are same-day.' },
+            { _key: 'h1', icon: 'clock', title: 'Same-Day Service in Pretoria', description: 'We\'re based in Gauteng with technicians across Pretoria — most services are same-day.' },
             { _key: 'h2', icon: 'shield', title: 'SABS-Approved Treatments', description: 'All chemicals are SABS-approved and safe for families, pets, and the environment.' },
             { _key: 'h3', icon: 'certificate', title: 'Licensed & Insured', description: 'Fully licensed by the Department of Agriculture with comprehensive liability insurance.' },
             { _key: 'h4', icon: 'map-location', title: 'All Pretoria Suburbs', description: 'Waterkloof, Hatfield, Arcadia, Menlo Park, Lynnwood, Faerie Glen, and more.' },
@@ -64,7 +64,7 @@ const areas = [
             ],
         },
         serviceHighlights: [
-            { _key: 'h1', icon: 'clock', title: 'Rapid Response in Centurion', description: 'Technicians deployed across Centurion for fast, same-day callouts.' },
+            { _key: 'h1', icon: 'clock', title: 'Rapid Response in Centurion', description: 'Technicians deployed across Centurion for fast, same-day service.' },
             { _key: 'h2', icon: 'home', title: 'Estate & Complex Specialists', description: 'Experience with body corporates, sectional title, and estate management.' },
             { _key: 'h3', icon: 'shield', title: 'Child & Pet Safe', description: 'Eco-friendly, low-toxicity treatments safe for families and pets.' },
             { _key: 'h4', icon: 'map-location', title: 'All Centurion Estates', description: 'Midstream, Irene, The Reeds, Eldoraigne, Wierdapark, and surrounds.' },
@@ -128,7 +128,7 @@ const areas = [
             ],
         },
         serviceHighlights: [
-            { _key: 'h1', icon: 'clock', title: 'Fast Response in JHB South', description: 'Technicians based in the area for rapid same-day callouts.' },
+            { _key: 'h1', icon: 'clock', title: 'Fast Response in JHB South', description: 'Technicians based in the area for rapid same-day service.' },
             { _key: 'h2', icon: 'shield', title: 'Eco-Friendly Solutions', description: 'Low-impact treatments that protect your family and garden.' },
             { _key: 'h3', icon: 'certificate', title: 'Written Guarantee', description: 'All treatments come with a service guarantee for your peace of mind.' },
             { _key: 'h4', icon: 'map-location', title: 'Full Southern Coverage', description: 'Alberton, Glenvista, Meyersdal, Brackendowns, Bassonia, and more.' },
@@ -194,7 +194,7 @@ const areas = [
         serviceHighlights: [
             { _key: 'h1', icon: 'tag', title: 'Affordable Pricing', description: 'Competitive rates without compromising on quality or safety.' },
             { _key: 'h2', icon: 'home', title: 'Complex & Body Corporate', description: 'Coordinated treatments for townhouse and apartment complexes.' },
-            { _key: 'h3', icon: 'clock', title: 'Same-Day Service', description: 'Emergency and same-day callouts available across Randburg.' },
+            { _key: 'h3', icon: 'clock', title: 'Same-Day Service', description: 'Emergency and same-day services available across Randburg.' },
             { _key: 'h4', icon: 'map-location', title: 'All Randburg Suburbs', description: 'Ferndale, Blairgowrie, Northcliff, Fairlands, Kensington B, and more.' },
         ],
         ctaHeading: 'Affordable Pest Control in Randburg',

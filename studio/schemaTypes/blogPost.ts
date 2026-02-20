@@ -308,7 +308,7 @@ export const blogPost = {
                     title: 'CTA Description',
                     type: 'text',
                     rows: 2,
-                    description: 'e.g., "Get a free inspection from our certified technicians"',
+                    description: 'e.g., "Get a free quote from our certified technicians"',
                 },
                 {
                     name: 'buttonText',
