@@ -187,7 +187,19 @@ export async function fetchServiceAreaBySlug(slug: string) {
       },
       ${SEO_FRAGMENT}
     }`;
-    const area = await client.fetch(query, { slug });
+    let area = await client.fetch(query, { slug });
+
+    if (!area) {
+      const slugsQuery = `*[_type == "serviceArea"]{ "slug": slug.current }`;
+      const allSlugs = await client.fetch(slugsQuery);
+      const matchingDirty = allSlugs.find((s: any) => normalizeSlug(s.slug) === slug);
+
+      if (matchingDirty?.slug) {
+        console.warn(`[WARN] Found dirty serviceArea slug in Sanity matching "${slug}": "${matchingDirty.slug}". Using fallback.`);
+        area = await client.fetch(query, { slug: matchingDirty.slug });
+      }
+    }
+
     return area;
   } catch (error) {
     console.error(`Error fetching service area "${slug}":`, error);
@@ -261,7 +273,20 @@ export async function fetchServiceBySlug(slug: string) {
       ${LOCAL_CONTEXT_FRAGMENT},
       pricing
     }`;
-    const service = await client.fetch(query, { slug });
+    let service = await client.fetch(query, { slug });
+
+    // Fallback for dirty slugs (e.g. ones that accidently contain \u00A0 spaces in Sanity)
+    if (!service) {
+      const slugsQuery = `*[_type == "service"]{ "slug": slug.current }`;
+      const allSlugs = await client.fetch(slugsQuery);
+      const matchingDirty = allSlugs.find((s: any) => normalizeSlug(s.slug) === slug);
+
+      if (matchingDirty?.slug) {
+        console.warn(`[WARN] Found dirty slug in Sanity matching "${slug}": "${matchingDirty.slug}". Using fallback.`);
+        service = await client.fetch(query, { slug: matchingDirty.slug });
+      }
+    }
+
     return service;
   } catch (error) {
     console.error(`Error fetching service with slug "${slug}":`, error);
@@ -426,7 +451,20 @@ export async function fetchBlogPostBySlug(slug: string) {
         price
       }
     }`;
-    return await client.fetch(query, { slug: normalized });
+    let post = await client.fetch(query, { slug: normalized });
+
+    if (!post) {
+      const slugsQuery = `*[_type == "blogPost"]{ "slug": slug.current }`;
+      const allSlugs = await client.fetch(slugsQuery);
+      const matchingDirty = allSlugs.find((s: any) => normalizeSlug(s.slug) === slug);
+
+      if (matchingDirty?.slug) {
+        console.warn(`[WARN] Found dirty blogPost slug in Sanity matching "${slug}": "${matchingDirty.slug}". Using fallback.`);
+        post = await client.fetch(query, { slug: matchingDirty.slug });
+      }
+    }
+
+    return post;
   } catch (error) {
     console.error('Error fetching blog post:', error);
     return null;
