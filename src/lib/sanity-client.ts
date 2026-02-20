@@ -2,13 +2,13 @@ import { createClient } from '@sanity/client';
 import { createImageUrlBuilder } from '@sanity/image-url';
 
 const getReadToken = () => {
-  // En Astro/Cloudflare, import.meta.env es la via oficial para inyectar variables de entorno.
-  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.SANITY_READ_TOKEN) {
-    return import.meta.env.SANITY_READ_TOKEN;
-  }
-  // Fallback para scripts Node puros (como los que ejecutamos localmente)
+  // 1. Cloudflare Build Step (Node.js) - This is where the static SSG fetch happens!
   if (typeof process !== 'undefined' && process.env && process.env.SANITY_READ_TOKEN) {
     return process.env.SANITY_READ_TOKEN;
+  }
+  // 2. Vite/Astro dev server fallback
+  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.SANITY_READ_TOKEN) {
+    return import.meta.env.SANITY_READ_TOKEN;
   }
   return undefined;
 };
