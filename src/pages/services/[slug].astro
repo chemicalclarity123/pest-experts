@@ -224,8 +224,10 @@ const breadcrumbItems = [
     {service.content?.length > 0 && (
       <section class="content-section">
         <h2 class="section-title">{fullContentHeading}</h2>
-        <div class="prose prose-lg max-w-none">
-          <PortableText value={service.content} />
+        <div class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100 max-w-4xl mx-auto">
+          <div class="prose prose-lg max-w-none">
+            <PortableText value={service.content} />
+          </div>
         </div>
       </section>
     )}
@@ -234,8 +236,10 @@ const breadcrumbItems = [
     {service.overview && (
       <section class="content-section overview-section">
         <h2 class="section-title">{service.overviewHeading || "Why Choose Professional Pest Control?"}</h2>
-        <div class="prose prose-lg max-w-none">
-          <PortableText value={service.overview} />
+        <div class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100 max-w-4xl mx-auto">
+          <div class="prose prose-lg max-w-none">
+            <PortableText value={service.overview} />
+          </div>
         </div>
       </section>
     )}
@@ -247,7 +251,7 @@ const breadcrumbItems = [
           <span class="title-icon">⚠️</span>
           Signs of Infestation
         </h2>
-        <div class="signs-grid">
+        <div class="signs-grid max-w-4xl mx-auto">
           {service.signsOfInfestation.map((sign: string) => (
             <div class="sign-card">
               <svg class="sign-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -264,7 +268,7 @@ const breadcrumbItems = [
     {service.treatmentProcess?.length > 0 && (
       <section class="content-section">
         <h2 class="section-title">Our Treatment Process</h2>
-        <div class="process-timeline">
+        <div class="process-timeline max-w-4xl mx-auto">
           {service.treatmentProcess.map((step: any, index: number) => (
             <div class="process-step">
               <div class="step-number">{index + 1}</div>
@@ -282,8 +286,10 @@ const breadcrumbItems = [
     {service.benefits?.length > 0 && (
       <section class="content-section benefits-section">
         <h2 class="section-title">Why Professional Treatment?</h2>
-        <div class="prose prose-lg max-w-none">
-          <PortableText value={service.benefits} />
+        <div class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100 max-w-4xl mx-auto">
+          <div class="prose prose-lg max-w-none">
+            <PortableText value={service.benefits} />
+          </div>
         </div>
       </section>
     )}
