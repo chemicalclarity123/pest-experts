@@ -223,10 +223,29 @@ const breadcrumbItems = [
     <!-- Contenido principal del servicio desde Sanity (campo "Full Content") -->
     {service.content?.length > 0 && (
       <section class="content-section">
-        <h2 class="section-title">{fullContentHeading}</h2>
-        <div class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100 max-w-4xl mx-auto">
-          <div class="prose prose-lg max-w-none">
+        <div class="cro-intro-card bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100 max-w-4xl mx-auto text-center relative overflow-hidden">
+          
+          {/* Subtle background flair */}
+          <div class="absolute top-0 right-0 w-64 h-64 bg-green-50 rounded-full blur-3xl opacity-50 -z-10 -translate-y-1/2 translate-x-1/2"></div>
+          
+          {/* Trust Signal Badge */}
+          <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-green-50 border border-green-100 text-sm font-bold text-green-900 mb-6 shadow-sm transition-transform hover:scale-105">
+            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-white shadow-sm text-base">🛡️</span> 
+            <span class="tracking-wide uppercase text-xs">Certified {service.title} Experts</span>
+          </div>
+
+          <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-10 tracking-tight leading-tight">
+            {fullContentHeading}
+          </h2>
+          
+          <div class="prose prose-lg max-w-none text-left text-gray-600 w-full mx-auto" style="color: #4b5563;">
             <PortableText value={service.content} />
+          </div>
+
+          <div class="mt-12">
+            <a href="#lead-form" class="cta-primary inline-flex text-lg px-8 py-4 w-full sm:w-auto justify-center shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+              Get a Free Quote Now
+            </a>
           </div>
         </div>
       </section>
@@ -235,9 +254,11 @@ const breadcrumbItems = [
     <!-- Overview -->
     {service.overview && (
       <section class="content-section overview-section">
-        <h2 class="section-title">{service.overviewHeading || "Why Choose Professional Pest Control?"}</h2>
-        <div class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100 max-w-4xl mx-auto">
-          <div class="prose prose-lg max-w-none">
+        <div class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100 max-w-4xl mx-auto relative overflow-hidden">
+          <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-8 tracking-tight">
+            {service.overviewHeading || "Why Choose Professional Pest Control?"}
+          </h2>
+          <div class="prose prose-lg max-w-none text-gray-600" style="color: #4b5563;">
             <PortableText value={service.overview} />
           </div>
         </div>
@@ -246,12 +267,12 @@ const breadcrumbItems = [
 
     <!-- Signs of Infestation -->
     {service.signsOfInfestation?.length > 0 && (
-      <section class="content-section">
+      <section class="content-section max-w-4xl mx-auto">
         <h2 class="section-title">
           <span class="title-icon">⚠️</span>
           Signs of Infestation
         </h2>
-        <div class="signs-grid max-w-4xl mx-auto">
+        <div class="signs-grid">
           {service.signsOfInfestation.map((sign: string) => (
             <div class="sign-card">
               <svg class="sign-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -266,9 +287,9 @@ const breadcrumbItems = [
 
     <!-- Treatment Process -->
     {service.treatmentProcess?.length > 0 && (
-      <section class="content-section">
+      <section class="content-section max-w-4xl mx-auto">
         <h2 class="section-title">Our Treatment Process</h2>
-        <div class="process-timeline max-w-4xl mx-auto">
+        <div class="process-timeline">
           {service.treatmentProcess.map((step: any, index: number) => (
             <div class="process-step">
               <div class="step-number">{index + 1}</div>
