@@ -415,7 +415,11 @@ export async function fetchBlogPosts() {
       publishedAt,
       featured
     }`;
-    return await client.fetch(query);
+    const posts = await client.fetch(query);
+    return posts.map((post: any) => ({
+      ...post,
+      slug: normalizeSlug(post.slug)
+    }));
   } catch (error) {
     console.error('Error fetching blog posts:', error);
     return [];
