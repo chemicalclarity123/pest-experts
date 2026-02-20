@@ -7,6 +7,8 @@ export const client = createClient({
   apiVersion: '2026-02-04',
   // CDN activado — cachea queries de lectura en el edge global de Sanity (~50ms vs ~1500ms)
   useCdn: true,
+  // Provide read token for private datasets
+  token: typeof process !== 'undefined' ? process.env?.SANITY_READ_TOKEN : (import.meta as any).env?.SANITY_READ_TOKEN,
 });
 
 // Image URL builder
