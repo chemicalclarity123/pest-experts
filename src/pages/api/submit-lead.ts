@@ -230,12 +230,40 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     const data = await request.json();
 
-    // Acepta ambos nombres de campo para compatibilidad
-    const name = data.fullName || data.name;
-    const phone = data.phone;
-    const email = data.email;
-    const suburb = data.suburb || data.pestChallenge || '';
-    const message = data.message || '';
+    // 1. Origin Verification (CORS/CSRF Protection)
+    const origin = request.headers.get('origin');
+    const allowedOrigins = [
+      'https://pestexperts.co.za',
+      'https://www.pestexperts.co.za',
+      'http://localhost:4321',
+      'http://localhost:3000'
+    ];
+
+    // Si el origen no está en la lista permitida (y existe), bloqueamos
+    if (origin && !allowedOrigins.some(allowed => origin.startsWith(allowed))) {
+      console.warn(`Blocked request from unauthorized origin: ${origin}`);
+      return new Response(JSON.stringify({ error: 'Unauthorized request origin.' }), {
+        status: 403,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    // 2. Honeypot Validation (Bot Protection)
+    if (data.a_password && data.a_password.trim() !== '') {
+      console.warn('Bot detected via honeypot field. Dropping submission silently.');
+      // Devolvemos 200 OK para que el bot piense que tuvo éxito, pero no procesamos nada
+      return new Response(JSON.stringify({
+        success: true,
+        message: "Thank you! We'll contact you within 1 hour."
+      }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    }
+
+    // Acepta ambos nombres de campo para compatibilidad (cast to string to fix TS errors)
+    const name = String(data.fullName || data.name || '');
+    const phone = String(data.phone || '');
+    const email = String(data.email || '');
+    const suburb = String(data.suburb || data.pestChallenge || '');
+    const message = String(data.message || '');
 
     // Valida campos obligatorios
     if (!name || !phone || !email || !suburb || !message) {

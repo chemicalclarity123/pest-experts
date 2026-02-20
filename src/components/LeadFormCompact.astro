@@ -33,6 +33,12 @@ const HeadingTag = headingLevel;
   
   <form class="lead-form" id={formId} data-form="lead" novalidate>
     <input type="hidden" name="source" value={source} />
+    
+    <!-- Honeypot Field (Anti-Bot) -->
+    <div style="opacity: 0; position: absolute; top: 0; left: 0; height: 0; width: 0; z-index: -1;">
+      <label for={`${formId}-hp`}>Leave this empty</label>
+      <input type="text" id={`${formId}-hp`} name="a_password" tabindex="-1" autocomplete="off" />
+    </div>
 
     <div class="form-group">
       <label for={`${formId}-name`} class="sr-only">Full Name</label>
@@ -202,10 +208,10 @@ const HeadingTag = headingLevel;
               form_source: data.source || 'unknown',
               /* Enhanced Conversions: GTM hashea automáticamente estos datos antes de enviarlos */
               enhanced_conversions: {
-                email: data.email || '',
-                phone_number: data.phone || '',
-                first_name: (data.fullName || '').split(' ')[0],
-                last_name: (data.fullName || '').split(' ').slice(1).join(' '),
+                email: String(data.email || ''),
+                phone_number: String(data.phone || ''),
+                first_name: String(data.fullName || '').split(' ')[0],
+                last_name: String(data.fullName || '').split(' ').slice(1).join(' '),
               },
             });
           }
