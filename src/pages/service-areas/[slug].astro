@@ -47,9 +47,13 @@ const areaName = area.title;
 const phone = companySettings?.contactInfo?.telephone || "+27 12 345 6789";
 const whatsappNumber = companySettings?.contactInfo?.whatsapp || "+27123456789";
 
-// Imagen del hero con fallback
-const heroImage = area.image?.asset 
-  ? urlFor(area.image).width(1920).height(800).url() 
+// Imagen del hero con fallback (Optimized for Mobile/Desktop)
+const heroImageDesktop = area.image?.asset 
+  ? urlFor(area.image).width(1920).height(800).format('webp').url() 
+  : '/images/hero-bg.jpg';
+
+const heroImageMobile = area.image?.asset 
+  ? urlFor(area.image).width(800).height(1000).format('webp').url() 
   : '/images/hero-bg.jpg';
 
 // Subtítulo del hero con cadena de fallbacks
@@ -116,7 +120,10 @@ const schemaMarkup = [businessSchema];
        ═══════════════════════════════ -->
   <section class="hero-section">
     <div class="hero-bg">
-      <img src={heroImage} alt={`Pest control services in ${areaName}`} class="hero-image" width="1920" height="800" fetchpriority="high" decoding="async" />
+      <picture>
+        <source media="(min-width: 768px)" srcset={heroImageDesktop} />
+        <img src={heroImageMobile} alt={`Pest control services in ${areaName}`} class="hero-image" fetchpriority="high" decoding="sync" />
+      </picture>
       <div class="hero-overlay"></div>
     </div>
 
@@ -199,7 +206,7 @@ const schemaMarkup = [businessSchema];
        1.5 PREMIUM AREA INTRO (AESTHETIC UPGRADE)
        ═══════════════════════════════ -->
   {(area.introHeadline || area.introBodyText) && (
-    <section class="relative pt-20 pb-12 lg:pt-32 lg:pb-16 overflow-hidden bg-gradient-to-b from-white to-gray-50/50">
+    <section class="relative pt-20 pb-12 lg:pt-32 lg:pb-16 overflow-x-clip bg-gradient-to-b from-white to-gray-50/50">
       
       {/* Decorative Background Elements */}
       <div class="absolute top-0 right-0 w-1/2 h-full bg-green-50/30 transform -skew-x-12 translate-x-32 hidden lg:block -z-10"></div>
@@ -208,7 +215,7 @@ const schemaMarkup = [businessSchema];
 
       <div class="content-container">
         
-        <div class="flex flex-col lg:flex-row items-start gap-12 lg:gap-20">
+        <div class="flex flex-col lg:flex-row gap-12 lg:gap-20">
           
           {/* Main Text Content Column */}
           <div class="w-full lg:w-3/5 text-left">
@@ -219,13 +226,13 @@ const schemaMarkup = [businessSchema];
             </div>
 
             {area.introHeadline && (
-              <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mt-0 mb-6 leading-tight tracking-tight">
+              <h2 class="section-heading text-left mt-0 mb-6">
                 {area.introHeadline}
               </h2>
             )}
             
             {area.introShortDescription && (
-              <p class="text-xl md:text-2xl text-gray-600 font-medium mb-8 leading-relaxed border-l-4 border-green-600 pl-6 rounded-sm">
+              <p class="section-subtext text-left mb-8 border-l-4 border-green-600 pl-6 rounded-sm">
                 {area.introShortDescription}
               </p>
             )}
