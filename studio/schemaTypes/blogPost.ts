@@ -4,10 +4,9 @@ export const blogPost = {
     name: 'blogPost',
     title: 'Blog Post',
     type: 'document',
-    groups: [
-        { name: 'content', title: 'Content', default: true },
-        { name: 'seo', title: 'SEO & Social' },
-        { name: 'cro', title: 'CRO & Linking' },
+    fieldsets: [
+        { name: 'seo', title: 'SEO & Social', options: { collapsible: true, collapsed: false } },
+        { name: 'cro', title: 'CRO & Linking', options: { collapsible: true, collapsed: false } },
     ],
     fields: [
         {
@@ -15,7 +14,6 @@ export const blogPost = {
             title: 'Post Title',
             type: 'string',
             description: 'The headline — keep it clear, keyword-rich, and under 70 characters',
-            group: 'content',
             validation: (Rule: any) => Rule.required().custom((value: string) => {
                 if (!value) return true;
                 if (value.includes('\u00A0')) {
@@ -32,7 +30,6 @@ export const blogPost = {
             title: 'Slug',
             type: 'slug',
             description: 'URL path — auto-generated from title',
-            group: 'content',
             options: {
                 source: 'title',
                 maxLength: 96,
@@ -51,7 +48,6 @@ export const blogPost = {
             title: 'Featured Image',
             type: 'image',
             description: 'Hero image and social share fallback. Optimal: 1200x630px',
-            group: 'content',
             options: {
                 hotspot: true,
             },
@@ -71,7 +67,6 @@ export const blogPost = {
             title: 'Excerpt',
             type: 'text',
             description: 'Short summary for cards and meta description fallback (max 200 chars)',
-            group: 'content',
             rows: 3,
             validation: (Rule: any) => Rule.required().max(200).warning('Keep under 200 characters'),
         },
@@ -80,7 +75,6 @@ export const blogPost = {
             title: 'Author Name',
             type: 'string',
             description: 'Author of this post (for Article schema)',
-            group: 'content',
             initialValue: 'Pest Experts Team',
         },
         {
@@ -88,7 +82,6 @@ export const blogPost = {
             title: 'Published Date',
             type: 'datetime',
             description: 'When this post was first published',
-            group: 'content',
             validation: (Rule: any) => Rule.required(),
             options: {
                 dateFormat: 'YYYY-MM-DD',
@@ -99,7 +92,6 @@ export const blogPost = {
             title: 'Last Updated',
             type: 'datetime',
             description: 'Last time the content was meaningfully updated (improves freshness signals)',
-            group: 'content',
             options: {
                 dateFormat: 'YYYY-MM-DD',
             },
@@ -109,7 +101,6 @@ export const blogPost = {
             title: 'Category',
             type: 'string',
             description: 'Primary content category',
-            group: 'content',
             options: {
                 list: [
                     { title: 'Pest Tips', value: 'pest-tips' },
@@ -126,7 +117,6 @@ export const blogPost = {
             title: 'Tags',
             type: 'array',
             description: 'Topic tags for filtering and internal linking',
-            group: 'content',
             of: [{ type: 'string' }],
             options: {
                 layout: 'tags',
@@ -140,7 +130,6 @@ export const blogPost = {
             title: 'Reading Time (minutes)',
             type: 'number',
             description: 'Estimated reading time — shown on cards and post header',
-            group: 'content',
             validation: (Rule: any) => Rule.min(1).max(60),
         },
         {
@@ -148,7 +137,6 @@ export const blogPost = {
             title: 'Featured Post',
             type: 'boolean',
             description: 'Pin this post to the top of the blog listing',
-            group: 'content',
             initialValue: false,
         },
         {
@@ -156,7 +144,6 @@ export const blogPost = {
             title: 'Post Content',
             type: 'array',
             description: 'Full article content with rich text, headings, and images',
-            group: 'content',
             of: [
                 {
                     type: 'block',
@@ -231,7 +218,7 @@ export const blogPost = {
             title: 'SEO & Social',
             type: 'object',
             description: 'Override auto-generated meta tags',
-            group: 'seo',
+            fieldset: 'seo',
             fields: [
                 {
                     name: 'metaTitle',
@@ -280,7 +267,7 @@ export const blogPost = {
             title: 'Related Services',
             type: 'array',
             description: 'Link to relevant services — shown as CTA cards after content',
-            group: 'cro',
+            fieldset: 'cro',
             of: [
                 {
                     type: 'reference',
@@ -294,7 +281,7 @@ export const blogPost = {
             title: 'CTA Override',
             type: 'object',
             description: 'Custom call-to-action for this post (overrides default)',
-            group: 'cro',
+            fieldset: 'cro',
             options: { collapsible: true, collapsed: true },
             fields: [
                 {
