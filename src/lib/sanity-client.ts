@@ -1,26 +1,12 @@
 import { createClient } from '@sanity/client';
 import { createImageUrlBuilder } from '@sanity/image-url';
 
-const getReadToken = () => {
-  // 1. Cloudflare Build Step (Node.js) - This is where the static SSG fetch happens!
-  if (typeof process !== 'undefined' && process.env && process.env.SANITY_READ_TOKEN) {
-    return process.env.SANITY_READ_TOKEN;
-  }
-  // 2. Vite/Astro dev server fallback
-  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.SANITY_READ_TOKEN) {
-    return import.meta.env.SANITY_READ_TOKEN;
-  }
-  return undefined;
-};
-
 export const client = createClient({
   projectId: 'vc8zkv1m',
   dataset: 'production',
   apiVersion: '2026-02-04',
   // CDN activado — cachea queries de lectura en el edge global de Sanity (~50ms vs ~1500ms)
   useCdn: true,
-  // Provide read token for private datasets
-  token: getReadToken(),
 });
 
 // Image URL builder
