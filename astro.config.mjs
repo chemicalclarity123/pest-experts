@@ -2,6 +2,8 @@
 import { defineConfig } from 'astro/config';
 
 
+import cloudflare from '@astrojs/cloudflare';
+
 import sitemap from '@astrojs/sitemap';
 
 import tailwindcss from '@tailwindcss/vite';
@@ -9,7 +11,8 @@ import tailwindcss from '@tailwindcss/vite';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://pestexperts.co.za',
-  output: 'static',
+  output: 'hybrid',
+  adapter: cloudflare(),
   integrations: [sitemap({
     filter: (page) => !page.includes('/test-sanity')
   })],
