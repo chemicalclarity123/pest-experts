@@ -1,6 +1,18 @@
 import { createClient } from '@sanity/client';
 import { createImageUrlBuilder } from '@sanity/image-url';
 
+const getReadToken = () => {
+  // En Astro/Cloudflare, import.meta.env es la via oficial para inyectar variables de entorno.
+  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.SANITY_READ_TOKEN) {
+    return import.meta.env.SANITY_READ_TOKEN;
+  }
+  // Fallback para scripts Node puros (como los que ejecutamos localmente)
+  if (typeof process !== 'undefined' && process.env && process.env.SANITY_READ_TOKEN) {
+    return process.env.SANITY_READ_TOKEN;
+  }
+  return undefined;
+};
+
 export const client = createClient({
   projectId: 'vc8zkv1m',
   dataset: 'production',
@@ -8,7 +20,7 @@ export const client = createClient({
   // CDN activado — cachea queries de lectura en el edge global de Sanity (~50ms vs ~1500ms)
   useCdn: true,
   // Provide read token for private datasets
-  token: typeof process !== 'undefined' ? process.env?.SANITY_READ_TOKEN : (import.meta as any).env?.SANITY_READ_TOKEN,
+  token: getReadToken(),
 });
 
 // Image URL builder
