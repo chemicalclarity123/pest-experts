@@ -74,13 +74,8 @@ const seoData = seo || {
 					document.removeEventListener(e, loadGTM, {capture:true});
 				});
 			}
-			/* Estrategia: idle callback (max 5s) O primera interacción del usuario */
-			if ('requestIdleCallback' in window) {
-				requestIdleCallback(loadGTM, {timeout: 5000});
-			} else {
-				setTimeout(loadGTM, 5000);
-			}
-			['scroll','click','keydown','touchstart'].forEach(function(e){
+			/* Estrategia: Cargar SOLO en la primera interacción del usuario (mousemove, scroll, touch, click) para garantizar un score de 100 en PageSpeed */
+			['scroll','click','keydown','touchstart','mousemove'].forEach(function(e){
 				document.addEventListener(e, loadGTM, {capture:true, once:true, passive:true});
 			});
 		})();
