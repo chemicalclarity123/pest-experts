@@ -244,6 +244,23 @@ export async function fetchServiceBySlug(slug: string) {
       "slug": slug.current,
       featured,
       description,
+      introHeadline,
+      introShortDescription,
+      introBodyText,
+      serviceHighlights[]{
+        icon,
+        title,
+        description
+      },
+      selectedReviews[]->{
+        author,
+        rating,
+        text,
+        relativeTime,
+        publishDate,
+        authorPhoto,
+        location
+      },
       content,
       image,
       features,
