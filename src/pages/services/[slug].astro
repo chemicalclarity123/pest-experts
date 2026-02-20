@@ -234,11 +234,11 @@ const breadcrumbItems = [
             <span class="tracking-wide uppercase text-xs">Certified {service.title} Experts</span>
           </div>
 
-          <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-10 tracking-tight leading-tight">
+          <h2 class="section-heading mt-0 mb-6 text-left">
             {fullContentHeading}
           </h2>
           
-          <div class="prose prose-lg max-w-none text-left text-gray-600 w-full mx-auto" style="color: #4b5563;">
+          <div class="prose prose-lg prose-green area-intro-prose max-w-none text-left text-gray-600">
             <PortableText value={service.content} />
           </div>
 
@@ -255,10 +255,10 @@ const breadcrumbItems = [
     {service.overview && (
       <section class="content-section overview-section">
         <div class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100 max-w-4xl mx-auto relative overflow-hidden">
-          <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-8 tracking-tight">
+          <h2 class="section-heading mt-0 mb-6 text-left">
             {service.overviewHeading || "Why Choose Professional Pest Control?"}
           </h2>
-          <div class="prose prose-lg max-w-none text-gray-600" style="color: #4b5563;">
+          <div class="prose prose-lg prose-green area-intro-prose max-w-none text-left text-gray-600">
             <PortableText value={service.overview} />
           </div>
         </div>
