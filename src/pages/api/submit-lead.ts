@@ -194,6 +194,7 @@ async function sendEmail(
   to: string[],
   subject: string,
   html: string,
+  from: string = 'Pest Experts <noreply@pestexperts.co.za>',
   replyTo?: string,
 ) {
   const response = await fetch('https://api.resend.com/emails', {
@@ -203,7 +204,7 @@ async function sendEmail(
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: 'Pest Experts <noreply@pestexperts.co.za>',
+      from,
       to,
       subject,
       html,
@@ -298,7 +299,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
         ['louderthan+pests@gmail.com', 'info@pestexperts.co.za'],
         `New Lead: ${name} — ${suburb}`,
         buildAdminEmail(emailData),
-        email,
+        'Pest Experts Alerts <noreply@pestexperts.co.za>', // From
+        email, // Reply to client
       );
 
       // Envía correo de confirmación al usuario
@@ -307,6 +309,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         [email],
         'Thank You for Contacting Pest Experts',
         buildUserEmail(emailData),
+        'Pest Experts <info@pestexperts.co.za>' // From
       );
 
       // Espera ambos emails para confirmar que se enviaron antes de responder
