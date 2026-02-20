@@ -81,18 +81,19 @@ function formatDate(dateStr: string): string {
                 </div>
               </a>
 
-              {/* Inline CTA after 3rd post */}
-              {index === 2 && posts.length > 3 && (
-                <div class="inline-cta">
-                  <div class="cta-content">
-                    <h3>Need help with a pest problem?</h3>
-                    <p>Our experts respond within 2 hours. Get a free, no-obligation quote today.</p>
-                    <a href="/contact/" class="cta-button">Get a Free Quote</a>
-                  </div>
-                </div>
-              )}
             </>
           ))}
+          
+          {/* Inline CTA placed at the bottom of the grid */}
+          {posts.length > 0 && (
+            <div class="inline-cta">
+              <div class="cta-content">
+                <h3>Need help with a pest problem?</h3>
+                <p>Our experts respond within 2 hours. Get a free, no-obligation quote today.</p>
+                <a href="/contact/" class="cta-button">Get a Free Quote</a>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -253,6 +254,7 @@ function formatDate(dateStr: string): string {
 
   /* Inline CTA between posts */
   .inline-cta {
+    grid-column: 1 / -1;
     background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
     border: 2px solid #1d5f20;
     border-radius: 12px;
