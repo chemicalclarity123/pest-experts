@@ -195,15 +195,15 @@ const schemaMarkup = [businessSchema];
       <div class="content-container">
         <div class="intro-section">
           {area.introHeadline && (
-            <h2 class="section-heading" style="text-align: left;">{area.introHeadline}</h2>
+            <h2 class="section-heading">{area.introHeadline}</h2>
           )}
           {area.introShortDescription && (
-            <p class="section-subtext" style="text-align: left; margin-left: 0; max-width: 800px;">
+            <p class="section-subtext">
               {area.introShortDescription}
             </p>
           )}
           {area.introBodyText && (
-            <div class="prose area-intro-prose" style="max-width: none;">
+            <div class="prose max-w-none" style="margin-top: 2rem;">
               <PortableText value={area.introBodyText} />
             </div>
           )}
@@ -683,17 +683,6 @@ const schemaMarkup = [businessSchema];
   .prose :global(strong) {
     font-weight: 600;
     color: #1f2937;
-  }
-
-  .area-intro-prose {
-    column-count: 2;
-    column-gap: 3rem;
-  }
-
-  @media (max-width: 768px) {
-    .area-intro-prose {
-      column-count: 1;
-    }
   }
 
   /* ══════════════════════════════════════
