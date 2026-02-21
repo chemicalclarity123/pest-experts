@@ -115,9 +115,63 @@ export const service = {
             description: 'Brief service overview (used in cards and previews)',
             rows: 3,
         },
+        // --- Premium 2-Column Layout Fields ---
+        {
+            name: 'introHeadline',
+            title: 'Intro Headline',
+            type: 'string',
+            description: 'Optional headline for the 2-column layout (above the main content).',
+        },
+        {
+            name: 'introShortDescription',
+            title: 'Intro Short Description',
+            type: 'text',
+            rows: 3,
+            description: 'Short introductory paragraph with a green left-border.',
+        },
+        {
+            name: 'introBodyText',
+            title: 'Intro Body Text',
+            type: 'array',
+            of: [{ type: 'block' }],
+            description: 'Main body copy for the service. Replaces the legacy "Full Content" field in the new 2-column premium layout.',
+        },
+        {
+            name: 'serviceHighlights',
+            title: 'Service Highlights (Right Column Card)',
+            type: 'array',
+            description: 'Feature cards specific to this service. Appears in the floating right-side "Why Choose Us" card.',
+            of: [{
+                type: 'object',
+                fields: [
+                    {
+                        name: 'icon',
+                        title: 'Icon Name (Font Awesome)',
+                        type: 'string',
+                        description: 'e.g., "shield-halved", "clock", "bug-slash"',
+                    },
+                    {
+                        name: 'title',
+                        title: 'Title',
+                        type: 'string',
+                        validation: (Rule: any) => Rule.required(),
+                    },
+                    {
+                        name: 'description',
+                        title: 'Description',
+                        type: 'text',
+                        rows: 2,
+                    },
+                ],
+                preview: {
+                    select: { title: 'title' },
+                },
+            }],
+        },
+        // --- Legacy Content Field ---
         {
             name: 'content',
-            title: 'Full Content',
+            title: 'Full Content (Legacy)',
             type: 'array',
             description: 'Detailed service information',
             of: [
@@ -362,6 +416,13 @@ export const service = {
             type: 'array',
             of: [{ type: 'block' }],
             description: 'Benefits of using professional service vs DIY',
+        },
+        {
+            name: 'selectedReviews',
+            title: 'Selected Google Reviews (Right Column Badge)',
+            type: 'array',
+            description: 'Manually select up to 3 Google reviews to display on the floating right-side card. If empty, it falls back to recent 5-star reviews.',
+            of: [{ type: 'reference', to: [{ type: 'googleReview' }] }],
         },
         {
             name: 'customTestimonials',

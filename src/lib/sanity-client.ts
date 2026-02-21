@@ -463,11 +463,10 @@ export async function fetchBlogPostBySlug(slug: string) {
       featured,
       seo,
       ctaOverride,
-      "relatedServices": relatedServices[]-> {
-        _id,
+      associatedServices[]{
         title,
-        "slug": slug.current,
         description,
+        slug,
         image,
         price
       }

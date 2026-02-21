@@ -263,15 +263,55 @@ export const blogPost = {
 
         // CRO group
         {
-            name: 'relatedServices',
-            title: 'Related Services',
+            name: 'associatedServices',
+            title: 'Associated Services',
             type: 'array',
-            description: 'Link to relevant services — shown as CTA cards after content',
+            description: 'Link to relevant services natively without maintaining schema references — shown as CTA cards after content',
             fieldset: 'cro',
             of: [
                 {
-                    type: 'reference',
-                    to: [{ type: 'service' }],
+                    type: 'object',
+                    fields: [
+                        {
+                            name: 'title',
+                            title: 'Service Title',
+                            type: 'string',
+                            validation: (Rule: any) => Rule.required(),
+                        },
+                        {
+                            name: 'description',
+                            title: 'Service Description',
+                            type: 'text',
+                            rows: 2,
+                            validation: (Rule: any) => Rule.required(),
+                        },
+                        {
+                            name: 'slug',
+                            title: 'Service Slug (URL path)',
+                            type: 'string',
+                            description: 'E.g., ant-control-solutions',
+                            validation: (Rule: any) => Rule.required(),
+                        },
+                        {
+                            name: 'image',
+                            title: 'Service Image',
+                            type: 'image',
+                            options: { hotspot: true },
+                        },
+                        {
+                            name: 'price',
+                            title: 'Starting Price (Optional)',
+                            type: 'number',
+                            description: 'E.g., 950',
+                        },
+                    ],
+                    preview: {
+                        select: {
+                            title: 'title',
+                            subtitle: 'description',
+                            media: 'image',
+                        },
+                    },
                 },
             ],
             validation: (Rule: any) => Rule.max(3).warning('Show at most 3 for best conversion'),

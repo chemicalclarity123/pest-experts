@@ -164,12 +164,12 @@ const ctaButton = post.ctaOverride?.buttonText || "Get a Free Quote";
         </div>
       )}
 
-      <!-- Related Services -->
-      {post.relatedServices && post.relatedServices.length > 0 && (
+      <!-- Associated Services -->
+      {post.associatedServices && post.associatedServices.length > 0 && (
         <section class="related-services">
           <h2>Related Services</h2>
           <div class="services-grid">
-            {post.relatedServices.map((service: any) => (
+            {post.associatedServices.map((service: any) => (
               <a href={`/services/${service.slug}/`} class="service-card">
                 {service.image && (
                   <img
