@@ -14,7 +14,9 @@ if (fs.existsSync(envPath)) {
         const [key, ...valueParts] = line.split('=');
         if (key && valueParts.length > 0) {
             const value = valueParts.join('=').trim().replace(/^['"]|['"]$/g, '');
-            process.env[key.trim()] = value;
+            if (process.env[key.trim()] === undefined) {
+                process.env[key.trim()] = value;
+            }
         }
     });
 }
