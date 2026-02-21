@@ -7,6 +7,7 @@ import Testimonials from '../../components/Testimonials.astro';
 import LeadFormCompact from '../../components/LeadFormCompact.astro';
 import WhyChooseUs from '../../components/WhyChooseUs.astro';
 import WhatsAppWidget from '../../components/WhatsAppWidget.astro';
+import SeoSnippetBox from '../../components/SeoSnippetBox.astro';
 import Footer from '../../components/Footer.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { PortableText } from "astro-portabletext";
@@ -224,11 +225,13 @@ const schemaMarkup = [businessSchema];
           
           {/* Main Text Content Column */}
           <div class="w-full lg:w-3/5 text-left">
-            {/* Trust Signal Badge */}
             <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-green-50 border border-green-100 text-sm font-bold text-green-900 mb-8 shadow-sm transition-transform hover:scale-105">
               <span class="flex items-center justify-center w-6 h-6 rounded-full bg-white shadow-sm text-base">📍</span> 
               <span class="tracking-wide uppercase text-xs">Local Experts in {areaName}</span>
             </div>
+
+            <!-- SEO Snippet Injection -->
+            <SeoSnippetBox snippetContent={area.featuredSnippet} />
 
             {area.introHeadline && (
               <h2 class="section-heading text-left mt-0 mb-6">

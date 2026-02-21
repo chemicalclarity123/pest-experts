@@ -170,6 +170,11 @@ export async function fetchServiceAreaBySlug(slug: string) {
       ctaHeading,
       ctaDescription,
       isHub,
+      featuredSnippet{
+        snippetQuestion,
+        snippetAnswer,
+        snippetList
+      },
       nearbyAreas[]->{
         title,
         "slug": slug.current,
@@ -247,6 +252,11 @@ export async function fetchServiceBySlug(slug: string) {
       introHeadline,
       introShortDescription,
       introBodyText,
+      featuredSnippet{
+        snippetQuestion,
+        snippetAnswer,
+        snippetList
+      },
       serviceHighlights[]{
         icon,
         title,

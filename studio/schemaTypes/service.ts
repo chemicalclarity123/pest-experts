@@ -5,6 +5,45 @@ export const service = {
     title: 'Service',
     type: 'document',
     fields: [
+        // --- SEO Featured Snippet (Position Zero) ---
+        {
+            name: 'featuredSnippet',
+            title: 'Featured Snippet (Position Zero)',
+            type: 'object',
+            description: 'Highly structured Q&A block designed to win Google Featured Snippets. Renders at the top of the page.',
+            options: { collapsible: true, collapsed: false },
+            fields: [
+                {
+                    name: 'snippetQuestion',
+                    title: 'Snippet Question (H2)',
+                    type: 'string',
+                    description: 'The exact question users search for (e.g., "How much does termite control cost?")',
+                },
+                {
+                    name: 'snippetAnswer',
+                    title: 'Snippet Answer (Paragraph)',
+                    type: 'text',
+                    rows: 3,
+                    description: 'The direct answer. MUST be between 40-60 words for optimal Google pickup.',
+                    validation: (Rule: any) => Rule.custom((text: string) => {
+                        if (!text) return true;
+                        const wordCount = text.trim().split(/\s+/).length;
+                        if (wordCount < 30 || wordCount > 70) {
+                            return 'For best SEO results, snippet answers should ideally be between 40-60 words.';
+                        }
+                        return true;
+                    }).warning(),
+                },
+                {
+                    name: 'snippetList',
+                    title: 'Snippet List (Optional)',
+                    type: 'array',
+                    of: [{ type: 'string' }],
+                    description: 'Optional step-by-step or feature list to accompany the answer (Google loves lists).',
+                },
+            ],
+        },
+
         {
             name: 'title',
             title: 'Service Name',

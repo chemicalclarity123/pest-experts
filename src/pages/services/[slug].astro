@@ -5,6 +5,7 @@ import Testimonials from '../../components/Testimonials.astro';
 import FAQ from '../../components/FAQ.astro';
 import WhyChooseUs from '../../components/WhyChooseUs.astro';
 import WhatsAppWidget from '../../components/WhatsAppWidget.astro';
+import SeoSnippetBox from '../../components/SeoSnippetBox.astro';
 import { PortableText } from "astro-portabletext";
 import { 
   fetchServices, 
@@ -230,6 +231,9 @@ const breadcrumbItems = [
             <span class="flex items-center justify-center w-6 h-6 rounded-full bg-white shadow-sm text-base">🛡️</span> 
             <span class="tracking-wide uppercase text-xs">Certified {service.title} Experts</span>
           </div>
+
+          <!-- SEO Snippet Injection -->
+          <SeoSnippetBox snippetContent={service.featuredSnippet} />
 
           <h2 class="section-heading text-left mt-0 mb-6">
             {service.introHeadline || fullContentHeading}

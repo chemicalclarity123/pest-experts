@@ -1,0 +1,53 @@
+---
+// src/components/SeoSnippetBox.astro
+// Renders a Google Featured Snippet optimized block (Position Zero structure)
+
+interface Props {
+  snippetContent: {
+    snippetQuestion: string;
+    snippetAnswer: string;
+    snippetList?: string[];
+  };
+}
+
+const { snippetContent } = Astro.props;
+
+// Skip rendering if no question or answer
+if (!snippetContent?.snippetQuestion || !snippetContent?.snippetAnswer) {
+  return null;
+}
+---
+
+<section 
+  class="seo-snippet-box mx-auto max-w-4xl bg-white border border-gray-100 rounded-xl shadow-sm p-6 mb-12"
+  aria-label="Quick Answer"
+>
+  <h2 class="text-xl md:text-2xl font-bold text-gray-900 mb-3 leading-tight">
+    {snippetContent.snippetQuestion}
+  </h2>
+  
+  <p class="text-gray-700 leading-relaxed text-[1.05rem] mb-4">
+    {snippetContent.snippetAnswer}
+  </p>
+  
+  {snippetContent.snippetList && snippetContent.snippetList.length > 0 && (
+    <ul class="space-y-2 mt-4">
+      {snippetContent.snippetList.map((item) => (
+        <li class="flex items-start text-gray-700">
+          <svg class="w-5 h-5 text-[#2b6b2a] mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          <span class="leading-relaxed">{item}</span>
+        </li>
+      ))}
+    </ul>
+  )}
+</section>
+
+<style>
+  .seo-snippet-box {
+    position: relative;
+    /* Subtle highlight on the top edge to draw attention */
+    border-top: 4px solid #1d5f20;
+  }
+</style>
