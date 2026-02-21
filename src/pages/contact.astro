@@ -116,29 +116,19 @@ const schemaMarkup = {
 >
   <!-- Hero Section -->
   <section class="page-hero" aria-label="Contact page header">
-    {mapImageUrl && (
-      <img 
-        src={mapImageUrl} 
-        alt="Pest Experts service area map - Gauteng" 
-        class="hero-bg-img"
-        width="1200"
-        height="400"
-        loading="eager"
-      />
-    )}
-    <!-- Elegant dynamic gradient over the map -->
-    <div class="hero-overlay bg-gradient-to-br from-green-900/90 via-green-800/80 to-blue-900/70"></div>
+    <!-- Premium opaque gradient background without the map image -->
+    <div class="hero-overlay bg-gradient-to-br from-[#1a4f1d] via-[#1d5f20] to-[#2d7a30]"></div>
     
     <!-- Subtle background pattern for depth -->
-    <div class="absolute inset-0 opacity-[0.03] bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0wIDBoNDB2NDBIMHoiIGZpbGw9Im5vbmUiLz4KPHBhdGggZD0iTTIwIDIwTDIwLjAxLDIwWiIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNSIvPgo8L3N2Zz4=')] mix-blend-overlay pointer-events-none"></div>
+    <div class="absolute inset-0 opacity-[0.05] bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0wIDBoNDB2NDBIMHoiIGZpbGw9Im5vbmUiLz4KPHBhdGggZD0iTTIwIDIwTDIwLjAxLDIwWiIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNSIvPgo8L3N2Zz4=')] mix-blend-overlay pointer-events-none"></div>
 
     <div class="container hero-content relative z-10 pt-16 pb-12">
       <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-sm font-semibold text-white mb-6 shadow-sm mx-auto animate-fade-in-up">
-        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-green-500 shadow-sm text-xs">💬</span> 
+        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#4ade80] shadow-sm text-xs text-green-900">💬</span> 
         <span class="tracking-wide uppercase text-xs">Always Here To Help</span>
       </div>
-      <h1 class="text-5xl md:text-6xl font-extrabold mb-4 tracking-tight leading-tight animate-fade-in-up" style="animation-delay: 100ms;">Contact Us</h1>
-      <p class="hero-sub text-xl md:text-2xl font-light text-green-50 max-w-2xl mx-auto animate-fade-in-up" style="animation-delay: 200ms;">Fast, Effective Pest Control Solutions across Gauteng</p>
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 tracking-tight leading-tight animate-fade-in-up text-white" style="animation-delay: 100ms;">Contact Us</h1>
+      <p class="hero-sub text-lg md:text-xl lg:text-2xl font-light text-green-50 max-w-2xl mx-auto animate-fade-in-up" style="animation-delay: 200ms;">Reach out today for fast, effective pest control solutions across Gauteng.</p>
     </div>
   </section>
 
