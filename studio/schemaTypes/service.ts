@@ -4,6 +4,9 @@ export const service = {
     name: 'service',
     title: 'Service',
     type: 'document',
+    fieldsets: [
+        { name: 'seoFields', title: 'SEO', options: { collapsible: true } },
+    ],
     fields: [
         // --- SEO Featured Snippet (Position Zero) ---
         {
