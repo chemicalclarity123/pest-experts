@@ -156,8 +156,10 @@ const getIconSvg = (iconName: string) => {
     filter: drop-shadow(0 2px 4px rgba(29, 95, 32, 0.2));
   }
 
+  .feature-card:hover .icon :global(svg path),
   .feature-card:hover .icon :global(svg) {
-    fill: white;
+    fill: white !important;
+    color: white !important;
     filter: drop-shadow(0 4px 8px rgba(255, 255, 255, 0.3));
     transform: scale(1.1);
   }
