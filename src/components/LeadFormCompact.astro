@@ -27,7 +27,7 @@ const HeadingTag = headingLevel;
 ---
 
 <!-- Wrapper con clase de variante para estilos condicionales -->
-<div class:list={["lead-form-wrapper", `lead-form--${variant}`, { "has-ribbon overflow-hidden relative": showRibbon }]} id={`${formId}-wrapper`}>
+<div class:list={["lead-form-wrapper", `lead-form--${variant}`, { "has-ribbon overflow-hidden relative pt-10 sm:pt-12": showRibbon }]} id={`${formId}-wrapper`}>
   {showRibbon && (
     <div class="absolute -right-12 top-6 bg-amber-500 text-white font-bold text-xs py-1 px-12 rotate-45 shadow-sm hidden sm:block z-10 pointer-events-none text-center">
       FAST RESPONSE
