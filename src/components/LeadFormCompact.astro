@@ -9,6 +9,7 @@ interface Props {
   formId?: string;
   variant?: 'card' | 'dark';
   headingLevel?: 'h2' | 'h3';
+  showRibbon?: boolean;
 }
 
 const { 
@@ -17,7 +18,8 @@ const {
   source = "general",
   formId = "leadForm",
   variant = "card",
-  headingLevel = "h3"
+  headingLevel = "h3",
+  showRibbon = false
 } = Astro.props;
 
 /* Tag HTML dinámico para el encabezado según contexto SEO */
@@ -25,7 +27,12 @@ const HeadingTag = headingLevel;
 ---
 
 <!-- Wrapper con clase de variante para estilos condicionales -->
-<div class:list={["lead-form-wrapper", `lead-form--${variant}`]} id={`${formId}-wrapper`}>
+<div class:list={["lead-form-wrapper", `lead-form--${variant}`, { "has-ribbon overflow-hidden relative": showRibbon }]} id={`${formId}-wrapper`}>
+  {showRibbon && (
+    <div class="absolute -right-12 top-6 bg-amber-500 text-white font-bold text-xs py-1 px-12 rotate-45 shadow-sm hidden sm:block z-10 pointer-events-none text-center">
+      FAST RESPONSE
+    </div>
+  )}
   <div class="form-header">
     <HeadingTag>{title}</HeadingTag>
     {description && <p class="form-description">{description}</p>}

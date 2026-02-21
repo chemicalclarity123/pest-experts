@@ -227,10 +227,6 @@ const schemaMarkup = {
             <div class="absolute -inset-1 bg-gradient-to-r from-green-600 to-green-400 rounded-[24px] blur opacity-20 group-hover:opacity-30 transition duration-1000 group-hover:duration-200"></div>
             
             <div class="form-card relative bg-white rounded-[20px] p-2 md:p-3 premium-shadow overflow-hidden border border-white/50 backdrop-blur-xl">
-              <!-- Trust badge corner ribbon -->
-              <div class="absolute -right-12 top-6 bg-amber-500 text-white font-bold text-xs py-1 px-12 rotate-45 shadow-sm hidden sm:block">
-                FAST RESPONSE
-              </div>
               
               <LeadFormCompact 
                 title="Send Us A Message" 
@@ -239,6 +235,7 @@ const schemaMarkup = {
                 formId="contactForm"
                 variant="card"
                 headingLevel="h2"
+                showRibbon={true}
               />
               
               <div class="mt-4 pb-2 flex items-center justify-center gap-6 text-xs text-gray-500 font-medium">
