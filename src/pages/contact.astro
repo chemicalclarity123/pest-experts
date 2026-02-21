@@ -263,6 +263,7 @@ const schemaMarkup = {
   <Testimonials 
     title={companySettings?.testimonials?.title || homepage?.testimonials?.title || "What Our Customers Say"} 
     reviews={companySettings?.testimonials?.reviews?.length > 0 ? companySettings.testimonials.reviews : (homepage?.testimonials?.reviews || [])} 
+    googleReviews={companySettings?.googleReviews}
   />
 
   {whatsapp && <WhatsAppWidget phoneNumber={whatsapp} />}
