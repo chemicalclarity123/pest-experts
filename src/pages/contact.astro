@@ -144,10 +144,10 @@ const schemaMarkup = {
         <!-- Contact Details Column -->
         <div class="details-column lg:mt-10">
           <div class="info-card premium-shadow group">
-            <h3 class="flex items-center gap-3">
+            <h2 class="flex items-center gap-3 text-xl font-bold">
               <span class="w-2 h-8 bg-green-600 rounded-full inline-block"></span>
               Get In Touch
-            </h3>
+            </h2>
             <p class="info-text">We are ready to assist you with any pest control needs.</p>
             
             <div class="contact-links">
@@ -179,10 +179,10 @@ const schemaMarkup = {
 
           {address && (
             <div class="info-card premium-shadow group">
-              <h3 class="flex items-center gap-3">
+              <h2 class="flex items-center gap-3 text-xl font-bold">
                 <span class="w-2 h-8 bg-amber-500 rounded-full inline-block"></span>
                 Visit Us
-              </h3>
+              </h2>
               <div class="contact-item">
                 <div class="icon-box bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-100 group-hover:from-amber-500 group-hover:to-amber-600 transition-all duration-300">
                   <svg xmlns="http://www.w3.org/2000/svg" class="icon text-amber-600 group-hover:text-white transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -204,10 +204,10 @@ const schemaMarkup = {
 
           {hours.length > 0 && (
             <div class="info-card premium-shadow">
-              <h3 class="flex items-center gap-3">
+              <h2 class="flex items-center gap-3 text-xl font-bold">
                 <span class="w-2 h-8 bg-purple-600 rounded-full inline-block"></span>
                 Business Hours
-              </h3>
+              </h2>
               <div class="hours-list">
                 {hours.map((h: any) => (
                   <div class="hour-row group/row">
