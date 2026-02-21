@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import Footer from '../../components/Footer.astro';
+import WhatsAppWidget from '../../components/WhatsAppWidget.astro';
 import { fetchBlogPosts, fetchCompanySettings, urlFor } from '../../lib/sanity-client';
 import { generateBreadcrumbSchema } from '../../lib/schema';
 
@@ -35,6 +36,8 @@ function formatDate(dateStr: string): string {
     day: 'numeric',
   });
 }
+
+const whatsappNumber = companySettings?.contactInfo?.whatsapp || "+27123456789";
 ---
 
 <Layout seo={seoData} schemaMarkup={schemaMarkup}>

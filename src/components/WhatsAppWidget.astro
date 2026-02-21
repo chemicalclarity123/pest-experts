@@ -8,8 +8,17 @@ interface Props {
 
 const { phoneNumber, message = "Hi! I'd like to get a quote for pest control services." } = Astro.props;
 
-// Format phone number for WhatsApp (remove spaces, dashes, etc.)
-const formattedPhone = phoneNumber.replace(/[^\d+]/g, '');
+// Format phone number for WhatsApp
+let formattedPhone = phoneNumber.replace(/[^\d+]/g, '');
+
+// If it starts with a local South African 0 (e.g., 082), replace it with +27
+if (formattedPhone.startsWith('0')) {
+  formattedPhone = '+27' + formattedPhone.substring(1);
+}
+
+// Remove the '+' for the final wa.me URL as it prefers just the numbers (e.g., 2782...)
+formattedPhone = formattedPhone.replace('+', '');
+
 const whatsappUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
 ---
 
