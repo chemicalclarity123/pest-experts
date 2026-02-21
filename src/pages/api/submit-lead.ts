@@ -239,8 +239,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
       'http://localhost:3000'
     ];
 
-    // Si el origen no está en la lista permitida (y existe), bloqueamos
-    if (origin && !allowedOrigins.some(allowed => origin.startsWith(allowed))) {
+    // Si el origen no está en la lista permitida (y existe), y no contiene '.pages.dev', bloqueamos
+    if (origin && !allowedOrigins.some(allowed => origin.startsWith(allowed)) && !origin.endsWith('.pages.dev')) {
       console.warn(`Blocked request from unauthorized origin: ${origin}`);
       return new Response(JSON.stringify({ error: 'Unauthorized request origin.' }), {
         status: 403,
