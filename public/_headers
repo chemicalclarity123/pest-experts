@@ -1,10 +1,3 @@
-# Dev domain — bloquea indexación para evitar contenido duplicado con pestexperts.co.za
-https://built-for-speed.pages.dev/*
-  X-Robots-Tag: noindex, nofollow
-
-# Todos los subdominios *.pages.dev — misma protección
-https://*.built-for-speed.pages.dev/*
-  X-Robots-Tag: noindex, nofollow
 
 # Archivos estáticos de Astro — inmutables, cache de 1 año
 /_astro/*
