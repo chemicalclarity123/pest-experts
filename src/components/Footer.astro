@@ -84,10 +84,10 @@ const footerAreas = serviceAreas.slice(0, 6);
             Professional pest control services across Gauteng Province. Fast, local, and effective solutions.
           </p>
           <div class="contact-info">
-            <a href={`tel:${phone.replace(/\s+/g, '')}`} class="contact-link">
+            <a href={`tel:${phone.replace(/\s+/g, '')}`} class="contact-link" aria-label={`Call us at ${phone}`}>
               📞 {phone}
             </a>
-            <a href={`mailto:${email}`} class="contact-link">
+            <a href={`mailto:${email}`} class="contact-link" aria-label={`Email us at ${email}`}>
               ✉️ {email}
             </a>
           </div>

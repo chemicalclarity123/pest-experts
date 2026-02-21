@@ -38,7 +38,7 @@ const {
         /* Solo renderizar imagen si tiene un asset real (evita crash de urlFor) */
         const hasAsset = imageSource?.asset || imageSource?._ref;
         return (
-        <a href={`/services/${slug}/`} class="service-card">
+        <a href={`/services/${slug}/`} class="service-card" aria-label={`Learn more about ${service.title}`}>
           {/* Sección de imagen — solo se renderiza si hay imagen disponible */}
           {hasAsset ? (
             <div class="service-image">
