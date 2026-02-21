@@ -183,9 +183,7 @@ const ctaButton = post.ctaOverride?.buttonText || "Get a Free Quote";
                 <div class="service-card-body">
                   <h3>{service.title}</h3>
                   <p>{service.description}</p>
-                  {service.price && (
-                    <span class="service-price">From R{service.price}</span>
-                  )}
+                  <span class="learn-more">Get a Quote →</span>
                 </div>
               </a>
             ))}
@@ -530,12 +528,20 @@ const ctaButton = post.ctaOverride?.buttonText || "Get a Free Quote";
     line-height: 1.5;
   }
 
-  .service-price {
-    display: inline-block;
+  .learn-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
     margin-top: 0.75rem;
     font-weight: 700;
     color: #1d5f20;
     font-size: 0.95rem;
+    transition: color 0.2s, gap 0.2s;
+  }
+
+  .service-card:hover .learn-more {
+    color: #2d7a30;
+    gap: 0.5rem;
   }
 
   /* Bottom CTA */
