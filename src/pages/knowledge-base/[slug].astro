@@ -498,6 +498,8 @@ const ctaButton = post.ctaOverride?.buttonText || "Get a Free Quote";
     text-decoration: none;
     color: inherit;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
   }
 
   .service-card:hover {
@@ -513,6 +515,9 @@ const ctaButton = post.ctaOverride?.buttonText || "Get a Free Quote";
 
   .service-card-body {
     padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
   }
 
   .service-card-body h3 {
@@ -526,6 +531,7 @@ const ctaButton = post.ctaOverride?.buttonText || "Get a Free Quote";
     font-size: 0.9rem;
     color: #6b7280;
     line-height: 1.5;
+    flex-grow: 1;
   }
 
   .learn-more {
