@@ -35,7 +35,7 @@ const HeadingTag = headingLevel;
     <input type="hidden" name="source" value={source} />
     
     <!-- Honeypot Field (Anti-Bot) -->
-    <div style="opacity: 0; position: absolute; top: 0; left: 0; height: 0; width: 0; z-index: -1;">
+    <div style="opacity: 0; position: absolute; top: 0; left: 0; height: 0; width: 0; z-index: -1;" aria-hidden="true">
       <label for={`${formId}-hp`}>Leave this empty</label>
       <input type="text" id={`${formId}-hp`} name="a_password" tabindex="-1" autocomplete="off" />
     </div>

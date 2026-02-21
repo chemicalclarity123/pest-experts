@@ -134,54 +134,57 @@ const schemaMarkup = generateHomepageSchema({
     trustBadges={pageData.hero?.trustBadges}
   />
 
-  <!-- Services Section -->
-  <ServicesSection 
-    title={pageData.services?.title}
-    description={pageData.services?.description}
-    serviceCards={pageData.services?.serviceCards}
-  />
-
-  <!-- Service Areas Map -->
-  <ServiceAreasMap 
-    title={pageData.serviceAreas?.title}
-    description={pageData.serviceAreas?.description}
-    mapImage={pageData.serviceAreas?.mapImage}
-  />
-
-  <!-- Why Choose Us -->
-  <WhyChooseUs 
-    title={pageData.whyChooseUs?.title}
-    features={pageData.whyChooseUs?.features}
-  />
-
-  <!-- Testimonials -->
-  <Testimonials 
-    title={companySettings?.testimonials?.title || pageData.testimonials?.title || "What Our Customers Say"}
-    reviews={companySettings?.testimonials?.reviews}
-    googleReviews={companySettings?.googleReviews}
-  />
-  
-  <!-- FAQ Section -->
-  {pageData.faq?.questions && pageData.faq.questions.length > 0 && (
-    <FAQ 
-      title={pageData.faq.title}
-      questions={pageData.faq.questions}
+  <!-- Below the fold content optimized for Speed Index -->
+  <div style="content-visibility: auto; contain-intrinsic-size: 0 2000px;">
+    <!-- Services Section -->
+    <ServicesSection 
+      title={pageData.services?.title}
+      description={pageData.services?.description}
+      serviceCards={pageData.services?.serviceCards}
     />
-  )}
 
-  <!-- Lead Form — variante oscura con fondo verde -->
-  <section class="lead-form-section">
-    <div class="lead-form-container">
-      <LeadFormCompact 
-        title={pageData.leadForm?.title || "Get A Free Quote"}
-        description={pageData.leadForm?.description || "Fill out the form and we'll contact you within 1 hour"}
-        source="homepage_bottom"
-        formId="bottomForm"
-        variant="dark"
-        headingLevel="h2"
+    <!-- Service Areas Map -->
+    <ServiceAreasMap 
+      title={pageData.serviceAreas?.title}
+      description={pageData.serviceAreas?.description}
+      mapImage={pageData.serviceAreas?.mapImage}
+    />
+
+    <!-- Why Choose Us -->
+    <WhyChooseUs 
+      title={pageData.whyChooseUs?.title}
+      features={pageData.whyChooseUs?.features}
+    />
+
+    <!-- Testimonials -->
+    <Testimonials 
+      title={companySettings?.testimonials?.title || pageData.testimonials?.title || "What Our Customers Say"}
+      reviews={companySettings?.testimonials?.reviews}
+      googleReviews={companySettings?.googleReviews}
+    />
+    
+    <!-- FAQ Section -->
+    {pageData.faq?.questions && pageData.faq.questions.length > 0 && (
+      <FAQ 
+        title={pageData.faq.title}
+        questions={pageData.faq.questions}
       />
-    </div>
-  </section>
+    )}
+
+    <!-- Lead Form — variante oscura con fondo verde -->
+    <section class="lead-form-section">
+      <div class="lead-form-container">
+        <LeadFormCompact 
+          title={pageData.leadForm?.title || "Get A Free Quote"}
+          description={pageData.leadForm?.description || "Fill out the form and we'll contact you within 1 hour"}
+          source="homepage_bottom"
+          formId="bottomForm"
+          variant="dark"
+          headingLevel="h2"
+        />
+      </div>
+    </section>
+  </div>
 
   <!-- WhatsApp Widget -->
   <WhatsAppWidget 
