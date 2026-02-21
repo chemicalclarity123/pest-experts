@@ -128,7 +128,7 @@ const HeadingTag = headingLevel;
 
     /* Validación en tiempo real: muestra tips cuando el campo pierde foco */
     form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea').forEach(field => {
-      if (field.type === 'hidden') return;
+      if (field.type === 'hidden' || field.name === 'a_password') return;
 
       field.addEventListener('blur', () => {
         if (field.value.trim()) {
@@ -154,7 +154,7 @@ const HeadingTag = headingLevel;
       /* Marca todos los campos como tocados y valida */
       let isValid = true;
       form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea').forEach(field => {
-        if (field.type === 'hidden') return;
+        if (field.type === 'hidden' || field.name === 'a_password') return;
         field.classList.add('touched');
         if (!field.validity.valid || !field.value.trim()) {
           field.classList.add('invalid');
