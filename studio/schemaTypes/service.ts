@@ -10,6 +10,7 @@ export const service = {
             name: 'featuredSnippet',
             title: 'Featured Snippet (Position Zero)',
             type: 'object',
+            fieldset: 'seoFields',
             description: 'Highly structured Q&A block designed to win Google Featured Snippets. Renders at the top of the page.',
             options: { collapsible: true, collapsed: false },
             fields: [
