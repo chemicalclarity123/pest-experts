@@ -48,7 +48,7 @@ const {
             <h3 class="service-heading">{service.heading}</h3>
             <p class="service-description">{service.description}</p>
             {service.link && (
-              <a href={service.link} class="learn-more">
+              <a href={service.link} class="learn-more" aria-label={`Learn more about ${service.heading}`}>
                 Learn More →
               </a>
             )}
