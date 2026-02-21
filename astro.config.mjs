@@ -12,6 +12,9 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   site: 'https://pestexperts.co.za',
   output: 'static',
+  build: {
+    inlineStylesheets: 'always' // Inlines all CSS directly into the HTML to remove render-blocking <link> tags
+  },
   adapter: cloudflare(),
   integrations: [sitemap({
     filter: (page) => !page.includes('/test-sanity')

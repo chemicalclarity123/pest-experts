@@ -29,18 +29,18 @@ const hasValidImage = backgroundImage && (
 // Genera URLs optimizadas por tamaño para srcset responsivo
 const isSanityImage = hasValidImage && typeof backgroundImage === 'object' && backgroundImage.asset;
 
-// URL principal (desktop) — q65 equilibra calidad y tamaño para LCP
+// URL principal (desktop) — q45 equilibra calidad y tamaño para LCP rápido
 const bgImageUrl = isSanityImage
-  ? urlFor(backgroundImage).width(1280).quality(65).auto('format').url()
+  ? urlFor(backgroundImage).width(1280).quality(45).auto('format').url()
   : backgroundImage;
 
 // URLs para srcset — mobile recibe imagen más pequeña y más comprimida (ahorra ~70% de datos)
 const bgImageMobile = isSanityImage
-  ? urlFor(backgroundImage).width(640).quality(50).auto('format').url()
+  ? urlFor(backgroundImage).width(640).quality(40).auto('format').url()
   : backgroundImage;
 
 const bgImageDesktop = isSanityImage
-  ? urlFor(backgroundImage).width(1440).quality(65).auto('format').url()
+  ? urlFor(backgroundImage).width(1440).quality(45).auto('format').url()
   : backgroundImage;
 ---
 

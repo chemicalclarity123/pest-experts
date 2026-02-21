@@ -68,12 +68,12 @@ const fallbackHomepage = {
 
 const pageData = homepage || fallbackHomepage;
 
-// Pre-calcula URLs del hero para preload en <head>
+// Pre-calcula URLs del hero para preload en <head> (Aggressive compression for LCP optimization)
 const heroImg = pageData.hero?.backgroundImage;
 const hasHeroImage = heroImg && typeof heroImg === 'object' && heroImg.asset;
-const preloadMobile = hasHeroImage ? urlFor(heroImg).width(640).quality(50).auto('format').url() : null;
-const preloadDesktop = hasHeroImage ? urlFor(heroImg).width(1280).quality(65).auto('format').url() : null;
-const preloadFull = hasHeroImage ? urlFor(heroImg).width(1440).quality(65).auto('format').url() : null;
+const preloadMobile = hasHeroImage ? urlFor(heroImg).width(640).quality(40).auto('format').url() : null;
+const preloadDesktop = hasHeroImage ? urlFor(heroImg).width(1280).quality(45).auto('format').url() : null;
+const preloadFull = hasHeroImage ? urlFor(heroImg).width(1440).quality(45).auto('format').url() : null;
 
 // Get WhatsApp number from company settings
 const whatsappNumber = companySettings?.contactInfo?.whatsapp || "+27123456789";
