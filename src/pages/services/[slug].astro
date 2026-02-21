@@ -53,9 +53,15 @@ const faqTitle = service.localContext?.faqs?.length > 0
 
 const whatsappNumber = companySettings?.contactInfo?.whatsapp || "+27123456789";
 
-// Imagen hero — se necesita antes del schema
-const heroImage = service.image?.asset 
-  ? urlFor(service.image).width(1920).height(800).url() 
+// Imagen hero responsiva para optimizar LCP
+const isSanityImage = service.image && service.image.asset;
+
+const heroImageDesktop = isSanityImage
+  ? urlFor(service.image).width(1440).height(600).quality(65).auto('format').url()
+  : '/images/hero-bg.jpg';
+
+const heroImageMobile = isSanityImage
+  ? urlFor(service.image).width(640).height(400).quality(50).auto('format').url()
   : '/images/hero-bg.jpg';
   
 // Schema Generation — incluye imagen y URL para rich results en Google
@@ -63,7 +69,7 @@ const serviceSchema = generateServiceSchema({
   name: service.title,
   description: service.description,
   serviceType: service.localContext?.serviceType || "PestControl",
-  image: heroImage,
+  image: heroImageDesktop,
   url: Astro.url.href,
   provider: {
     name: companySettings?.businessName || "Built For Speed Pest Experts",
@@ -100,19 +106,27 @@ const breadcrumbItems = [
   seo={service.seo}
   schemaMarkup={schemaMarkup}
 >
+  <Fragment slot="preload">
+    <link rel="preload" href={heroImageMobile} as="image" fetchpriority="high" media="(max-width: 767px)" />
+    <link rel="preload" href={heroImageDesktop} as="image" fetchpriority="high" media="(min-width: 768px)" />
+  </Fragment>
+
   <!-- Hero Section with 2-Column Layout -->
   <section class="hero-section">
     <!-- Background Image Container -->
     <div class="hero-background">
-      <img 
-        src={heroImage} 
-        alt={service.image?.alt || service.title}
-        class="hero-image"
-        width="1920"
-        height="800"
-        fetchpriority="high"
-        decoding="async"
-      />
+      <picture>
+        <source media="(min-width: 768px)" srcset={heroImageDesktop} />
+        <img 
+          src={heroImageMobile} 
+          alt={service.image?.alt || service.title}
+          class="hero-image"
+          width="1440"
+          height="600"
+          fetchpriority="high"
+          decoding="sync"
+        />
+      </picture>
       <div class="hero-overlay"></div>
     </div>
 
