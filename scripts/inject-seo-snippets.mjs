@@ -1,18 +1,27 @@
 import { createClient } from '@sanity/client';
-import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-import OpenAI from "openai"; // Optional: Use AI to bulk generate snippet content
+import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Load env vars from project root
-dotenv.config({ path: join(__dirname, '../.env') });
+// Manually parse .env to bypass sudo / tsx environment stripping issues
+const envPath = join(__dirname, '../.env');
+if (fs.existsSync(envPath)) {
+    const envConfig = fs.readFileSync(envPath, 'utf8');
+    envConfig.split('\n').forEach(line => {
+        const [key, ...valueParts] = line.split('=');
+        if (key && valueParts.length > 0) {
+            const value = valueParts.join('=').trim().replace(/^['"]|['"]$/g, '');
+            process.env[key.trim()] = value;
+        }
+    });
+}
 
 const projectId = process.env.PUBLIC_SANITY_PROJECT_ID;
 const dataset = process.env.PUBLIC_SANITY_DATASET || 'production';
-const token = process.env.SANITY_WRITE_TOKEN;
+const token = process.env.SANITY_WRITE_TOKEN || process.env.SANITY_READ_TOKEN;
 
 if (!projectId || !token) {
     console.error("❌ Missing required environment variables (PUBLIC_SANITY_PROJECT_ID or SANITY_WRITE_TOKEN).");
