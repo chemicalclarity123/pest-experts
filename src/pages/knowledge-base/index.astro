@@ -110,6 +110,11 @@ const whatsappNumber = companySettings?.contactInfo?.whatsapp || "+27123456789";
     </div>
   </section>
 
+  <WhatsAppWidget 
+    phoneNumber={whatsappNumber}
+    message="Hi! I have a question about pest control from reading your blog."
+  />
+
   <Footer companyData={companySettings} />
 </Layout>
 
