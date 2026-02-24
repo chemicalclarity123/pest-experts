@@ -210,12 +210,8 @@ async function sendEmail(
       html,
       reply_to: replyTo,
       tracking_settings: {
-        click_tracking: {
-          enable: false,
-        },
-        open_tracking: {
-          enable: false,
-        },
+        click_tracking: false,
+        open_tracking: false,
       },
     }),
   });
