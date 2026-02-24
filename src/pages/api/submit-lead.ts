@@ -194,7 +194,7 @@ async function sendEmail(
   to: string[],
   subject: string,
   html: string,
-  from: string = 'Pest Experts <noreply@pestexperts.co.za>',
+  from: string = 'Pest Experts <info@pestexperts.co.za>',
   replyTo?: string,
 ) {
   const response = await fetch('https://api.resend.com/emails', {
@@ -335,7 +335,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         ['louderthan+pests@gmail.com', 'info@pestexperts.co.za'],
         `New Lead: ${name} — ${suburb}`,
         buildAdminEmail(emailData),
-        'Pest Experts Alerts <noreply@pestexperts.co.za>', // From
+        'Pest Experts Alerts <info@pestexperts.co.za>', // Updated From
         email, // Reply to client
       );
 
