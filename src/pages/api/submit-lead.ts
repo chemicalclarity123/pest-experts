@@ -209,6 +209,14 @@ async function sendEmail(
       subject,
       html,
       reply_to: replyTo,
+      tracking_settings: {
+        click_tracking: {
+          enabled: false,
+        },
+        open_tracking: {
+          enabled: false,
+        },
+      },
     }),
   });
 
