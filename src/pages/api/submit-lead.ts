@@ -211,10 +211,10 @@ async function sendEmail(
       reply_to: replyTo,
       tracking_settings: {
         click_tracking: {
-          enabled: false,
+          enable: false,
         },
         open_tracking: {
-          enabled: false,
+          enable: false,
         },
       },
     }),
