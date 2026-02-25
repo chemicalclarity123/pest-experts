@@ -209,10 +209,6 @@ async function sendEmail(
       subject,
       html,
       reply_to: replyTo,
-      tracking_settings: {
-        click_tracking: false,
-        open_tracking: false,
-      },
     }),
   });
 
@@ -331,7 +327,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         ['louderthan+pests@gmail.com', 'info@pestexperts.co.za'],
         `New Lead: ${name} — ${suburb}`,
         buildAdminEmail(emailData),
-        'Pest Experts Alerts <info@pestexperts.co.za>', // Updated From
+        'info@pestexperts.co.za', // Simplified From
         email, // Reply to client
       );
 
@@ -341,16 +337,26 @@ export const POST: APIRoute = async ({ request, locals }) => {
         [email],
         'Thank You for Contacting Pest Experts',
         buildUserEmail(emailData),
-        'Pest Experts <info@pestexperts.co.za>' // From
+        'info@pestexperts.co.za' // Simplified From
       );
 
       // Espera ambos emails para confirmar que se enviaron antes de responder
       try {
-        await Promise.all([adminEmailPromise, userEmailPromise]);
+        const results = await Promise.all([adminEmailPromise, userEmailPromise]);
+
+        // Si alguno falló, lanzamos error para que el catch lo maneje (o al menos logueamos)
+        if (results.some(r => !r)) {
+          throw new Error('One or more emails failed to send via Resend.');
+        }
+
         console.log('Both emails sent successfully');
       } catch (emailErr) {
         console.error('Email sending failed:', emailErr);
-        // Los emails fallaron pero el lead se registró — no bloqueamos
+        // Si los correos fallan de forma crítica, devolvemos error 500 para debug
+        return new Response(
+          JSON.stringify({ error: 'Mail delivery failed. Please check Resend dashboard logs.' }),
+          { status: 500, headers: { 'Content-Type': 'application/json' } }
+        );
       }
     } else {
       console.warn('RESEND_API_KEY not found — skipping email notifications');
