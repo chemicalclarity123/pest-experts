@@ -215,9 +215,10 @@ async function sendEmail(
   if (!response.ok) {
     const errorBody = await response.text();
     console.error('Resend API error:', response.status, errorBody);
+    return { success: false, error: errorBody };
   }
 
-  return response.ok;
+  return { success: true };
 }
 
 /* ─── Handler principal ─── */
@@ -344,22 +345,33 @@ export const POST: APIRoute = async ({ request, locals }) => {
       try {
         const results = await Promise.all([adminEmailPromise, userEmailPromise]);
 
-        // Si alguno falló, lanzamos error para que el catch lo maneje (o al menos logueamos)
-        if (results.some(r => !r)) {
-          throw new Error('One or more emails failed to send via Resend.');
+        // Si alguno falló, lanzamos error para que el catch lo maneje
+        const failedResult = results.find(r => !r.success);
+        if (failedResult) {
+          let errorMsg = failedResult.error || 'Unknown error';
+          try {
+            // Intenta parsear JSON de Resend
+            const parsed = JSON.parse(failedResult.error || '{}');
+            errorMsg = parsed.message || errorMsg;
+          } catch (e) { }
+          throw new Error(errorMsg);
         }
 
         console.log('Both emails sent successfully');
-      } catch (emailErr) {
+      } catch (emailErr: any) {
         console.error('Email sending failed:', emailErr);
-        // Si los correos fallan de forma crítica, devolvemos error 500 para debug
+        // Devolvemos error 500 con el mensaje exacto para debugging
         return new Response(
-          JSON.stringify({ error: 'Mail delivery failed. Please check Resend dashboard logs.' }),
+          JSON.stringify({ error: `Resend Error: ${emailErr.message}` }),
           { status: 500, headers: { 'Content-Type': 'application/json' } }
         );
       }
     } else {
       console.warn('RESEND_API_KEY not found — skipping email notifications');
+      return new Response(
+        JSON.stringify({ error: 'RESEND_API_KEY is not configured on the server. Mail skipped.' }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      );
     }
 
     return new Response(
