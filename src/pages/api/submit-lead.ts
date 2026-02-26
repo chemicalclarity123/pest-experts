@@ -393,9 +393,19 @@ export const POST: APIRoute = async ({ request, locals }) => {
         );
       }
     } else {
-      console.warn('RESEND_API_KEY not found — skipping email notifications');
+      // Diagnóstico detallado — ayuda a depurar bindings faltantes en Cloudflare
+      const availableKeys = runtimeEnv ? Object.keys(runtimeEnv) : [];
+      console.error(
+        'RESEND_API_KEY not found in any env source.',
+        '\n  runtime env available:', !!runtimeEnv,
+        '\n  runtime env keys:', availableKeys.length > 0 ? availableKeys.join(', ') : '(empty)',
+        '\n  import.meta.env has RESEND_API_KEY:', !!(import.meta.env as any).RESEND_API_KEY,
+      );
       return new Response(
-        JSON.stringify({ error: 'RESEND_API_KEY is not configured on the server. Mail skipped.' }),
+        JSON.stringify({
+          error: 'Email service is temporarily unavailable. Your enquiry was saved — we will contact you shortly.',
+          debug: `runtime_env=${!!runtimeEnv}, keys=${availableKeys.length}`,
+        }),
         { status: 500, headers: { 'Content-Type': 'application/json' } }
       );
     }

@@ -1,0 +1,10 @@
+# Cloudflare Pages — configuración mínima para bindings y platform proxy
+# Los secrets (RESEND_API_KEY, SANITY_WRITE_TOKEN, etc.) se configuran en el
+# Dashboard de Cloudflare, NO en este archivo.
+name = "pest-experts"
+compatibility_date = "2024-09-23"
+
+[vars]
+PUBLIC_SANITY_PROJECT_ID = "vc8zkv1m"
+PUBLIC_SANITY_DATASET = "production"
+PUBLIC_SANITY_API_VERSION = "2026-02-04"
