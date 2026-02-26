@@ -7,12 +7,51 @@ import { createClient } from '@sanity/client';
 export const prerender = false;
 
 /**
- * Helper para obtener variables de entorno desde múltiples fuentes:
- * 1. Cloudflare runtime (locals.runtime.env) — para secrets via wrangler
- * 2. import.meta.env — para build-time env vars
+ * Helper para obtener variables de entorno desde múltiples fuentes.
+ * Cloudflare Pages expone secrets de forma diferente según la versión del adapter.
+ * Intenta todas las rutas conocidas y luego import.meta.env como fallback.
  */
 function getEnvVar(name: string, runtimeEnv?: Record<string, any>): string | undefined {
-  return runtimeEnv?.[name] || (import.meta.env as any)[name] || undefined;
+  // 1. runtimeEnv ya extraído (locals.runtime.env o equivalente)
+  if (runtimeEnv?.[name]) return runtimeEnv[name];
+  // 2. import.meta.env — build-time env vars
+  if ((import.meta.env as any)[name]) return (import.meta.env as any)[name];
+  // 3. process.env — último recurso para Node-compatible runtimes
+  try { if ((globalThis as any).process?.env?.[name]) return (globalThis as any).process.env[name]; } catch { }
+  return undefined;
+}
+
+/**
+ * Extrae el entorno de Cloudflare runtime probando múltiples rutas.
+ * Diferentes versiones de @astrojs/cloudflare exponen los bindings en distintas ubicaciones:
+ *  - locals.runtime.env  (adapter v10+)
+ *  - locals.runtime       (adapter v8-9)
+ *  - locals directamente  (algunos edge cases)
+ */
+function extractRuntimeEnv(locals: any): Record<string, any> | undefined {
+  // Ruta 1: locals.runtime.env (más común en versiones recientes)
+  if (locals?.runtime?.env && typeof locals.runtime.env === 'object') {
+    console.log('[env-debug] Found env at locals.runtime.env');
+    return locals.runtime.env;
+  }
+  // Ruta 2: locals.runtime directamente tiene las keys
+  if (locals?.runtime && typeof locals.runtime === 'object' && locals.runtime.RESEND_API_KEY) {
+    console.log('[env-debug] Found env at locals.runtime');
+    return locals.runtime;
+  }
+  // Ruta 3: locals directamente tiene las keys (algunos configs)
+  if (locals && typeof locals === 'object' && locals.RESEND_API_KEY) {
+    console.log('[env-debug] Found env at locals directly');
+    return locals;
+  }
+  console.warn('[env-debug] No runtime env found. locals keys:', locals ? Object.keys(locals) : 'null');
+  if (locals?.runtime) {
+    console.warn('[env-debug] locals.runtime keys:', Object.keys(locals.runtime));
+    if (locals.runtime.env) {
+      console.warn('[env-debug] locals.runtime.env keys:', Object.keys(locals.runtime.env));
+    }
+  }
+  return undefined;
 }
 
 /* ─── Plantilla de correo para el equipo (admin) ─── */
@@ -224,10 +263,11 @@ async function sendEmail(
 /* ─── Handler principal ─── */
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
-    // Obtiene el entorno de Cloudflare runtime (secrets de wrangler)
-    const runtimeEnv = (locals as any)?.runtime?.env;
+    // Extrae el entorno de Cloudflare runtime — prueba múltiples rutas
+    const runtimeEnv = extractRuntimeEnv(locals);
 
-    console.log('API handler started. Runtime env available:', !!runtimeEnv);
+    console.log('API handler started. Runtime env available:', !!runtimeEnv,
+      'RESEND key found:', !!getEnvVar('RESEND_API_KEY', runtimeEnv));
 
     const data = await request.json();
 
