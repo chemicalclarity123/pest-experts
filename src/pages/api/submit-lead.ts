@@ -407,9 +407,22 @@ export const POST: APIRoute = async ({ request, locals }) => {
         );
       }
     } else {
-      console.warn('RESEND_API_KEY not found — skipping email notifications');
+      // Diagnóstico temporal: dump de la estructura de locals para debugging remoto
+      const debugInfo = {
+        localsKeys: locals ? Object.keys(locals) : 'null',
+        hasRuntime: !!(locals as any)?.runtime,
+        runtimeKeys: (locals as any)?.runtime ? Object.keys((locals as any).runtime) : 'no-runtime',
+        hasRuntimeEnv: !!(locals as any)?.runtime?.env,
+        runtimeEnvKeys: (locals as any)?.runtime?.env ? Object.keys((locals as any).runtime.env) : 'no-runtime-env',
+        runtimeEnvType: typeof (locals as any)?.runtime?.env,
+        importMetaEnvKeys: Object.keys(import.meta.env).filter(k => !k.startsWith('__')),
+      };
+      console.warn('RESEND_API_KEY not found. Debug:', JSON.stringify(debugInfo));
       return new Response(
-        JSON.stringify({ error: 'RESEND_API_KEY is not configured on the server. Mail skipped.' }),
+        JSON.stringify({
+          error: 'RESEND_API_KEY is not configured on the server. Mail skipped.',
+          debug: debugInfo,
+        }),
         { status: 500, headers: { 'Content-Type': 'application/json' } }
       );
     }
