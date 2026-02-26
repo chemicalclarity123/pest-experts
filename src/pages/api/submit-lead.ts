@@ -9,47 +9,33 @@ export const prerender = false;
 /**
  * Helper para obtener variables de entorno desde múltiples fuentes.
  * Cloudflare Pages expone secrets de forma diferente según la versión del adapter.
- * Intenta todas las rutas conocidas y luego import.meta.env como fallback.
+ * También maneja keys con espacios accidentales (ej: " RESEND_API_KEY" en el dashboard).
  */
 function getEnvVar(name: string, runtimeEnv?: Record<string, any>): string | undefined {
-  // 1. runtimeEnv ya extraído (locals.runtime.env o equivalente)
+  // 1. Búsqueda exacta en runtimeEnv
   if (runtimeEnv?.[name]) return runtimeEnv[name];
-  // 2. import.meta.env — build-time env vars
+  // 2. Búsqueda con trim — cubre keys con espacios accidentales en Cloudflare Dashboard
+  if (runtimeEnv) {
+    const trimmedMatch = Object.keys(runtimeEnv).find(k => k.trim() === name);
+    if (trimmedMatch && runtimeEnv[trimmedMatch]) return runtimeEnv[trimmedMatch];
+  }
+  // 3. import.meta.env — build-time env vars
   if ((import.meta.env as any)[name]) return (import.meta.env as any)[name];
-  // 3. process.env — último recurso para Node-compatible runtimes
+  // 4. process.env — último recurso para Node-compatible runtimes
   try { if ((globalThis as any).process?.env?.[name]) return (globalThis as any).process.env[name]; } catch { }
   return undefined;
 }
 
 /**
- * Extrae el entorno de Cloudflare runtime probando múltiples rutas.
- * Diferentes versiones de @astrojs/cloudflare exponen los bindings en distintas ubicaciones:
- *  - locals.runtime.env  (adapter v10+)
- *  - locals.runtime       (adapter v8-9)
- *  - locals directamente  (algunos edge cases)
+ * Extrae el entorno de Cloudflare runtime.
+ * La ruta estándar es locals.runtime.env (adapter v10+).
  */
 function extractRuntimeEnv(locals: any): Record<string, any> | undefined {
-  // Ruta 1: locals.runtime.env (más común en versiones recientes)
   if (locals?.runtime?.env && typeof locals.runtime.env === 'object') {
-    console.log('[env-debug] Found env at locals.runtime.env');
     return locals.runtime.env;
   }
-  // Ruta 2: locals.runtime directamente tiene las keys
-  if (locals?.runtime && typeof locals.runtime === 'object' && locals.runtime.RESEND_API_KEY) {
-    console.log('[env-debug] Found env at locals.runtime');
+  if (locals?.runtime && typeof locals.runtime === 'object') {
     return locals.runtime;
-  }
-  // Ruta 3: locals directamente tiene las keys (algunos configs)
-  if (locals && typeof locals === 'object' && locals.RESEND_API_KEY) {
-    console.log('[env-debug] Found env at locals directly');
-    return locals;
-  }
-  console.warn('[env-debug] No runtime env found. locals keys:', locals ? Object.keys(locals) : 'null');
-  if (locals?.runtime) {
-    console.warn('[env-debug] locals.runtime keys:', Object.keys(locals.runtime));
-    if (locals.runtime.env) {
-      console.warn('[env-debug] locals.runtime.env keys:', Object.keys(locals.runtime.env));
-    }
   }
   return undefined;
 }
@@ -407,22 +393,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
         );
       }
     } else {
-      // Diagnóstico temporal: dump de la estructura de locals para debugging remoto
-      const debugInfo = {
-        localsKeys: locals ? Object.keys(locals) : 'null',
-        hasRuntime: !!(locals as any)?.runtime,
-        runtimeKeys: (locals as any)?.runtime ? Object.keys((locals as any).runtime) : 'no-runtime',
-        hasRuntimeEnv: !!(locals as any)?.runtime?.env,
-        runtimeEnvKeys: (locals as any)?.runtime?.env ? Object.keys((locals as any).runtime.env) : 'no-runtime-env',
-        runtimeEnvType: typeof (locals as any)?.runtime?.env,
-        importMetaEnvKeys: Object.keys(import.meta.env).filter(k => !k.startsWith('__')),
-      };
-      console.warn('RESEND_API_KEY not found. Debug:', JSON.stringify(debugInfo));
+      console.warn('RESEND_API_KEY not found — skipping email notifications');
       return new Response(
-        JSON.stringify({
-          error: 'RESEND_API_KEY is not configured on the server. Mail skipped.',
-          debug: debugInfo,
-        }),
+        JSON.stringify({ error: 'RESEND_API_KEY is not configured on the server. Mail skipped.' }),
         { status: 500, headers: { 'Content-Type': 'application/json' } }
       );
     }
