@@ -354,7 +354,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         ['louderthan+pests@gmail.com', 'info@pestexperts.co.za'],
         `New Lead: ${name} — ${suburb}`,
         buildAdminEmail(emailData),
-        'info@pestexperts.co.za', // Simplified From
+        'Pest Experts Website <website@pestexperts.co.za>', // Use a different address to prevent self-spoofing drops
         email, // Reply to client
       );
 
