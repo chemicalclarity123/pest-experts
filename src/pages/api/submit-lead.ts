@@ -364,7 +364,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
         [email],
         'Thank You for Contacting Pest Experts',
         buildUserEmail(emailData),
-        'info@pestexperts.co.za' // Simplified From
+        'Pest Experts <website@pestexperts.co.za>', // Use a recognized/verified generic sender
+        'info@pestexperts.co.za' // Ensure the user's replies go straight to the team inbox
       );
 
       // Espera ambos emails para confirmar que se enviaron antes de responder
