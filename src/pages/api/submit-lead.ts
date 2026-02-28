@@ -78,13 +78,13 @@ function buildAdminEmail(data: Record<string, string>) {
               <tr>
                 <td style="padding:12px 16px;font-weight:600;color:#374151;font-size:14px;width:130px;border-bottom:1px solid #e5e7eb;">Phone</td>
                 <td style="padding:12px 16px;color:#1f2937;font-size:14px;border-bottom:1px solid #e5e7eb;">
-                  <a href="tel:${data.phone}" style="color:#1d5f20;text-decoration:none;">${data.phone}</a>
+                  <strong style="color:#1d5f20;">${data.phone}</strong>
                 </td>
               </tr>
               <tr style="background:#f9fafb;">
                 <td style="padding:12px 16px;font-weight:600;color:#374151;font-size:14px;width:130px;border-bottom:1px solid #e5e7eb;">Email</td>
                 <td style="padding:12px 16px;color:#1f2937;font-size:14px;border-bottom:1px solid #e5e7eb;">
-                  <a href="mailto:${data.email}" style="color:#1d5f20;text-decoration:none;">${data.email}</a>
+                  <strong style="color:#1d5f20;">${data.email}</strong>
                 </td>
               </tr>
               <tr>
@@ -111,9 +111,9 @@ function buildAdminEmail(data: Record<string, string>) {
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:20px;">
               <tr>
                 <td align="center">
-                  <a href="tel:${data.phone}" style="display:inline-block;background:#1d5f20;color:#ffffff;text-decoration:none;padding:12px 28px;border-radius:8px;font-weight:600;font-size:14px;">
-                    📞 Call ${data.fullName} Now
-                  </a>
+                  <div style="display:inline-block;background:#1d5f20;color:#ffffff;padding:12px 28px;border-radius:8px;font-weight:600;font-size:14px;">
+                    📞 Phone: ${data.phone}
+                  </div>
                 </td>
               </tr>
             </table>
@@ -180,8 +180,8 @@ function buildUserEmail(data: Record<string, string>) {
                 <td style="padding:16px 20px;">
                   <p style="margin:0 0 8px;color:#92400e;font-size:14px;font-weight:600;">⚡ Need urgent help?</p>
                   <p style="margin:0;color:#92400e;font-size:14px;line-height:1.5;">
-                    Call us directly at <a href="tel:+27715906630" style="color:#1d5f20;font-weight:600;text-decoration:none;">071 590 6630</a>
-                    or chat on <a href="https://wa.me/27715906630" style="color:#1d5f20;font-weight:600;text-decoration:none;">WhatsApp</a>.
+                    Contact us directly at <strong style="color:#1d5f20;">071 590 6630</strong>
+                    or chat with us on <strong>WhatsApp</strong> at the same number.
                   </p>
                 </td>
               </tr>
